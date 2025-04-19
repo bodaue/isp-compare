@@ -23,6 +23,7 @@ bcrypt = "^4.3.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.6"
+pre-commit = "^4.2.0"
 
 [tool.ruff]
 target-version = "py313"
