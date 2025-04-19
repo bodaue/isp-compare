@@ -2,7 +2,6 @@ from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
 from redis.asyncio import Redis
-from services.transaction_manager import TransactionManager
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -10,13 +9,14 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from core.config import Config
+from core.config import PostgresConfig, RedisConfig
+from services.transaction_manager import TransactionManager
 
 
 class DatabaseProvider(Provider):
     @provide(scope=Scope.APP)
-    def engine(self, config: Config) -> AsyncEngine:
-        return create_async_engine(config.postgres.build_dsn())
+    def engine(self, config: PostgresConfig) -> AsyncEngine:
+        return create_async_engine(config.build_dsn(), echo=config.enable_logging)
 
     @provide(scope=Scope.APP)
     def session_maker(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
@@ -30,11 +30,11 @@ class DatabaseProvider(Provider):
             yield session
 
     @provide(scope=Scope.APP)
-    def redis_client(self, config: Config) -> Redis:
+    def redis_client(self, config: RedisConfig) -> Redis:
         return Redis(
-            host=config.redis.host,
-            port=config.redis.port,
-            password=config.redis.password,
+            host=config.host,
+            port=config.port,
+            password=config.password,
         )
 
     transaction_manager = provide(TransactionManager, scope=Scope.REQUEST)
