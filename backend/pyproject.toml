@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "isp-compare-backend"
+version = "0.1.0"
+description = ""
+authors = ["Timur Kerimov <tim-online@mail.ru>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.13"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.2"
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.40" }
+asyncpg = "^0.30.0"
+alembic = "^1.15.2"
+dishka = "^1.5.3"
+poetry-core = "^2.1.2"
+pydantic-settings = "^2.9.1"
+redis = "^5.2.1"
+python-jose = "^3.4.0"
+bcrypt = "^4.3.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.6"
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "ALL"
+]
+ignore = [
+    "RUF001", "RUF002", "RUF003", "RUF012",
+    "COM812", "ISC001",
+    "D",
+    "RET502", "RET503",
+    "ANN401", "INP001",
+    "FBT001", "FBT002",
+    "PLR0913", "PLR0915",
+    "TRY003", "EM101", "EM102",
+    "S101", "C901", "I001"
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
