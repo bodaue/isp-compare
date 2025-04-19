@@ -63,7 +63,7 @@ ISP Compare - это веб-сервис, предназначенный для 
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/kerimov-timur/isp-compare.git
+git clone https://github.com/bodaue/isp-compare.git
 cd isp-compare
 ```
 
