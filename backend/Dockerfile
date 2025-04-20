@@ -15,4 +15,7 @@ COPY . .
 
 RUN poetry install --only-root --no-interaction --no-ansi
 
+RUN chmod +x scripts/prestart.sh
+
+ENTRYPOINT ["./scripts/prestart.sh"]
 CMD ["sh", "-c", "uvicorn isp_compare.main:create_application --host $SERVER_HOST --port $SERVER_PORT --factory"]

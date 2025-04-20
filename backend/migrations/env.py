@@ -1,6 +1,8 @@
 import asyncio
 from logging.config import fileConfig
+from pathlib import Path
 
+from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, NullPool
 from sqlalchemy.engine import Connection
 
@@ -10,8 +12,10 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from isp_compare.core.config import PostgresConfig
 from isp_compare.models import Base
 
+load_dotenv(Path(__file__).parents[2] / ".env")
+
 config = context.config
-config.set_main_option(name="sqlalchemy.url", value=str(PostgresConfig().build_dsn()))
+config.set_main_option(name="sqlalchemy.url", value=PostgresConfig().build_dsn())
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
