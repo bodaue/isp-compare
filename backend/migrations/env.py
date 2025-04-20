@@ -6,8 +6,8 @@ from sqlalchemy.engine import Connection
 from alembic import context
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from core.config import PostgresConfig
-from models import Base
+from isp_compare.core.config import PostgresConfig
+from isp_compare.models import Base
 
 config = context.config
 

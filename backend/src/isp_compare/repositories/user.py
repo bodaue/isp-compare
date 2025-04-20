@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from models.user import User
+from isp_compare.models.user import User
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 

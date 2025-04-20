@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.token import RefreshToken
+from isp_compare.models.token import RefreshToken
 
 
 class RefreshTokenRepository:

@@ -4,8 +4,8 @@ from uuid import UUID
 from sqlalchemy import Boolean, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.base import Base, IdMixin, TimestampMixin
-from models.user import User
+from isp_compare.models.base import Base, IdMixin, TimestampMixin
+from isp_compare.models.user import User
 
 
 class RefreshToken(IdMixin, TimestampMixin, Base):

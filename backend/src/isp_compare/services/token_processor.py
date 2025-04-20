@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
-from core.config import JWTConfig
+from isp_compare.core.config import JWTConfig
 from jose import jwt
 
 

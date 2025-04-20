@@ -1,11 +1,11 @@
-from core.exceptions import (
+from isp_compare.core.exceptions import (
     UsernameAlreadyExistsException,
 )
-from repositories.user import UserRepository
-from schemas.user import UserProfile, UserProfileUpdate
+from isp_compare.repositories.user import UserRepository
+from isp_compare.schemas.user import UserProfile, UserProfileUpdate
 
-from services.identity_provider import IdentityProvider
-from services.transaction_manager import TransactionManager
+from isp_compare.services.identity_provider import IdentityProvider
+from isp_compare.services.transaction_manager import TransactionManager
 
 
 class UserService:

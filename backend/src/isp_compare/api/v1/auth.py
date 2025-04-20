@@ -2,16 +2,16 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Response
 from fastapi.params import Depends
-from schemas.common import APIResponse
-from schemas.user import (
+from isp_compare.schemas.common import APIResponse
+from isp_compare.schemas.user import (
     TokenResponse,
     UserCreate,
     UserLogin,
 )
-from services.auth import AuthService
+from isp_compare.services.auth import AuthService
 from starlette import status
 
-from api.v1 import security
+from isp_compare.api.v1 import security
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

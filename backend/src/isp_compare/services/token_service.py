@@ -1,20 +1,20 @@
 from datetime import UTC, datetime
 
-from core.exceptions import (
+from isp_compare.core.exceptions import (
     InvalidTokenException,
     TokenExpiredException,
     TokenRevokedException,
     UserNotFoundException,
 )
 from jose import JWTError
-from models.token import RefreshToken
-from models.user import User
+from isp_compare.models.token import RefreshToken
+from isp_compare.models.user import User
 from redis.asyncio import Redis
-from repositories.token import RefreshTokenRepository
-from repositories.user import UserRepository
+from isp_compare.repositories.token import RefreshTokenRepository
+from isp_compare.repositories.user import UserRepository
 
-from services.token_processor import TokenProcessor
-from services.transaction_manager import TransactionManager
+from isp_compare.services.token_processor import TokenProcessor
+from isp_compare.services.transaction_manager import TransactionManager
 
 
 class TokenService:

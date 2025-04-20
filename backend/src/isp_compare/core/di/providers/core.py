@@ -1,6 +1,12 @@
 from dishka import Provider, Scope, from_context, provide
 
-from core.config import Config, CookieConfig, JWTConfig, PostgresConfig, RedisConfig
+from isp_compare.core.config import (
+    Config,
+    CookieConfig,
+    JWTConfig,
+    PostgresConfig,
+    RedisConfig,
+)
 
 
 class ConfigProvider(Provider):

@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from core.config import PostgresConfig, RedisConfig
-from services.transaction_manager import TransactionManager
+from isp_compare.core.config import PostgresConfig, RedisConfig
+from isp_compare.services.transaction_manager import TransactionManager
 
 
 class DatabaseProvider(Provider):

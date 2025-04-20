@@ -1,12 +1,12 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends
-from schemas.common import APIResponse
-from schemas.user import PasswordChange, UserProfile, UserProfileUpdate
-from services.auth import AuthService
-from services.user import UserService
+from isp_compare.schemas.common import APIResponse
+from isp_compare.schemas.user import PasswordChange, UserProfile, UserProfileUpdate
+from isp_compare.services.auth import AuthService
+from isp_compare.services.user import UserService
 
-from api.v1 import security
+from isp_compare.api.v1 import security
 
 router = APIRouter(prefix="/users", tags=["User"], dependencies=[Depends(security)])
 

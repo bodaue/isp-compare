@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
-from models.base import Base, IdMixin, TimestampMixin
+from isp_compare.models.base import Base, IdMixin, TimestampMixin
 
 
 class User(IdMixin, TimestampMixin, Base):

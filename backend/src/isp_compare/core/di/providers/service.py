@@ -1,10 +1,10 @@
 from dishka import Provider, Scope, provide
-from services.auth import AuthService
-from services.identity_provider import IdentityProvider
-from services.password_hasher import PasswordHasher
-from services.token_processor import TokenProcessor
-from services.token_service import TokenService
-from services.user import UserService
+from isp_compare.services.auth import AuthService
+from isp_compare.services.identity_provider import IdentityProvider
+from isp_compare.services.password_hasher import PasswordHasher
+from isp_compare.services.token_processor import TokenProcessor
+from isp_compare.services.token_service import TokenService
+from isp_compare.services.user import UserService
 
 
 class ServiceProvider(Provider):

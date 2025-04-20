@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, provide
-from repositories.token import RefreshTokenRepository
-from repositories.user import UserRepository
+from isp_compare.repositories.token import RefreshTokenRepository
+from isp_compare.repositories.user import UserRepository
 
 
 class RepositoryProvider(Provider):

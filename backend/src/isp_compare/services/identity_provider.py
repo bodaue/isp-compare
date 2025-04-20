@@ -1,17 +1,17 @@
 from uuid import UUID
 
-from core.exceptions import (
+from isp_compare.core.exceptions import (
     InvalidTokenException,
     TokenRevokedException,
     UserNotFoundException,
 )
 from fastapi import Request
 from jose import JWTError
-from models import User
-from repositories.user import UserRepository
+from isp_compare.models import User
+from isp_compare.repositories.user import UserRepository
 
-from services.token_processor import TokenProcessor
-from services.token_service import TokenService
+from isp_compare.services.token_processor import TokenProcessor
+from isp_compare.services.token_service import TokenService
 
 
 class IdentityProvider:

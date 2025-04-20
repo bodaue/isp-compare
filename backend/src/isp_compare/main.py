@@ -1,12 +1,13 @@
 from typing import TYPE_CHECKING
 
-from api.v1.auth import router as auth_router
-from api.v1.user import router as settings_router
-from core.config import Config, create_config
-from core.di.main import create_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from isp_compare.api.v1.auth import router as auth_router
+from isp_compare.api.v1.user import router as settings_router
+from isp_compare.core.config import Config, create_config
+from isp_compare.core.di.main import create_container
 
 if TYPE_CHECKING:
     from dishka import AsyncContainer

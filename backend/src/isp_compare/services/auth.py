@@ -1,5 +1,5 @@
-from core.config import CookieConfig, JWTConfig
-from core.exceptions import (
+from isp_compare.core.config import CookieConfig, JWTConfig
+from isp_compare.core.exceptions import (
     EmailAlreadyExistsException,
     IncorrectPasswordException,
     InvalidCredentialsException,
@@ -8,20 +8,20 @@ from core.exceptions import (
     UserNotFoundException,
 )
 from fastapi import Request, Response
-from models.user import User
-from repositories.user import UserRepository
-from schemas.user import (
+from isp_compare.models.user import User
+from isp_compare.repositories.user import UserRepository
+from isp_compare.schemas.user import (
     PasswordChange,
     TokenResponse,
     UserCreate,
     UserLogin,
 )
 
-from services.identity_provider import IdentityProvider
-from services.password_hasher import PasswordHasher
-from services.token_processor import TokenProcessor
-from services.token_service import TokenService
-from services.transaction_manager import TransactionManager
+from isp_compare.services.identity_provider import IdentityProvider
+from isp_compare.services.password_hasher import PasswordHasher
+from isp_compare.services.token_processor import TokenProcessor
+from isp_compare.services.token_service import TokenService
+from isp_compare.services.transaction_manager import TransactionManager
 
 
 class AuthService:
