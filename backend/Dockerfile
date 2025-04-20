@@ -6,10 +6,13 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
+
 RUN pip install --no-cache-dir poetry \
     && poetry config virtualenvs.create false \
-    && poetry install --without dev --no-interaction --no-ansi
+    && poetry install --without dev --no-root --no-interaction --no-ansi
 
 COPY . .
+
+RUN poetry install --only-root --no-interaction --no-ansi
 
 CMD ["sh", "-c", "uvicorn isp_compare.main:create_application --host $SERVER_HOST --port $SERVER_PORT --factory"]
