@@ -1,11 +1,14 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from isp_compare.models.base import Base, IdMixin, TimestampMixin
-from isp_compare.models.user import User
+
+if TYPE_CHECKING:
+    from isp_compare.models.user import User
 
 
 class RefreshToken(IdMixin, TimestampMixin, Base):
@@ -17,4 +20,4 @@ class RefreshToken(IdMixin, TimestampMixin, Base):
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    user: Mapped[User] = relationship("User")
+    user: Mapped["User"] = relationship()
