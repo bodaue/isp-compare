@@ -1,4 +1,3 @@
-# backend/src/isp_compare/api/v1/provider.py
 from uuid import UUID
 
 from dishka import FromDishka

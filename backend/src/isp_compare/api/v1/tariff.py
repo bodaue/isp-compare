@@ -1,4 +1,3 @@
-# backend/src/isp_compare/api/v1/tariff.py
 from typing import Annotated
 from uuid import UUID
 
@@ -53,7 +52,7 @@ async def get_provider_tariffs(
     return await service.get_provider_tariffs(provider_id, limit, offset)
 
 
-@router.get("/tariffs/search")
+@router.get("/tariffs/search", dependencies=[Depends(security)])
 @inject
 async def search_tariffs(
     service: FromDishka[TariffService],

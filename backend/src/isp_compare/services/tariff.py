@@ -1,11 +1,14 @@
 from uuid import UUID
 
 from isp_compare.core.exceptions import (
+    AppException,
     ProviderNotFoundException,
     TariffNotFoundException,
 )
+from isp_compare.models import SearchHistory
 from isp_compare.models.tariff import Tariff
 from isp_compare.repositories.provider import ProviderRepository
+from isp_compare.repositories.search_history import SearchHistoryRepository
 from isp_compare.repositories.tariff import TariffRepository
 from isp_compare.schemas.tariff import (
     TariffCreate,
@@ -22,11 +25,13 @@ class TariffService:
         self,
         tariff_repository: TariffRepository,
         provider_repository: ProviderRepository,
+        search_history_repository: SearchHistoryRepository,
         transaction_manager: TransactionManager,
         identity_provider: IdentityProvider,
     ) -> None:
         self._tariff_repository = tariff_repository
         self._provider_repository = provider_repository
+        self._search_history_repository = search_history_repository
         self._transaction_manager = transaction_manager
         self._identity_provider = identity_provider
 
@@ -107,4 +112,15 @@ class TariffService:
             limit=search_params.limit,
             offset=search_params.offset,
         )
+        try:
+            user = await self._identity_provider.get_current_user()
+        except AppException:
+            pass
+        else:
+            search_history = SearchHistory(
+                user_id=user.id,
+                search_params=search_params.model_dump(mode="json", exclude_none=True),
+            )
+            await self._search_history_repository.create(search_history)
+            await self._transaction_manager.commit()
         return [TariffResponse.model_validate(tariff) for tariff in tariffs]

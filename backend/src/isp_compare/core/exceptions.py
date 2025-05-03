@@ -89,3 +89,8 @@ class TariffNotFoundException(AppException):
 class ReviewNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Review not found"
+
+
+class SearchHistoryNotFoundException(AppException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Search history not found"
