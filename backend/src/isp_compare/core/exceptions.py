@@ -15,7 +15,11 @@ class AppException(HTTPException):
         super().__init__(status_code=self.status_code, detail=_detail, headers=_headers)
 
 
-# Authentication Exceptions
+class AdminAccessDeniedException(AppException):
+    status_code = status.HTTP_403_FORBIDDEN
+    detail = "You don't have administrator privileges to perform this action"
+
+
 class InvalidCredentialsException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
     detail = "Invalid username or password"
@@ -37,6 +41,12 @@ class TokenRevokedException(AppException):
 class InvalidTokenException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
     detail = "Could not validate credentials"
+    headers = {"WWW-Authenticate": "Bearer"}
+
+
+class TokenSubjectMissingException(AppException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Invalid token: missing subject"
     headers = {"WWW-Authenticate": "Bearer"}
 
 
@@ -64,3 +74,13 @@ class EmailAlreadyExistsException(AppException):
 class IncorrectPasswordException(AppException):
     status_code = status.HTTP_400_BAD_REQUEST
     detail = "Current password is incorrect"
+
+
+class ProviderNotFoundException(AppException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Provider not found"
+
+
+class TariffNotFoundException(AppException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Tariff not found"

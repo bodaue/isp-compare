@@ -1,7 +1,9 @@
 from dishka import Provider, Scope, provide
+
 from isp_compare.services.auth import AuthService
 from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.password_hasher import PasswordHasher
+from isp_compare.services.provider import ProviderService
 from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.token_service import TokenService
 from isp_compare.services.user import UserService
@@ -17,3 +19,5 @@ class ServiceProvider(Provider):
     auth_service = provide(AuthService)
     user_service = provide(UserService)
     token_service = provide(TokenService)
+
+    provider_service = provide(ProviderService)

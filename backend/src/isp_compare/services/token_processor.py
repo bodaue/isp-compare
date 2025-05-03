@@ -4,6 +4,7 @@ from typing import Any
 from uuid import UUID
 
 from isp_compare.core.config import JWTConfig
+from isp_compare.core.exceptions import TokenSubjectMissingException
 from jose import jwt
 
 
@@ -46,5 +47,5 @@ class TokenProcessor:
         payload = self.decode_token(token)
         user_id_str = payload.get("sub")
         if not user_id_str:
-            raise ValueError("Invalid token: missing subject")
+            raise TokenSubjectMissingException
         return UUID(user_id_str)

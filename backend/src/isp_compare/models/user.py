@@ -11,3 +11,5 @@ class User(IdMixin, TimestampMixin, Base):
     hashed_password: Mapped[str]
 
     email: Mapped[str | None] = mapped_column(unique=True)
+
+    is_admin: Mapped[bool] = mapped_column(default=False)

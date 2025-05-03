@@ -1,15 +1,16 @@
 from uuid import UUID
 
+from fastapi import Request
+from jose import JWTError
+
 from isp_compare.core.exceptions import (
+    AdminAccessDeniedException,
     InvalidTokenException,
     TokenRevokedException,
     UserNotFoundException,
 )
-from fastapi import Request
-from jose import JWTError
 from isp_compare.models import User
 from isp_compare.repositories.user import UserRepository
-
 from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.token_service import TokenService
 
@@ -54,3 +55,8 @@ class IdentityProvider:
             raise UserNotFoundException
 
         return user
+
+    async def ensure_is_admin(self) -> None:
+        user = await self.get_current_user()
+        if not user.is_admin:
+            raise AdminAccessDeniedException
