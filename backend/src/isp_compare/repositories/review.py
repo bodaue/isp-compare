@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -54,11 +54,6 @@ class ReviewRepository:
         await self._session.execute(stmt)
 
     async def calculate_average_rating(self, provider_id: UUID) -> float:
-        stmt = select(Review.rating).where(Review.provider_id == provider_id)
-        result = await self._session.execute(stmt)
-        ratings = list(result.scalars())
-
-        if not ratings:
-            return 0.0
-
-        return sum(ratings) / len(ratings)
+        stmt = select(func.avg(Review.rating)).where(Review.provider_id == provider_id)
+        result = await self._session.scalar(stmt)
+        return result or None

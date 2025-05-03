@@ -44,8 +44,6 @@ class ReviewService:
                 "comment": data.comment,
             }
             await self._review_repository.update(existing_review.id, update_data)
-            await self._transaction_manager.commit()
-            updated_review = await self._review_repository.get_by_id(existing_review.id)
 
             avg_rating = await self._review_repository.calculate_average_rating(
                 provider_id=provider_id
@@ -55,6 +53,7 @@ class ReviewService:
             )
             await self._transaction_manager.commit()
 
+            updated_review = await self._review_repository.get_by_id(existing_review.id)
             return ReviewResponse.model_validate(updated_review)
 
         review = Review(
@@ -65,7 +64,6 @@ class ReviewService:
         )
 
         await self._review_repository.create(review)
-        await self._transaction_manager.commit()
 
         avg_rating = await self._review_repository.calculate_average_rating(
             provider_id=provider_id
@@ -110,8 +108,6 @@ class ReviewService:
 
         if update_data:
             await self._review_repository.update(review_id, update_data)
-            await self._transaction_manager.commit()
-            review = await self._review_repository.get_by_id(review_id)
 
             avg_rating = await self._review_repository.calculate_average_rating(
                 review.provider_id
@@ -120,6 +116,7 @@ class ReviewService:
                 review.provider_id, {"rating": avg_rating}
             )
             await self._transaction_manager.commit()
+            review = await self._review_repository.get_by_id(review.id)
 
         return ReviewResponse.model_validate(review)
 
@@ -136,7 +133,6 @@ class ReviewService:
         provider_id = review.provider_id
 
         await self._review_repository.delete(review_id)
-        await self._transaction_manager.commit()
 
         avg_rating = await self._review_repository.calculate_average_rating(provider_id)
         await self._provider_repository.update(provider_id, {"rating": avg_rating})
