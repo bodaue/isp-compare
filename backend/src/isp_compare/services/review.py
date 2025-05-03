@@ -97,7 +97,7 @@ class ReviewService:
     ) -> ReviewResponse:
         user = await self._identity_provider.get_current_user()
 
-        review = await self._review_repository.get_by_id(review_id)
+        review = await self._review_repository.get_by_id(review_id, for_update=True)
         if not review:
             raise ReviewNotFoundException
 
@@ -123,7 +123,7 @@ class ReviewService:
     async def delete_review(self, review_id: UUID) -> None:
         user = await self._identity_provider.get_current_user()
 
-        review = await self._review_repository.get_by_id(review_id)
+        review = await self._review_repository.get_by_id(review_id, for_update=True)
         if not review:
             raise ReviewNotFoundException
 
@@ -132,7 +132,7 @@ class ReviewService:
 
         provider_id = review.provider_id
 
-        await self._review_repository.delete(review_id)
+        await self._review_repository.delete(review)
 
         avg_rating = await self._review_repository.calculate_average_rating(provider_id)
         await self._provider_repository.update(provider_id, {"rating": avg_rating})

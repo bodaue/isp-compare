@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete, func, select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -15,12 +15,16 @@ class ReviewRepository:
     async def create(self, review: Review) -> None:
         self._session.add(review)
 
-    async def get_by_id(self, review_id: UUID) -> Review | None:
+    async def get_by_id(
+        self, review_id: UUID, for_update: bool = False
+    ) -> Review | None:
         stmt = (
             select(Review)
             .options(joinedload(Review.user), joinedload(Review.provider))
             .where(Review.id == review_id)
         )
+        if for_update:
+            stmt = stmt.with_for_update()
         return await self._session.scalar(stmt)
 
     async def get_by_user_and_provider(
@@ -49,9 +53,8 @@ class ReviewRepository:
         stmt = update(Review).where(Review.id == review_id).values(**update_data)
         await self._session.execute(stmt)
 
-    async def delete(self, review_id: UUID) -> None:
-        stmt = delete(Review).where(Review.id == review_id)
-        await self._session.execute(stmt)
+    async def delete(self, review: Review) -> None:
+        await self._session.delete(review)
 
     async def calculate_average_rating(self, provider_id: UUID) -> float:
         stmt = select(func.avg(Review.rating)).where(Review.provider_id == provider_id)

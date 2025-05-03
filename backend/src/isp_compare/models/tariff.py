@@ -23,7 +23,9 @@ class ConnectionType(enum.Enum):
 class Tariff(IdMixin, TimestampMixin, Base):
     __tablename__ = "tariffs"
 
-    provider_id: Mapped[UUID] = mapped_column(ForeignKey("providers.id"))
+    provider_id: Mapped[UUID] = mapped_column(
+        ForeignKey("providers.id", ondelete="CASCADE")
+    )
     provider: Mapped["Provider"] = relationship(back_populates="tariffs")
 
     name: Mapped[str] = mapped_column(String(255))

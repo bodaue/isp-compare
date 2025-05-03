@@ -17,7 +17,9 @@ class Review(IdMixin, TimestampMixin, Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship()
 
-    provider_id: Mapped[UUID] = mapped_column(ForeignKey("providers.id"))
+    provider_id: Mapped[UUID] = mapped_column(
+        ForeignKey("providers.id", ondelete="CASCADE")
+    )
     provider: Mapped["Provider"] = relationship(back_populates="reviews")
 
     rating: Mapped[int]

@@ -19,5 +19,9 @@ class Provider(IdMixin, TimestampMixin, Base):
     logo_url: Mapped[str | None] = mapped_column(String(512))
     rating: Mapped[float | None] = mapped_column(Float)
 
-    tariffs: Mapped[list["Tariff"]] = relationship(back_populates="provider")
-    reviews: Mapped[list["Review"]] = relationship(back_populates="provider")
+    tariffs: Mapped[list["Tariff"]] = relationship(
+        back_populates="provider", cascade="all, delete-orphan"
+    )
+    reviews: Mapped[list["Review"]] = relationship(
+        back_populates="provider", cascade="all, delete-orphan"
+    )
