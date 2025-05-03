@@ -35,13 +35,14 @@ class SearchHistoryService:
     async def delete_search_history(self, search_history_id: UUID) -> None:
         user = await self._identity_provider.get_current_user()
         search_history = await self._search_history_repository.get_by_id(
-            search_history_id
+            search_history_id=search_history_id,
+            for_update=True,
         )
 
         if not search_history or search_history.user_id != user.id:
             raise SearchHistoryNotFoundException
 
-        await self._search_history_repository.delete(search_history_id)
+        await self._search_history_repository.delete(search_history)
         await self._transaction_manager.commit()
 
     async def clear_search_history(self) -> None:

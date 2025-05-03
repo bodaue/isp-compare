@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from isp_compare.models.provider import Provider
@@ -14,8 +14,13 @@ class ProviderRepository:
     async def create(self, provider: Provider) -> None:
         self._session.add(provider)
 
-    async def get_by_id(self, provider_id: UUID) -> Provider | None:
+    async def get_by_id(
+        self, provider_id: UUID, for_update: bool = False
+    ) -> Provider | None:
         stmt = select(Provider).where(Provider.id == provider_id)
+
+        if for_update:
+            stmt = stmt.with_for_update()
         return await self._session.scalar(stmt)
 
     async def get_all(self, limit: int, offset: int) -> list[Provider]:
@@ -27,6 +32,5 @@ class ProviderRepository:
         stmt = update(Provider).where(Provider.id == provider_id).values(**update_data)
         await self._session.execute(stmt)
 
-    async def delete(self, provider_id: UUID) -> None:
-        stmt = delete(Provider).where(Provider.id == provider_id)
-        await self._session.execute(stmt)
+    async def delete(self, provider: Provider) -> None:
+        await self._session.delete(provider)

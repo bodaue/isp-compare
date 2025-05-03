@@ -76,7 +76,7 @@ class TariffService:
     ) -> TariffResponse:
         await self._identity_provider.ensure_is_admin()
 
-        tariff = await self._tariff_repository.get_by_id(tariff_id)
+        tariff = await self._tariff_repository.get_by_id(tariff_id, for_update=True)
         if not tariff:
             raise TariffNotFoundException
 
@@ -89,11 +89,11 @@ class TariffService:
     async def delete_tariff(self, tariff_id: UUID) -> None:
         await self._identity_provider.ensure_is_admin()
 
-        tariff = await self._tariff_repository.get_by_id(tariff_id)
+        tariff = await self._tariff_repository.get_by_id(tariff_id, for_update=True)
         if not tariff:
             raise TariffNotFoundException
 
-        await self._tariff_repository.delete(tariff_id)
+        await self._tariff_repository.delete(tariff)
         await self._transaction_manager.commit()
 
     async def search_tariffs(

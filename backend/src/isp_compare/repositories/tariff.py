@@ -14,8 +14,12 @@ class TariffRepository:
     async def create(self, tariff: Tariff) -> None:
         self._session.add(tariff)
 
-    async def get_by_id(self, tariff_id: UUID) -> Tariff | None:
+    async def get_by_id(
+        self, tariff_id: UUID, for_update: bool = False
+    ) -> Tariff | None:
         stmt = select(Tariff).where(Tariff.id == tariff_id)
+        if for_update:
+            stmt = stmt.with_for_update()
         return await self._session.scalar(stmt)
 
     async def get_all(self, limit: int, offset: int) -> list[Tariff]:
@@ -39,10 +43,8 @@ class TariffRepository:
         stmt = update(Tariff).where(Tariff.id == tariff_id).values(**update_data)
         await self._session.execute(stmt)
 
-    async def delete(self, tariff_id: UUID) -> None:
-        tariff = await self.get_by_id(tariff_id)
-        if tariff:
-            await self._session.delete(tariff)
+    async def delete(self, tariff: Tariff) -> None:
+        await self._session.delete(tariff)
 
     async def search(
         self,
