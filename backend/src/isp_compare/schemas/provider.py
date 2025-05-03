@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_serializer
 
 class ProviderBase(BaseModel):
     name: str = Field(..., max_length=255)
-    description: str | None = None
+    description: str | None = Field(None, max_length=4096)
     website: HttpUrl | None = None
     logo_url: str | None = Field(None, max_length=512)
 
@@ -22,7 +22,7 @@ class ProviderCreate(ProviderBase):
 
 class ProviderUpdate(BaseModel):
     name: str | None = Field(None, max_length=255)
-    description: str | None = None
+    description: str | None = Field(None, max_length=4096)
     website: HttpUrl | None = None
     logo_url: str | None = Field(None, max_length=512)
 

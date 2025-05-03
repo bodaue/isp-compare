@@ -4,6 +4,7 @@ from isp_compare.services.auth import AuthService
 from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.password_hasher import PasswordHasher
 from isp_compare.services.provider import ProviderService
+from isp_compare.services.tariff import TariffService
 from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.token_service import TokenService
 from isp_compare.services.user import UserService
@@ -21,3 +22,4 @@ class ServiceProvider(Provider):
     token_service = provide(TokenService)
 
     provider_service = provide(ProviderService)
+    tariff_service = provide(TariffService)
