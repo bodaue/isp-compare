@@ -159,16 +159,14 @@ cython_debug/
 .idea/
 
 # Dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp/
 .pnp.js
 
 # Testing
-/coverage
+coverage/
 
 # Production
-/build
-/dist
 
 # Environment variables
 .env.local
