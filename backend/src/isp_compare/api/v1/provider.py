@@ -22,7 +22,7 @@ async def create_provider(
     data: ProviderCreate,
     service: FromDishka[ProviderService],
 ) -> ProviderResponse:
-    return await service.create_provider(data.model_dump())
+    return await service.create_provider(data)
 
 
 @router.get("")
