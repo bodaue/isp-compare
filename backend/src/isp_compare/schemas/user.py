@@ -64,3 +64,12 @@ class UserProfileUpdate(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"  # noqa: S105
+
+
+class UserRead(BaseModel):
+    id: UUID
+
+    fullname: str
+    username: str
+
+    model_config = ConfigDict(from_attributes=True)

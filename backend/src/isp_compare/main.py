@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from isp_compare.api.v1.auth import router as auth_router
 from isp_compare.api.v1.provider import router as provider_router
+from isp_compare.api.v1.review import router as review_router
 from isp_compare.api.v1.tariff import router as tariff_router
 from isp_compare.api.v1.user import router as settings_router
 from isp_compare.core.config import Config, create_config
@@ -21,6 +22,7 @@ def setup_routers(app: FastAPI) -> None:
 
     app.include_router(provider_router)
     app.include_router(tariff_router)
+    app.include_router(review_router)
 
 
 def create_application() -> FastAPI:

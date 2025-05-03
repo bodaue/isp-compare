@@ -84,3 +84,8 @@ class ProviderNotFoundException(AppException):
 class TariffNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Tariff not found"
+
+
+class ReviewNotFoundException(AppException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Review not found"

@@ -1,6 +1,7 @@
 from dishka import Provider, Scope, provide
 
 from isp_compare.repositories.provider import ProviderRepository
+from isp_compare.repositories.review import ReviewRepository
 from isp_compare.repositories.tariff import TariffRepository
 from isp_compare.repositories.token import RefreshTokenRepository
 from isp_compare.repositories.user import UserRepository
@@ -14,3 +15,4 @@ class RepositoryProvider(Provider):
 
     provider_repository = provide(ProviderRepository)
     tariff_repository = provide(TariffRepository)
+    review_repository = provide(ReviewRepository)
