@@ -4,6 +4,7 @@ from isp_compare.services.auth import AuthService
 from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.password_hasher import PasswordHasher
 from isp_compare.services.provider import ProviderService
+from isp_compare.services.rate_limiter import RateLimiter
 from isp_compare.services.review import ReviewService
 from isp_compare.services.search_history import SearchHistoryService
 from isp_compare.services.tariff import TariffService
@@ -27,3 +28,5 @@ class ServiceProvider(Provider):
     tariff_service = provide(TariffService)
     review_service = provide(ReviewService)
     search_history_service = provide(SearchHistoryService)
+
+    rate_limiter = provide(RateLimiter)

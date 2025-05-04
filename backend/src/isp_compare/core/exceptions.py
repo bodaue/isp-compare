@@ -94,3 +94,20 @@ class ReviewNotFoundException(AppException):
 class SearchHistoryNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Search history not found"
+
+
+class RateLimitExceededException(AppException):
+    status_code = status.HTTP_429_TOO_MANY_REQUESTS
+    detail = "Превышен лимит запросов. Пожалуйста, попробуйте позже."
+
+
+class LoginRateLimitExceededException(RateLimitExceededException):
+    detail = "Слишком много попыток входа. Пожалуйста, попробуйте позже."
+
+
+class PasswordChangeRateLimitExceededException(RateLimitExceededException):
+    detail = "Слишком много попыток смены пароля. Пожалуйста, попробуйте позже."
+
+
+class TokenRefreshRateLimitExceededException(RateLimitExceededException):
+    detail = "Слишком много попыток обновления токена. Пожалуйста, попробуйте позже."

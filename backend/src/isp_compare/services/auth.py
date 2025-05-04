@@ -1,13 +1,16 @@
+from fastapi import Request, Response
+
 from isp_compare.core.config import CookieConfig, JWTConfig
 from isp_compare.core.exceptions import (
     EmailAlreadyExistsException,
     IncorrectPasswordException,
     InvalidCredentialsException,
+    LoginRateLimitExceededException,
+    PasswordChangeRateLimitExceededException,
     RefreshTokenMissingException,
     UsernameAlreadyExistsException,
     UserNotFoundException,
 )
-from fastapi import Request, Response
 from isp_compare.models.user import User
 from isp_compare.repositories.user import UserRepository
 from isp_compare.schemas.user import (
@@ -16,9 +19,9 @@ from isp_compare.schemas.user import (
     UserCreate,
     UserLogin,
 )
-
 from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.password_hasher import PasswordHasher
+from isp_compare.services.rate_limiter import RateLimiter
 from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.token_service import TokenService
 from isp_compare.services.transaction_manager import TransactionManager
@@ -36,6 +39,7 @@ class AuthService:
         token_processor: TokenProcessor,
         token_service: TokenService,
         identity_provider: IdentityProvider,
+        rate_limiter: RateLimiter,
     ) -> None:
         self._request = request
         self._user_repository = user_repository
@@ -46,6 +50,7 @@ class AuthService:
         self._token_processor = token_processor
         self._token_service = token_service
         self._identity_provider = identity_provider
+        self._rate_limiter = rate_limiter
 
     async def register(self, data: UserCreate, response: Response) -> TokenResponse:
         existing_username = await self._user_repository.get_by_username(data.username)
@@ -86,6 +91,13 @@ class AuthService:
         return TokenResponse(access_token=access_token)
 
     async def login(self, data: UserLogin, response: Response) -> TokenResponse:
+        client_ip = self._request.client.host if self._request.client else "unknown"
+        is_allowed, remaining = await self._rate_limiter.login_rate_limit(
+            ip_address=client_ip, username=data.username
+        )
+        if not is_allowed:
+            raise LoginRateLimitExceededException
+
         user = await self._user_repository.get_by_username(data.username)
         if not user or not self._password_hasher.verify(
             data.password, user.hashed_password
@@ -154,6 +166,12 @@ class AuthService:
         user = await self._identity_provider.get_current_user()
         if not user:
             raise UserNotFoundException
+
+        is_allowed, remaining = await self._rate_limiter.password_change_rate_limit(
+            user.id
+        )
+        if not is_allowed:
+            raise PasswordChangeRateLimitExceededException
 
         if not self._password_hasher.verify(
             data.current_password, user.hashed_password
