@@ -42,9 +42,9 @@ pytestmark = pytest.mark.asyncio
 def postgres_config() -> PostgresConfig:
     return PostgresConfig(
         host=os.getenv("TEST_POSTGRES_HOST", "localhost"),
-        port=int(os.getenv("TEST_POSTGRES_PORT", "5432")),
+        port=int(os.getenv("TEST_POSTGRES_PORT", "5433")),
         user=os.getenv("TEST_POSTGRES_USER", "postgres"),
-        password=SecretStr(os.getenv("TEST_POSTGRES_PASSWORD", "postgres_password")),
+        password=SecretStr(os.getenv("TEST_POSTGRES_PASSWORD", "postgres")),
         db=os.getenv("TEST_POSTGRES_DB", "isp_compare_test"),
         enable_logging=False,
     )

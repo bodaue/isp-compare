@@ -46,6 +46,8 @@ ignore = [
     "TRY003", "EM101", "EM102",
     "S101", "C901", "I001", "PLR2004"
 ]
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["poetry-core"]
