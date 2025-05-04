@@ -1,13 +1,16 @@
+import asyncio
 import os
 from collections.abc import AsyncGenerator
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
+import fakeredis
 import pytest
 from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 from pydantic import SecretStr
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -36,6 +39,19 @@ from isp_compare.core.di.providers.service import ServiceProvider
 from isp_compare.models.base import Base
 
 pytestmark = pytest.mark.asyncio
+
+
+@pytest.fixture(autouse=True, scope="session")
+def event_loop() -> None:
+    """
+    Create an event loop for the entire test session.
+    This ensures that all tests use the same event loop.
+    """
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    asyncio.set_event_loop(loop)
+    yield loop
+    loop.close()
 
 
 @pytest.fixture(scope="session")
@@ -152,17 +168,27 @@ async def session(
 
 
 @pytest.fixture
-def mock_database_provider(session: AsyncSession) -> Provider:
+def redis_client() -> Redis:
+    """Create a fake Redis client for tests."""
+    return fakeredis.aioredis.FakeRedis(decode_responses=True)
+
+
+@pytest.fixture
+def mock_database_provider(session: AsyncSession, redis_client: Redis) -> Provider:
     class MockProvider(DatabaseProvider):
         @provide(scope=Scope.REQUEST)
         async def get_session(self) -> AsyncSession:
             return session
 
+        @provide(scope=Scope.APP)
+        def redis_client(self) -> Redis:
+            return redis_client
+
     return MockProvider()
 
 
 @pytest.fixture
-def container(mock_database_provider: Provider) -> AsyncContainer:
+def container(config: Config, mock_database_provider: Provider) -> AsyncContainer:
     """Create container for tests."""
     return make_async_container(
         FastapiProvider(),
@@ -170,7 +196,7 @@ def container(mock_database_provider: Provider) -> AsyncContainer:
         mock_database_provider,
         RepositoryProvider(),
         ServiceProvider(),
-        context={Config: MagicMock()},
+        context={Config: config},
     )
 
 
