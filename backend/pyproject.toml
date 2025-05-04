@@ -19,6 +19,9 @@ redis = "^5.2.1"
 python-jose = "^3.4.0"
 bcrypt = "^4.3.0"
 pydantic = { extras = ["email"], version = "^2.11.3" }
+pytest = "^8.3.5"
+httpx = "^0.28.1"
+pytest-asyncio = "^0.26.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -41,7 +44,7 @@ ignore = [
     "FBT001", "FBT002",
     "PLR0913", "PLR0915",
     "TRY003", "EM101", "EM102",
-    "S101", "C901", "I001"
+    "S101", "C901", "I001", "PLR2004"
 ]
 
 [build-system]
