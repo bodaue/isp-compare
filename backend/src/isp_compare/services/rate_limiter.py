@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from redis.asyncio import Redis
 
@@ -21,9 +21,8 @@ class RateLimiter:
             remaining_attempts = 0
             is_allowed = False
         else:
-            member = f"{current_time}:{key}"
+            member = str(uuid4())
             await self._redis.zadd(key, {member: current_time})
-
             attempt_count += 1
 
             is_allowed = attempt_count <= max_attempts

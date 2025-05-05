@@ -94,3 +94,8 @@ async def clean_database(engine: AsyncEngine) -> None:
             await conn.execute(text(f'TRUNCATE TABLE "{table_name}" CASCADE;'))
 
         await conn.execute(text("SET session_replication_role = 'origin';"))
+
+
+@pytest.fixture(autouse=True)
+async def clean_redis(redis_client: Redis) -> None:
+    await redis_client.flushall()

@@ -27,7 +27,7 @@ async def test_update_provider_success(
     assert data["name"] == update_data["name"]
     assert data["description"] == update_data["description"]
     assert data["website"] == update_data["website"]
-    assert data["logo_url"] == provider.logo_url  # Unchanged field
+    assert data["logo_url"] == provider.logo_url
 
 
 async def test_update_provider_unauthorized(
