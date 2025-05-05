@@ -7,7 +7,6 @@ from httpx import ASGITransport, AsyncClient
 
 @pytest.fixture
 async def client(fastapi_app: FastAPI) -> AsyncGenerator[AsyncClient]:
-    """Create an async test client for FastAPI app."""
     async with AsyncClient(
         transport=ASGITransport(app=fastapi_app), base_url="http://test"
     ) as client:
