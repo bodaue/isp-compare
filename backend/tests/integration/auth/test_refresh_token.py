@@ -32,4 +32,6 @@ async def test_refresh_token_after_logout(auth_client: AsyncClient) -> None:
     check_response(logout_response, 200)
 
     refresh_response = await auth_client.post("/auth/refresh")
-    check_response(refresh_response, 401)
+    check_response(
+        refresh_response, 401, expected_detail=RefreshTokenMissingException.detail
+    )
