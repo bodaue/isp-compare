@@ -44,7 +44,8 @@ async def regular_user(session: AsyncSession) -> User:
 @pytest.fixture
 async def user_token(client: AsyncClient, regular_user: User) -> str:
     response = await client.post(
-        "/auth/login", json={"username": regular_user.username, "password": "User123"}
+        "/auth/login",
+        json={"username": regular_user.username, "password": "Password123!"},
     )
     assert response.status_code == 200, f"Login failed: {response.json()}"
     return response.json()["access_token"]

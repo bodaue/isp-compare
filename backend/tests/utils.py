@@ -1,9 +1,11 @@
+from typing import Any
+
 from httpx import Response
 
 
 def check_response(
     response: Response, expected_status: int = 200, expected_detail: str | None = None
-) -> None:
+) -> dict[str, Any]:
     status = response.status_code
 
     assert status == expected_status, (
@@ -20,3 +22,4 @@ def check_response(
             f"Expected detail to contain '{expected_detail}', got"
             f" '{response_json['detail']}'"
         )
+    return response.json()

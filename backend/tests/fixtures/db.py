@@ -1,13 +1,13 @@
 import asyncio
 from asyncio import AbstractEventLoop
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Generator
 from typing import Any
-from collections.abc import Generator
 
 import fakeredis
 import pytest
 from dishka import Provider, Scope, provide
 from redis.asyncio import Redis
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -81,3 +81,16 @@ def mock_database_provider(session: AsyncSession, redis_client: Redis) -> Provid
             return redis_client
 
     return MockProvider()
+
+
+@pytest.fixture(autouse=True)
+async def clean_database(engine: AsyncEngine) -> None:
+    async with engine.begin() as conn:
+        await conn.execute(text("SET session_replication_role = 'replica';"))
+
+        tables = Base.metadata.tables
+
+        for table_name in tables:
+            await conn.execute(text(f'TRUNCATE TABLE "{table_name}" CASCADE;'))
+
+        await conn.execute(text("SET session_replication_role = 'origin';"))
