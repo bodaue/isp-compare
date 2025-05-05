@@ -1,14 +1,12 @@
 import asyncio
 import os
 from collections.abc import AsyncGenerator
-from unittest.mock import AsyncMock
 
 import fakeredis
 import pytest
 from dishka import AsyncContainer, Provider, Scope, make_async_container, provide
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from fastapi import FastAPI
-from httpx import ASGITransport, AsyncClient
 from pydantic import SecretStr
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import (
@@ -37,6 +35,8 @@ from isp_compare.core.di.providers.database import DatabaseProvider
 from isp_compare.core.di.providers.repository import RepositoryProvider
 from isp_compare.core.di.providers.service import ServiceProvider
 from isp_compare.models.base import Base
+from tests.fixtures.auth import *  # noqa: F403
+from tests.fixtures.clients import *  # noqa: F403
 
 pytestmark = pytest.mark.asyncio
 
@@ -161,8 +161,6 @@ async def session(
 ) -> AsyncGenerator[AsyncSession]:
     """Create database session for tests."""
     async with session_maker() as session:
-        # Transaction should be mocked to avoid actual commits
-        session.commit = AsyncMock()
         yield session
         await session.rollback()
 
@@ -213,12 +211,3 @@ async def fastapi_app(container: AsyncContainer) -> FastAPI:
 
     setup_dishka(container, app)
     return app
-
-
-@pytest.fixture
-async def client(fastapi_app: FastAPI) -> AsyncGenerator[AsyncClient]:
-    """Create an async test client for FastAPI app."""
-    async with AsyncClient(
-        transport=ASGITransport(app=fastapi_app), base_url="http://test"
-    ) as client:
-        yield client
