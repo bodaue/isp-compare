@@ -76,7 +76,7 @@ async def test_update_provider_invalid_data(
     check_response(response, 422)
 
     invalid_data = {
-        "name": "A" * 300,  # Exceeds max length
+        "name": "A" * 300,
     }
     response = await admin_client.patch(f"/providers/{provider.id}", json=invalid_data)
     check_response(response, 422)

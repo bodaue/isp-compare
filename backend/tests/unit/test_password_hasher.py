@@ -52,4 +52,4 @@ def test_same_password_different_hashes(
 ) -> None:
     hash1 = password_hasher.hash(test_password)
     hash2 = password_hasher.hash(test_password)
-    assert hash1 != hash2  # Different due to different salts
+    assert hash1 != hash2

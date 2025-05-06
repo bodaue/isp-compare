@@ -262,7 +262,6 @@ async def test_calculate_average_rating(
     test_user: User,
     faker: Faker,
 ) -> None:
-    # Create reviews with specific ratings
     ratings = [3, 4, 5]
     for rating in ratings:
         user = User(

@@ -41,7 +41,6 @@ async def test_get_search_history_with_limit(
     assert isinstance(data, list)
     assert len(data) <= limit
 
-    # If there are enough history entries, verify we got the right amount
     if len(user_search_history) >= limit:
         assert len(data) == limit
 
@@ -53,15 +52,12 @@ async def test_get_search_history_with_offset(
     response = await auth_client.get(f"/search-history?offset={offset}")
     data = check_response(response, 200)
 
-    # Get all search history to compare
     all_response = await auth_client.get("/search-history")
     all_data = all_response.json()
 
-    # Check that offset works correctly
     if len(all_data) > offset:
         assert len(data) == len(all_data) - offset
 
-        # Verify that offset items are skipped
         for i in range(len(data)):
             assert data[i]["id"] == all_data[i + offset]["id"]
 

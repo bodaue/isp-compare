@@ -25,17 +25,13 @@ def rate_limiter(redis_mock: AsyncMock) -> RateLimiter:
 async def test_check_rate_limit_allowed(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
-    # Mock setup
-    redis_mock.zcard.return_value = 2  # Current count is below limit
+    redis_mock.zcard.return_value = 2
 
-    # Test with limit not reached
     is_allowed, remaining = await rate_limiter.check_rate_limit("test:key", 5, 10)
 
-    # Checks
     assert is_allowed is True
-    assert remaining == 2  # 5 (limit) - 3 (current count after adding new attempt)
+    assert remaining == 2
 
-    # Verify Redis calls
     redis_mock.zremrangebyscore.assert_called_once()
     redis_mock.zcard.assert_called_once()
     redis_mock.zadd.assert_called_once()
@@ -46,20 +42,16 @@ async def test_check_rate_limit_allowed(
 async def test_check_rate_limit_exceeded(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
-    # Mock setup
-    redis_mock.zcard.return_value = 5  # Current count equals limit
+    redis_mock.zcard.return_value = 5
 
-    # Test with limit reached
     is_allowed, remaining = await rate_limiter.check_rate_limit("test:key", 5, 10)
 
-    # Checks
     assert is_allowed is False
     assert remaining == 0
 
-    # Verify Redis calls
     redis_mock.zremrangebyscore.assert_called_once()
     redis_mock.zcard.assert_called_once()
-    assert redis_mock.zadd.call_count == 0  # Should not add new entry
+    assert redis_mock.zadd.call_count == 0
     redis_mock.expire.assert_called_once()
 
 
@@ -70,10 +62,8 @@ async def test_login_rate_limit(rate_limiter: RateLimiter) -> None:
     ) as mock_check:
         result = await rate_limiter.login_rate_limit("127.0.0.1", "test_user")
 
-        # Check result
         assert result == (True, 4)
 
-        # Verify correct parameters
         mock_check.assert_called_once_with("login_limit:127.0.0.1:test_user", 5, 5)
 
 
@@ -86,10 +76,8 @@ async def test_password_change_rate_limit(rate_limiter: RateLimiter) -> None:
     ) as mock_check:
         result = await rate_limiter.password_change_rate_limit(user_id)
 
-        # Check result
         assert result == (True, 1)
 
-        # Verify correct parameters
         mock_check.assert_called_once_with(f"password_change_limit:{user_id}", 2, 1440)
 
 

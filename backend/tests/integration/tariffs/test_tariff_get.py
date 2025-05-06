@@ -48,7 +48,6 @@ async def test_get_all_tariffs_success(
     assert isinstance(data, list)
     assert len(data) >= len([t for t in tariffs if t.is_active])
 
-    # Check that all active tariffs are included
     active_tariff_ids = [str(t.id) for t in tariffs if t.is_active]
     response_tariff_ids = [t["id"] for t in data]
 
@@ -70,21 +69,17 @@ async def test_get_all_tariffs_with_limit(
 async def test_get_all_tariffs_with_offset(
     client: AsyncClient, tariffs: list[Tariff]
 ) -> None:
-    # First get all tariffs
     all_response = await client.get("/tariffs")
     all_data = all_response.json()
 
-    # Then get with offset
     offset = 2
     response = await client.get(f"/tariffs?offset={offset}")
     data = check_response(response, 200)
 
-    # Check if offset works correctly
     if len(all_data) > offset:
         expected_length = len(all_data) - offset
         assert len(data) <= expected_length
 
-        # Check that the right tariffs are returned
         for i in range(min(len(data), len(all_data) - offset)):
             assert data[i]["id"] == all_data[i + offset]["id"]
 
@@ -100,5 +95,5 @@ async def test_get_provider_tariffs_success(
     response_tariff_ids = [t["id"] for t in data]
 
     for tariff_id in provider_tariff_ids:
-        if tariff_id in response_tariff_ids:  # Some may be inactive
+        if tariff_id in response_tariff_ids:
             assert tariff_id in response_tariff_ids

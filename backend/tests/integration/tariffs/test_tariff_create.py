@@ -97,14 +97,12 @@ async def test_create_tariff_nonexistent_provider(admin_client: AsyncClient) -> 
 async def test_create_tariff_invalid_data(
     admin_client: AsyncClient, provider: Provider
 ) -> None:
-    # Missing required fields
     invalid_data = {"name": "Invalid Tariff"}
     response = await admin_client.post(
         f"/providers/{provider.id}/tariffs", json=invalid_data
     )
     check_response(response, 422)
 
-    # Invalid connection type
     invalid_data = {
         "name": "Invalid Connection Type",
         "price": 19.99,
@@ -116,7 +114,6 @@ async def test_create_tariff_invalid_data(
     )
     check_response(response, 422)
 
-    # Negative price
     invalid_data = {
         "name": "Negative Price",
         "price": -19.99,
@@ -128,7 +125,6 @@ async def test_create_tariff_invalid_data(
     )
     check_response(response, 422)
 
-    # Zero speed
     invalid_data = {
         "name": "Zero Speed",
         "price": 19.99,

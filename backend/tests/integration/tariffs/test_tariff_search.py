@@ -22,7 +22,6 @@ async def test_search_tariffs_success(
 
     assert isinstance(data, list)
 
-    # Check that all returned tariffs match search criteria
     for tariff_data in data:
         assert float(tariff_data["price"]) >= search_params["min_price"]
         assert float(tariff_data["price"]) <= search_params["max_price"]
@@ -44,7 +43,6 @@ async def test_search_tariffs_unauthorized(client: AsyncClient) -> None:
 async def test_search_tariffs_partial_params(
     auth_client: AsyncClient, tariffs: list[Tariff]
 ) -> None:
-    # Only specify some search parameters
     search_params = {"min_speed": 100, "has_tv": True}
 
     response = await auth_client.get("/tariffs/search", params=search_params)
@@ -52,7 +50,6 @@ async def test_search_tariffs_partial_params(
 
     assert isinstance(data, list)
 
-    # Check that all returned tariffs match search criteria
     for tariff_data in data:
         assert tariff_data["speed"] >= search_params["min_speed"]
         assert tariff_data["has_tv"] == search_params["has_tv"]
@@ -60,7 +57,6 @@ async def test_search_tariffs_partial_params(
 
 
 async def test_search_tariffs_no_results(auth_client: AsyncClient) -> None:
-    # Search parameters that shouldn't match any tariffs
     search_params = {"min_price": 1000, "min_speed": 1000}
 
     response = await auth_client.get("/tariffs/search", params=search_params)
@@ -73,7 +69,6 @@ async def test_search_tariffs_no_results(auth_client: AsyncClient) -> None:
 async def test_search_tariffs_limit_offset(
     auth_client: AsyncClient, tariffs: list[Tariff]
 ) -> None:
-    # All tariffs with pagination
     search_params = {"limit": 2, "offset": 1}
 
     response = await auth_client.get("/tariffs/search", params=search_params)
@@ -82,7 +77,6 @@ async def test_search_tariffs_limit_offset(
     assert isinstance(data, list)
     assert len(data) <= search_params["limit"]
 
-    # Get all to compare with paginated results
     all_response = await auth_client.get("/tariffs/search")
     all_data = all_response.json()
 
@@ -94,13 +88,11 @@ async def test_search_tariffs_limit_offset(
 async def test_search_tariffs_inactive_excluded(
     auth_client: AsyncClient, tariffs: list[Tariff]
 ) -> None:
-    # Search with minimal parameters to get most tariffs
     search_params = {"min_speed": 1}
 
     response = await auth_client.get("/tariffs/search", params=search_params)
     data = check_response(response, 200)
 
-    # Check that inactive tariffs are not included
     inactive_tariff_ids = [str(t.id) for t in tariffs if not t.is_active]
     response_tariff_ids = [t["id"] for t in data]
 
@@ -132,7 +124,6 @@ async def test_search_tariffs_creates_history(
     initial_data = initial_response.json()
     initial_count = len(initial_data)
 
-    # Perform a search
     search_params = {
         "min_price": 25,
         "max_speed": 200,

@@ -78,7 +78,6 @@ async def test_tariffs(
         tariffs.append(tariff)
         session.add(tariff)
 
-    # Создаем один неактивный тариф
     inactive_tariff = Tariff(
         provider_id=test_provider.id,
         name=f"{faker.word()} Inactive Tariff",
@@ -294,7 +293,6 @@ async def test_search(
         t for t in active_tariffs if t.connection_type == ConnectionType.FTTH
     ]
 
-    # Поиск по типу подключения
     result = await tariff_repository.search(
         min_price=None,
         max_price=None,
@@ -316,7 +314,6 @@ async def test_search(
 async def test_search_price_range(
     tariff_repository: TariffRepository, test_tariffs: list[Tariff]
 ) -> None:
-    # Поиск по диапазону цен
     min_price = 30
     max_price = 70
 
@@ -348,7 +345,6 @@ async def test_search_price_range(
 async def test_search_with_tv(
     tariff_repository: TariffRepository, test_tariffs: list[Tariff]
 ) -> None:
-    # Поиск тарифов с ТВ
     result = await tariff_repository.search(
         min_price=None,
         max_price=None,
@@ -372,7 +368,6 @@ async def test_search_with_tv(
 async def test_search_complex(
     tariff_repository: TariffRepository, test_tariffs: list[Tariff]
 ) -> None:
-    # Комплексный поиск
     min_speed = 100
     has_phone = True
 
@@ -404,7 +399,6 @@ async def test_search_complex(
 async def test_search_limit_offset(
     tariff_repository: TariffRepository, test_tariffs: list[Tariff]
 ) -> None:
-    # Проверка лимита и смещения
     limit = 2
     offset = 1
 

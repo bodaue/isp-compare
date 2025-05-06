@@ -15,7 +15,6 @@ async def test_delete_tariff_success(admin_client: AsyncClient, tariff: Tariff) 
     response = await admin_client.delete(f"/tariffs/{tariff.id}")
     check_response(response, 204)
 
-    # Verify it's deleted
     response = await admin_client.get(f"/tariffs/{tariff.id}")
     check_response(response, 404, expected_detail=TariffNotFoundException.detail)
 

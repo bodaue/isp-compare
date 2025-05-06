@@ -36,7 +36,6 @@ async def test_update_tariff_success(admin_client: AsyncClient, tariff: Tariff) 
     assert data["has_tv"] == update_data["has_tv"]
     assert data["additional_services"] == update_data["additional_services"]
 
-    # Fields that weren't updated
     assert data["connection_type"] == tariff.connection_type.value
     assert data["has_phone"] == tariff.has_phone
     assert float(data["connection_cost"]) == tariff.connection_cost
@@ -77,21 +76,18 @@ async def test_update_tariff_not_found(admin_client: AsyncClient) -> None:
 async def test_update_tariff_invalid_data(
     admin_client: AsyncClient, tariff: Tariff
 ) -> None:
-    # Negative price
     invalid_data = {
         "price": -19.99,
     }
     response = await admin_client.patch(f"/tariffs/{tariff.id}", json=invalid_data)
     check_response(response, 422)
 
-    # Zero speed
     invalid_data = {
         "speed": 0,
     }
     response = await admin_client.patch(f"/tariffs/{tariff.id}", json=invalid_data)
     check_response(response, 422)
 
-    # Invalid connection type
     invalid_data = {
         "connection_type": "INVALID_TYPE",
     }
