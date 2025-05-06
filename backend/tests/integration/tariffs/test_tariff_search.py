@@ -1,0 +1,125 @@
+from httpx import AsyncClient
+from utils import check_response
+
+from isp_compare.models.tariff import Tariff
+
+
+async def test_search_tariffs_success(
+    auth_client: AsyncClient, tariffs: list[Tariff]
+) -> None:
+    search_params = {
+        "min_price": 20,
+        "max_price": 40,
+        "min_speed": 50,
+        "max_speed": 150,
+        "connection_type": "FTTH",
+        "has_tv": True,
+        "has_phone": False,
+    }
+
+    response = await auth_client.get("/tariffs/search", params=search_params)
+    data = check_response(response, 200)
+
+    assert isinstance(data, list)
+
+    # Check that all returned tariffs match search criteria
+    for tariff_data in data:
+        assert float(tariff_data["price"]) >= search_params["min_price"]
+        assert float(tariff_data["price"]) <= search_params["max_price"]
+        assert tariff_data["speed"] >= search_params["min_speed"]
+        assert tariff_data["speed"] <= search_params["max_speed"]
+        assert tariff_data["connection_type"] == search_params["connection_type"]
+        assert tariff_data["has_tv"] == search_params["has_tv"]
+        assert tariff_data["has_phone"] == search_params["has_phone"]
+        assert tariff_data["is_active"] is True
+
+
+async def test_search_tariffs_unauthorized(client: AsyncClient) -> None:
+    search_params = {"min_price": 20, "max_price": 40}
+
+    response = await client.get("/tariffs/search", params=search_params)
+    check_response(response, 200)
+
+
+async def test_search_tariffs_partial_params(
+    auth_client: AsyncClient, tariffs: list[Tariff]
+) -> None:
+    # Only specify some search parameters
+    search_params = {"min_speed": 100, "has_tv": True}
+
+    response = await auth_client.get("/tariffs/search", params=search_params)
+    data = check_response(response, 200)
+
+    assert isinstance(data, list)
+
+    # Check that all returned tariffs match search criteria
+    for tariff_data in data:
+        assert tariff_data["speed"] >= search_params["min_speed"]
+        assert tariff_data["has_tv"] == search_params["has_tv"]
+        assert tariff_data["is_active"] is True
+
+
+async def test_search_tariffs_no_results(auth_client: AsyncClient) -> None:
+    # Search parameters that shouldn't match any tariffs
+    search_params = {"min_price": 1000, "min_speed": 1000}
+
+    response = await auth_client.get("/tariffs/search", params=search_params)
+    data = check_response(response, 200)
+
+    assert isinstance(data, list)
+    assert len(data) == 0
+
+
+async def test_search_tariffs_limit_offset(
+    auth_client: AsyncClient, tariffs: list[Tariff]
+) -> None:
+    # All tariffs with pagination
+    search_params = {"limit": 2, "offset": 1}
+
+    response = await auth_client.get("/tariffs/search", params=search_params)
+    data = check_response(response, 200)
+
+    assert isinstance(data, list)
+    assert len(data) <= search_params["limit"]
+
+    # Get all to compare with paginated results
+    all_response = await auth_client.get("/tariffs/search")
+    all_data = all_response.json()
+
+    if len(all_data) > search_params["offset"]:
+        for i in range(min(len(data), len(all_data) - search_params["offset"])):
+            assert data[i]["id"] == all_data[i + search_params["offset"]]["id"]
+
+
+async def test_search_tariffs_inactive_excluded(
+    auth_client: AsyncClient, tariffs: list[Tariff]
+) -> None:
+    # Search with minimal parameters to get most tariffs
+    search_params = {"min_speed": 1}
+
+    response = await auth_client.get("/tariffs/search", params=search_params)
+    data = check_response(response, 200)
+
+    # Check that inactive tariffs are not included
+    inactive_tariff_ids = [str(t.id) for t in tariffs if not t.is_active]
+    response_tariff_ids = [t["id"] for t in data]
+
+    for inactive_id in inactive_tariff_ids:
+        assert inactive_id not in response_tariff_ids
+
+
+async def test_search_tariffs_invalid_params(auth_client: AsyncClient) -> None:
+    invalid_params = {"min_price": "not-a-number", "max_speed": "invalid"}
+
+    response = await auth_client.get("/tariffs/search", params=invalid_params)
+    check_response(response, 422)
+
+    invalid_params = {"min_price": -10, "min_speed": -50}
+
+    response = await auth_client.get("/tariffs/search", params=invalid_params)
+    check_response(response, 422)
+
+    invalid_params = {"connection_type": "INVALID_TYPE"}
+
+    response = await auth_client.get("/tariffs/search", params=invalid_params)
+    check_response(response, 422)

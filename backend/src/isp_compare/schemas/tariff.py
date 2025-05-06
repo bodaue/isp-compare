@@ -46,10 +46,10 @@ class TariffResponse(TariffBase):
 
 
 class TariffSearchParams(BaseModel):
-    min_price: Decimal | None = None
-    max_price: Decimal | None = None
-    min_speed: int | None = None
-    max_speed: int | None = None
+    min_price: Decimal | None = Field(None, ge=0)
+    max_price: Decimal | None = Field(None, ge=0)
+    min_speed: int | None = Field(None, ge=0)
+    max_speed: int | None = Field(None, ge=0)
     connection_type: ConnectionType | None = None
     has_tv: bool | None = None
     has_phone: bool | None = None
