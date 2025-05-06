@@ -1,7 +1,7 @@
 import asyncio
 from asyncio import AbstractEventLoop
-from typing import Any
 from collections.abc import Generator
+from typing import Any
 
 import pytest
 from dishka import AsyncContainer, Provider, make_async_container
