@@ -41,10 +41,37 @@ async def regular_user(session: AsyncSession) -> User:
 
 
 @pytest.fixture
+async def regular_user_2(session: AsyncSession) -> User:
+    password_hasher = PasswordHasher()
+    hashed_password = password_hasher.hash("RegularUserPassword123!")
+
+    user = User(
+        fullname="Regular User 2",
+        username="user 2",
+        hashed_password=hashed_password,
+        email="user_2@example.com",
+        is_admin=False,
+    )
+    session.add(user)
+    await session.commit()
+    return user
+
+
+@pytest.fixture
 async def user_token(client: AsyncClient, regular_user: User) -> str:
     response = await client.post(
         "/auth/login",
         json={"username": regular_user.username, "password": "Password123!"},
+    )
+    assert response.status_code == 200, f"Login failed: {response.json()}"
+    return response.json()["access_token"]
+
+
+@pytest.fixture
+async def user_2_token(client: AsyncClient, regular_user_2: User) -> str:
+    response = await client.post(
+        "/auth/login",
+        json={"username": regular_user_2.username, "password": "Password123!"},
     )
     assert response.status_code == 200, f"Login failed: {response.json()}"
     return response.json()["access_token"]

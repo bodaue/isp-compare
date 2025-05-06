@@ -18,13 +18,19 @@ class ReviewRepository:
     async def get_by_id(
         self, review_id: UUID, for_update: bool = False
     ) -> Review | None:
+        if for_update:
+            stmt = select(Review).where(Review.id == review_id)
+            stmt = stmt.with_for_update()
+            review = await self._session.scalar(stmt)
+
+            if review:
+                await self._session.refresh(review, ["user", "provider"])
+            return review
         stmt = (
             select(Review)
             .options(joinedload(Review.user), joinedload(Review.provider))
             .where(Review.id == review_id)
         )
-        if for_update:
-            stmt = stmt.with_for_update()
         return await self._session.scalar(stmt)
 
     async def get_by_user_and_provider(
