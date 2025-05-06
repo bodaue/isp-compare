@@ -1,7 +1,7 @@
 from httpx import AsyncClient
 from isp_compare.core.exceptions import UsernameAlreadyExistsException
 from isp_compare.models import User
-from utils import check_response
+from tests.utils import check_response
 
 
 async def test_update_profile_success(

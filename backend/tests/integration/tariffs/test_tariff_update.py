@@ -1,7 +1,6 @@
 import uuid
 
 from httpx import AsyncClient
-from utils import check_response
 
 from isp_compare.core.exceptions import (
     AdminAccessDeniedException,
@@ -9,6 +8,7 @@ from isp_compare.core.exceptions import (
     TariffNotFoundException,
 )
 from isp_compare.models.tariff import Tariff
+from tests.utils import check_response
 
 
 async def test_update_tariff_success(admin_client: AsyncClient, tariff: Tariff) -> None:

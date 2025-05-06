@@ -2,7 +2,7 @@ import uuid
 from httpx import AsyncClient
 
 from isp_compare.models import Provider
-from utils import check_response
+from tests.utils import check_response
 
 from isp_compare.core.exceptions import TariffNotFoundException
 from isp_compare.models.tariff import Tariff

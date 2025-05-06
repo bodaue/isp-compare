@@ -1,7 +1,7 @@
 from httpx import AsyncClient
 
 from isp_compare.models import User
-from utils import check_response
+from tests.utils import check_response
 
 from isp_compare.core.exceptions import (
     EmailAlreadyExistsException,

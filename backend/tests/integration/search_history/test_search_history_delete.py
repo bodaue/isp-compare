@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from httpx import AsyncClient
-from utils import check_response
+from tests.utils import check_response
 
 from isp_compare.core.exceptions import (
     InvalidTokenException,

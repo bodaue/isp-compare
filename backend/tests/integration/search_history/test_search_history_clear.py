@@ -1,5 +1,5 @@
 from httpx import AsyncClient
-from utils import check_response
+from tests.utils import check_response
 
 from isp_compare.core.exceptions import InvalidTokenException
 from isp_compare.models.search_history import SearchHistory

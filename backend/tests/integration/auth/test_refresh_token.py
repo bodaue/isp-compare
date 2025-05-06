@@ -2,7 +2,7 @@ from httpx import AsyncClient
 from isp_compare.core.exceptions import (
     RefreshTokenMissingException,
 )
-from utils import check_response
+from tests.utils import check_response
 
 
 async def test_refresh_token_success(client: AsyncClient, user_token: str) -> None:

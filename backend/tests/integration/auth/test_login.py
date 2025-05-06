@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 from redis.asyncio import Redis
-from utils import check_response
+from tests.utils import check_response
 
 from isp_compare.core.exceptions import (
     InvalidCredentialsException,

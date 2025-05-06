@@ -3,7 +3,7 @@ from isp_compare.core.exceptions import (
     InvalidTokenException,
 )
 from isp_compare.models.user import User
-from utils import check_response
+from tests.utils import check_response
 
 
 async def test_get_profile_success(

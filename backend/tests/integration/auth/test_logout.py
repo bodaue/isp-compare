@@ -1,5 +1,5 @@
 from httpx import AsyncClient
-from utils import check_response
+from tests.utils import check_response
 
 
 async def test_logout_success(auth_client: AsyncClient) -> None:
