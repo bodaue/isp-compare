@@ -1,4 +1,3 @@
-# backend/tests/fixtures/tariffs.py
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
