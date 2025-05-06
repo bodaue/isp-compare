@@ -1,7 +1,4 @@
-import asyncio
-from asyncio import AbstractEventLoop
-from collections.abc import AsyncGenerator, Generator
-from typing import Any
+from collections.abc import AsyncGenerator
 
 import fakeredis
 import pytest
@@ -18,15 +15,6 @@ from sqlalchemy.ext.asyncio import (
 from isp_compare.core.config import PostgresConfig
 from isp_compare.core.di.providers.database import DatabaseProvider
 from isp_compare.models.base import Base
-
-
-@pytest.fixture(autouse=True, scope="session")
-def event_loop() -> Generator[AbstractEventLoop, Any]:
-    policy = asyncio.get_event_loop_policy()
-    loop = policy.new_event_loop()
-    asyncio.set_event_loop(loop)
-    yield loop
-    loop.close()
 
 
 @pytest.fixture(scope="session")

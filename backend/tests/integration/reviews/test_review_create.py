@@ -87,3 +87,25 @@ async def test_create_review_already_exists(
     assert data["rating"] == review_data["rating"]
     assert data["comment"] == review_data["comment"]
     assert data["id"] == str(review.id)
+
+
+async def test_review_creation_updates_provider_rating(
+    auth_client: AsyncClient, provider: Provider
+) -> None:
+    provider_response = await auth_client.get(f"/providers/{provider.id}")
+    provider_data = provider_response.json()
+    initial_rating = provider_data["rating"]
+
+    review_data = {
+        "rating": 5,
+        "comment": "Excellent provider with great service and fast speeds.",
+    }
+
+    await auth_client.post(f"/providers/{provider.id}/reviews", json=review_data)
+
+    updated_provider_response = await auth_client.get(f"/providers/{provider.id}")
+    updated_provider_data = updated_provider_response.json()
+    updated_rating = updated_provider_data["rating"]
+
+    assert updated_rating != initial_rating
+    assert updated_rating == 5.0

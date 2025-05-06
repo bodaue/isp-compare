@@ -1,3 +1,8 @@
+import asyncio
+from asyncio import AbstractEventLoop
+from typing import Any
+from collections.abc import Generator
+
 import pytest
 from dishka import AsyncContainer, Provider, make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
@@ -13,6 +18,15 @@ from isp_compare.core.config import Config
 from isp_compare.core.di.providers.core import ConfigProvider
 from isp_compare.core.di.providers.repository import RepositoryProvider
 from isp_compare.core.di.providers.service import ServiceProvider
+
+
+@pytest.fixture(autouse=True, scope="session")
+def event_loop() -> Generator[AbstractEventLoop, Any]:
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    asyncio.set_event_loop(loop)
+    yield loop
+    loop.close()
 
 
 @pytest.fixture

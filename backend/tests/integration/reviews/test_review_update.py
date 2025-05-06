@@ -1,13 +1,14 @@
 import uuid
 
 from httpx import AsyncClient
-from tests.utils import check_response
 
 from isp_compare.core.exceptions import (
     InvalidTokenException,
     ReviewNotFoundException,
 )
+from isp_compare.models import Provider
 from isp_compare.models.review import Review
+from tests.utils import check_response
 
 
 async def test_update_review_success(auth_client: AsyncClient, review: Review) -> None:
@@ -76,3 +77,22 @@ async def test_update_review_invalid_data(
     invalid_data = {"comment": "Кр"}
     response = await auth_client.patch(f"/reviews/{review.id}", json=invalid_data)
     check_response(response, 422)
+
+
+async def test_review_update_recalculates_provider_rating(
+    auth_client: AsyncClient, review: Review, provider: Provider
+) -> None:
+    provider_response = await auth_client.get(f"/providers/{provider.id}")
+    provider_data = provider_response.json()
+    initial_rating = provider_data["rating"]
+
+    update_data = {"rating": 2, "comment": "Service quality has degraded over time."}
+
+    await auth_client.patch(f"/reviews/{review.id}", json=update_data)
+
+    updated_provider_response = await auth_client.get(f"/providers/{provider.id}")
+    updated_provider_data = updated_provider_response.json()
+    updated_rating = updated_provider_data["rating"]
+
+    assert updated_rating != initial_rating
+    assert updated_rating == 2.0

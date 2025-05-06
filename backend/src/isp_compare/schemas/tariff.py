@@ -15,7 +15,7 @@ class TariffBase(BaseModel):
     has_tv: bool = False
     has_phone: bool = False
     additional_services: dict | None = None
-    connection_cost: Decimal = Field(0, ge=0, decimal_places=2)
+    connection_cost: Decimal = Field(Decimal("0"), ge=0, decimal_places=2)
     contract_period: int | None = Field(None, ge=0)
     is_active: bool = True
 
