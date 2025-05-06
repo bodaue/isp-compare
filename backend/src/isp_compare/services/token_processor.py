@@ -3,9 +3,10 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
+from jose import jwt
+
 from isp_compare.core.config import JWTConfig
 from isp_compare.core.exceptions import TokenSubjectMissingException
-from jose import jwt
 
 
 class TokenProcessor:
