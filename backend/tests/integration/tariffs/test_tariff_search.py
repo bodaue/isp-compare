@@ -123,3 +123,34 @@ async def test_search_tariffs_invalid_params(auth_client: AsyncClient) -> None:
 
     response = await auth_client.get("/tariffs/search", params=invalid_params)
     check_response(response, 422)
+
+
+async def test_search_tariffs_creates_history(
+    auth_client: AsyncClient, tariffs: list[Tariff]
+) -> None:
+    initial_response = await auth_client.get("/search-history")
+    initial_data = initial_response.json()
+    initial_count = len(initial_data)
+
+    # Perform a search
+    search_params = {
+        "min_price": 25,
+        "max_speed": 200,
+        "connection_type": "FTTH",
+    }
+
+    await auth_client.get("/tariffs/search", params=search_params)
+
+    history_response = await auth_client.get("/search-history")
+    history_data = history_response.json()
+
+    assert len(history_data) == initial_count + 1
+
+    latest_history = history_data[0]
+    assert latest_history["search_params"] == {
+        "min_price": "25",
+        "max_speed": 200,
+        "connection_type": "FTTH",
+        "limit": 50,
+        "offset": 0,
+    }

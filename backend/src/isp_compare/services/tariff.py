@@ -119,7 +119,7 @@ class TariffService:
         else:
             search_history = SearchHistory(
                 user_id=user.id,
-                search_params=search_params.model_dump(mode="json", exclude_none=True),
+                search_params=search_params.model_dump(exclude_none=True, mode="json"),
             )
             await self._search_history_repository.create(search_history)
             await self._transaction_manager.commit()
