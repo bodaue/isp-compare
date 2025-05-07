@@ -21,7 +21,7 @@ async def test_register_user_success(client: AsyncClient) -> None:
     data = check_response(response, 201)
 
     assert "access_token" in data
-    assert data["token_type"] == "bearer"  # noqa: S105
+    assert data["token_type"] == "bearer"
     assert "refresh_token" in response.cookies
 
 

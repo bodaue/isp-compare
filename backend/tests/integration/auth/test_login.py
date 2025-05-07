@@ -18,7 +18,7 @@ async def test_login_success(client: AsyncClient, regular_user: User) -> None:
     data = check_response(response, 200)
 
     assert "access_token" in data
-    assert data["token_type"] == "bearer"  # noqa: S105
+    assert data["token_type"] == "bearer"
     assert "refresh_token" in response.cookies
 
 
@@ -32,7 +32,7 @@ async def test_login_admin_success(client: AsyncClient, admin_user: User) -> Non
     data = check_response(response, 200)
 
     assert "access_token" in data
-    assert data["token_type"] == "bearer"  # noqa: S105
+    assert data["token_type"] == "bearer"
     assert "refresh_token" in response.cookies
 
 

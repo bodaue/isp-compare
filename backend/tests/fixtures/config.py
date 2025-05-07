@@ -48,7 +48,7 @@ def jwt_config() -> JWTConfig:
 def cookie_config() -> CookieConfig:
     return CookieConfig(
         secure=False,
-        refresh_token_key="refresh_token",  # noqa: S106
+        refresh_token_key="refresh_token",
         samesite="lax",
         path="/",
         httponly=True,

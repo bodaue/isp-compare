@@ -21,7 +21,7 @@ async def test_refresh_token_success(
     data = check_response(refresh_response, 200)
 
     assert "access_token" in data
-    assert data["token_type"] == "bearer"  # noqa: S105
+    assert data["token_type"] == "bearer"
     assert "refresh_token" in refresh_response.cookies
 
 
