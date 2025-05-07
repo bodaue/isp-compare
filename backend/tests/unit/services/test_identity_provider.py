@@ -2,6 +2,7 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from faker import Faker
 from fastapi import Request
 from jose import JWTError
 
@@ -58,6 +59,17 @@ def identity_provider(
         token_processor=token_processor_mock,
         user_repository=user_repository_mock,
         token_service=token_service_mock,
+    )
+
+
+@pytest.fixture
+def mock_user(faker: Faker) -> User:
+    return User(
+        id=uuid.uuid4(),
+        fullname=faker.name(),
+        username=faker.user_name(),
+        hashed_password=faker.sha256(),
+        email=faker.email(),
     )
 
 
@@ -134,19 +146,19 @@ async def test_get_current_user_id_value_error(
 async def test_get_current_user_success(
     identity_provider: IdentityProvider,
     user_repository_mock: AsyncMock,
-    regular_user: User,
+    mock_user: User,
 ) -> None:
     user_id = uuid.uuid4()
     with patch.object(
         identity_provider, "get_current_user_id", return_value=user_id
     ) as mock_get_id:
-        user_repository_mock.get_by_id.return_value = regular_user
+        user_repository_mock.get_by_id.return_value = mock_user
 
         result = await identity_provider.get_current_user()
 
         mock_get_id.assert_called_once()
         user_repository_mock.get_by_id.assert_called_once_with(user_id)
-        assert result == regular_user
+        assert result == mock_user
 
 
 async def test_get_current_user_not_found(
@@ -176,10 +188,10 @@ async def test_ensure_is_admin_success(
 
 
 async def test_ensure_is_admin_not_admin(
-    identity_provider: IdentityProvider, regular_user: User
+    identity_provider: IdentityProvider, mock_user: User
 ) -> None:
     with patch.object(
-        identity_provider, "get_current_user", return_value=regular_user
+        identity_provider, "get_current_user", return_value=mock_user
     ) as mock_get_user:
         with pytest.raises(AdminAccessDeniedException):
             await identity_provider.ensure_is_admin()

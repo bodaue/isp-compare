@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from faker import Faker
 from jose import JWTError
 from redis.asyncio import Redis
 
@@ -75,33 +76,44 @@ def token_service(
 
 
 @pytest.fixture
-def refresh_token(regular_user: User) -> RefreshToken:
+def mock_user(faker: Faker) -> User:
+    return User(
+        id=uuid.uuid4(),
+        fullname=faker.name(),
+        username=faker.user_name(),
+        hashed_password=faker.sha256(),
+        email=faker.email(),
+    )
+
+
+@pytest.fixture
+def refresh_token(mock_user: User) -> RefreshToken:
     return RefreshToken(
         id=uuid.uuid4(),
         token="valid_refresh_token",
-        user_id=regular_user.id,
+        user_id=mock_user.id,
         expires_at=datetime.now(UTC) + timedelta(days=1),
         revoked=False,
     )
 
 
 @pytest.fixture
-def expired_refresh_token(regular_user: User) -> RefreshToken:
+def expired_refresh_token(mock_user: User) -> RefreshToken:
     return RefreshToken(
         id=uuid.uuid4(),
         token="expired_refresh_token",
-        user_id=regular_user.id,
+        user_id=mock_user.id,
         expires_at=datetime.now(UTC) - timedelta(days=1),
         revoked=False,
     )
 
 
 @pytest.fixture
-def revoked_refresh_token(regular_user: User) -> RefreshToken:
+def revoked_refresh_token(mock_user: User) -> RefreshToken:
     return RefreshToken(
         id=uuid.uuid4(),
         token="revoked_refresh_token",
-        user_id=regular_user.id,
+        user_id=mock_user.id,
         expires_at=datetime.now(UTC) + timedelta(days=1),
         revoked=True,
         revoked_at=datetime.now(UTC) - timedelta(hours=1),
@@ -110,20 +122,20 @@ def revoked_refresh_token(regular_user: User) -> RefreshToken:
 
 async def test_create_tokens(
     token_service: TokenService,
-    regular_user: User,
+    mock_user: User,
     token_processor_mock: MagicMock,
     refresh_token_repository_mock: AsyncMock,
     transaction_manager_mock: AsyncMock,
 ) -> None:
     access_token, refresh_token, expires_at = await token_service.create_tokens(
-        regular_user
+        mock_user
     )
 
     refresh_token_repository_mock.revoke_all_for_user.assert_called_once_with(
-        regular_user.id
+        mock_user.id
     )
     token_processor_mock.create_access_token.assert_called_once_with(
-        user_id=regular_user.id
+        user_id=mock_user.id
     )
     token_processor_mock.create_refresh_token.assert_called_once()
 
@@ -131,7 +143,7 @@ async def test_create_tokens(
     created_token = refresh_token_repository_mock.create.call_args[0][0]
     assert isinstance(created_token, RefreshToken)
     assert created_token.token == "test_refresh_token"
-    assert created_token.user_id == regular_user.id
+    assert created_token.user_id == mock_user.id
 
     transaction_manager_mock.commit.assert_called_once()
 
@@ -223,14 +235,14 @@ async def test_is_access_token_blacklisted_false(
 async def test_rotate_refresh_token_success(
     token_service: TokenService,
     refresh_token: RefreshToken,
-    regular_user: User,
+    mock_user: User,
     refresh_token_repository_mock: AsyncMock,
     user_repository_mock: AsyncMock,
     token_processor_mock: MagicMock,
     transaction_manager_mock: AsyncMock,
 ) -> None:
     refresh_token_repository_mock.get_by_token.return_value = refresh_token
-    user_repository_mock.get_by_id.return_value = regular_user
+    user_repository_mock.get_by_id.return_value = mock_user
 
     (
         access_token,
@@ -244,7 +256,7 @@ async def test_rotate_refresh_token_success(
     user_repository_mock.get_by_id.assert_called_once_with(refresh_token.user_id)
     refresh_token_repository_mock.revoke.assert_called_once_with(refresh_token.token)
     token_processor_mock.create_access_token.assert_called_once_with(
-        user_id=regular_user.id
+        user_id=mock_user.id
     )
     token_processor_mock.create_refresh_token.assert_called_once()
 
@@ -252,7 +264,7 @@ async def test_rotate_refresh_token_success(
     created_token = refresh_token_repository_mock.create.call_args[0][0]
     assert isinstance(created_token, RefreshToken)
     assert created_token.token == "test_refresh_token"
-    assert created_token.user_id == regular_user.id
+    assert created_token.user_id == mock_user.id
 
     transaction_manager_mock.commit.assert_called_once()
 
