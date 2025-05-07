@@ -14,9 +14,9 @@ async def admin_user(session: AsyncSession, faker: Faker) -> User:
 
     user = User(
         fullname=faker.name(),
-        username=faker.user_name(),
+        username=faker.unique.user_name(),
         hashed_password=hashed_password,
-        email=faker.email(),
+        email=faker.unique.email(),
         is_admin=True,
     )
     session.add(user)
@@ -28,12 +28,11 @@ async def admin_user(session: AsyncSession, faker: Faker) -> User:
 async def regular_user(session: AsyncSession, faker: Faker) -> User:
     password_hasher = PasswordHasher()
     hashed_password = password_hasher.hash("Password123!")
-
     user = User(
         fullname=faker.name(),
-        username=faker.user_name(),
+        username=faker.unique.user_name(),
         hashed_password=hashed_password,
-        email=faker.email(),
+        email=faker.unique.email(),
         is_admin=False,
     )
     session.add(user)
@@ -48,9 +47,9 @@ async def regular_user_2(session: AsyncSession, faker: Faker) -> User:
 
     user = User(
         fullname=faker.name(),
-        username=faker.user_name(),
+        username=faker.unique.user_name(),
         hashed_password=hashed_password,
-        email=faker.email(),
+        email=faker.unique.email(),
         is_admin=False,
     )
     session.add(user)
