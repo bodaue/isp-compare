@@ -1,12 +1,11 @@
 from httpx import AsyncClient
-from redis.asyncio import Redis
-from tests.utils import check_response
 
 from isp_compare.core.exceptions import (
     InvalidCredentialsException,
     LoginRateLimitExceededException,
 )
 from isp_compare.models.user import User
+from tests.utils import check_response
 
 
 async def test_login_success(client: AsyncClient, regular_user: User) -> None:
@@ -57,9 +56,7 @@ async def test_login_invalid_password(client: AsyncClient, regular_user: User) -
     check_response(response, 401, expected_detail=InvalidCredentialsException.detail)
 
 
-async def test_login_rate_limit(
-    client: AsyncClient, regular_user: User, redis_client: Redis
-) -> None:
+async def test_login_rate_limit(client: AsyncClient, regular_user: User) -> None:
     login_data = {
         "username": regular_user.username,
         "password": "WrongPassword123",

@@ -8,6 +8,7 @@ from isp_compare.core.exceptions import (
     LoginRateLimitExceededException,
     PasswordChangeRateLimitExceededException,
     RefreshTokenMissingException,
+    TokenRefreshRateLimitExceededException,
     UsernameAlreadyExistsException,
     UserNotFoundException,
 )
@@ -123,6 +124,13 @@ class AuthService:
         return TokenResponse(access_token=access_token)
 
     async def refresh_token(self, response: Response) -> TokenResponse:
+        client_ip = self._request.client.host if self._request.client else "unknown"
+        is_allowed, remaining = await self._rate_limiter.refresh_token_rate_limit_by_ip(
+            ip_address=client_ip
+        )
+        if not is_allowed:
+            raise TokenRefreshRateLimitExceededException
+
         refresh_token = self._request.cookies.get("refresh_token")
 
         if not refresh_token:
@@ -136,7 +144,7 @@ class AuthService:
 
         response.set_cookie(
             key=self._cookie_config.refresh_token_key,
-            value=refresh_token,
+            value=new_refresh_token,
             httponly=self._cookie_config.httponly,
             secure=self._cookie_config.secure,
             samesite=self._cookie_config.samesite,

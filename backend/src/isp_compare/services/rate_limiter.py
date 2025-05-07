@@ -45,3 +45,7 @@ class RateLimiter:
     async def token_refresh_rate_limit(self, user_id: UUID) -> tuple[bool, int]:
         key = f"token_refresh_limit:{user_id}"
         return await self.check_rate_limit(key, 10, 60)  # 10 обновлений в час
+
+    async def refresh_token_rate_limit_by_ip(self, ip_address: str) -> tuple[bool, int]:
+        key = f"refresh_token_limit:ip:{ip_address}"
+        return await self.check_rate_limit(key, 10, 60)
