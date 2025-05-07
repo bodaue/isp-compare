@@ -1,4 +1,6 @@
 from httpx import AsyncClient
+
+from isp_compare.models import User
 from tests.utils import check_response
 
 
@@ -28,10 +30,12 @@ async def test_logout_with_invalid_token(client: AsyncClient) -> None:
     assert "refresh_token" not in response.cookies
 
 
-async def test_logout_clears_cookies(auth_client: AsyncClient) -> None:
+async def test_logout_clears_cookies(
+    auth_client: AsyncClient, regular_user: User
+) -> None:
     login_response = await auth_client.post(
         "/auth/login",
-        json={"username": "user", "password": "Password123!"},
+        json={"username": regular_user.username, "password": "Password123!"},
     )
     check_response(login_response, 200)
     assert "refresh_token" in login_response.cookies

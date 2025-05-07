@@ -18,25 +18,11 @@ async def search_history_repository(session: AsyncSession) -> SearchHistoryRepos
 
 
 @pytest.fixture
-async def test_user(session: AsyncSession, faker: Faker) -> User:
-    user = User(
-        fullname=faker.name(),
-        username=faker.user_name(),
-        hashed_password=faker.sha256(),
-        email=faker.email(),
-        is_admin=faker.boolean(),
-    )
-    session.add(user)
-    await session.commit()
-    return user
-
-
-@pytest.fixture
 async def test_search_history(
-    session: AsyncSession, test_user: User, faker: Faker
+    session: AsyncSession, regular_user: User, faker: Faker
 ) -> SearchHistory:
     search_history = SearchHistory(
-        user_id=test_user.id,
+        user_id=regular_user.id,
         search_params={
             "min_price": str(
                 faker.pydecimal(min_value=10, max_value=50, right_digits=2)
@@ -56,13 +42,13 @@ async def test_search_history(
 
 @pytest.fixture
 async def test_search_histories(
-    session: AsyncSession, test_user: User, faker: Faker
+    session: AsyncSession, regular_user: User, faker: Faker
 ) -> list[SearchHistory]:
     search_histories = []
 
     for _ in range(3):
         search_history = SearchHistory(
-            user_id=test_user.id,
+            user_id=regular_user.id,
             search_params={
                 "min_price": str(
                     faker.pydecimal(min_value=10, max_value=50, right_digits=2)
@@ -85,7 +71,7 @@ async def test_search_histories(
 async def test_create(
     session: AsyncSession,
     search_history_repository: SearchHistoryRepository,
-    test_user: User,
+    regular_user: User,
     faker: Faker,
 ) -> None:
     search_params = {
@@ -96,7 +82,7 @@ async def test_create(
     }
 
     search_history = SearchHistory(
-        user_id=test_user.id,
+        user_id=regular_user.id,
         search_params=search_params,
     )
 
@@ -108,7 +94,7 @@ async def test_create(
     saved_search_history = result.scalar_one()
 
     assert saved_search_history.id == search_history.id
-    assert saved_search_history.user_id == test_user.id
+    assert saved_search_history.user_id == regular_user.id
     assert saved_search_history.search_params == search_params
 
 
@@ -148,60 +134,60 @@ async def test_get_by_id_not_found(
 
 async def test_get_by_user(
     search_history_repository: SearchHistoryRepository,
-    test_user: User,
+    regular_user: User,
     test_search_histories: list[SearchHistory],
 ) -> None:
     limit = 10
     offset = 0
-    result = await search_history_repository.get_by_user(test_user.id, limit, offset)
+    result = await search_history_repository.get_by_user(regular_user.id, limit, offset)
 
     assert len(result) == len(test_search_histories)
 
     for search_history in result:
-        assert search_history.user_id == test_user.id
+        assert search_history.user_id == regular_user.id
 
 
 async def test_get_by_user_with_limit(
     search_history_repository: SearchHistoryRepository,
-    test_user: User,
+    regular_user: User,
     test_search_histories: list[SearchHistory],
 ) -> None:
     limit = 2
     offset = 0
-    result = await search_history_repository.get_by_user(test_user.id, limit, offset)
+    result = await search_history_repository.get_by_user(regular_user.id, limit, offset)
 
     assert len(result) == limit
 
     for search_history in result:
-        assert search_history.user_id == test_user.id
+        assert search_history.user_id == regular_user.id
 
 
 async def test_get_by_user_with_offset(
     search_history_repository: SearchHistoryRepository,
-    test_user: User,
+    regular_user: User,
     test_search_histories: list[SearchHistory],
 ) -> None:
     limit = 10
     offset = 1
-    result = await search_history_repository.get_by_user(test_user.id, limit, offset)
+    result = await search_history_repository.get_by_user(regular_user.id, limit, offset)
 
     assert len(result) == len(test_search_histories) - offset
 
     for search_history in result:
-        assert search_history.user_id == test_user.id
+        assert search_history.user_id == regular_user.id
 
 
 async def test_get_by_user_ordered_by_date(
     session: AsyncSession,
     search_history_repository: SearchHistoryRepository,
-    test_user: User,
+    regular_user: User,
     faker: Faker,
 ) -> None:
     search_histories = []
 
     for i in range(3):
         search_history = SearchHistory(
-            user_id=test_user.id,
+            user_id=regular_user.id,
             search_params={"param": f"value_{i}"},
         )
         search_histories.append(search_history)
@@ -210,7 +196,7 @@ async def test_get_by_user_ordered_by_date(
 
     await session.commit()
 
-    result = await search_history_repository.get_by_user(test_user.id, 10, 0)
+    result = await search_history_repository.get_by_user(regular_user.id, 10, 0)
 
     assert len(result) == 3
 
@@ -236,7 +222,7 @@ async def test_delete(
 async def test_delete_all_for_user(
     session: AsyncSession,
     search_history_repository: SearchHistoryRepository,
-    test_user: User,
+    regular_user: User,
     test_search_histories: list[SearchHistory],
 ) -> None:
     other_user = User(
@@ -255,10 +241,10 @@ async def test_delete_all_for_user(
     session.add(other_search_history)
     await session.commit()
 
-    await search_history_repository.delete_all_for_user(test_user.id)
+    await search_history_repository.delete_all_for_user(regular_user.id)
     await session.commit()
 
-    stmt = select(SearchHistory).where(SearchHistory.user_id == test_user.id)
+    stmt = select(SearchHistory).where(SearchHistory.user_id == regular_user.id)
     result = await session.execute(stmt)
     remaining_histories = list(result.scalars())
 

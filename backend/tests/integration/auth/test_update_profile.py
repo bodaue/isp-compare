@@ -1,4 +1,5 @@
 from httpx import AsyncClient
+
 from isp_compare.core.exceptions import UsernameAlreadyExistsException
 from isp_compare.models import User
 from tests.utils import check_response
@@ -32,9 +33,11 @@ async def test_update_profile_partial(
 
 
 async def test_update_profile_duplicate_username(
-    auth_client: AsyncClient, admin_user: User
+    auth_client: AsyncClient,
+    regular_user: User,
+    regular_user_2: User,
 ) -> None:
-    update_data = {"username": admin_user.username}
+    update_data = {"username": regular_user_2.username}
 
     response = await auth_client.patch("/users/profile", json=update_data)
     check_response(response, 409, expected_detail=UsernameAlreadyExistsException.detail)

@@ -1,14 +1,18 @@
 from httpx import AsyncClient
+
 from isp_compare.core.exceptions import (
     RefreshTokenMissingException,
 )
+from isp_compare.models import User
 from tests.utils import check_response
 
 
-async def test_refresh_token_success(client: AsyncClient, user_token: str) -> None:
+async def test_refresh_token_success(
+    client: AsyncClient, user_token: str, regular_user: User
+) -> None:
     login_response = await client.post(
         "/auth/login",
-        json={"username": "user", "password": "Password123!"},
+        json={"username": regular_user.username, "password": "Password123!"},
     )
     check_response(login_response, 200)
 

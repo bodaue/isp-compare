@@ -1,15 +1,16 @@
 from httpx import AsyncClient
-from tests.utils import check_response
 
 from isp_compare.core.exceptions import (
     IncorrectPasswordException,
     InvalidTokenException,
     PasswordChangeRateLimitExceededException,
 )
+from isp_compare.models import User
+from tests.utils import check_response
 
 
 async def test_change_password_success(
-    auth_client: AsyncClient, client: AsyncClient
+    auth_client: AsyncClient, regular_user: User, client: AsyncClient
 ) -> None:
     password_data = {
         "current_password": "Password123!",
@@ -22,7 +23,7 @@ async def test_change_password_success(
     assert data["message"] == "Password successfully changed"
 
     login_data = {
-        "username": "user",
+        "username": regular_user.username,
         "password": "NewPassword123!",
     }
 

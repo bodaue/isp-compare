@@ -4,13 +4,14 @@ from isp_compare.core.exceptions import (
     InvalidTokenException,
     ProviderNotFoundException,
 )
+from isp_compare.models import User
 from isp_compare.models.provider import Provider
 from isp_compare.models.review import Review
 from tests.utils import check_response
 
 
 async def test_create_review_success(
-    auth_client: AsyncClient, provider: Provider
+    auth_client: AsyncClient, regular_user: User, provider: Provider
 ) -> None:
     review_data = {
         "rating": 5,
@@ -27,7 +28,7 @@ async def test_create_review_success(
     assert "id" in data
     assert "created_at" in data
     assert "updated_at" in data
-    assert data["user"]["username"] == "user"
+    assert data["user"]["username"] == regular_user.username
 
 
 async def test_create_review_unauthorized(

@@ -19,26 +19,12 @@ async def refresh_token_repository(session: AsyncSession) -> RefreshTokenReposit
 
 
 @pytest.fixture
-async def test_user(session: AsyncSession, faker: Faker) -> User:
-    user = User(
-        fullname=faker.name(),
-        username=faker.user_name(),
-        hashed_password=faker.sha256(),
-        email=faker.email(),
-        is_admin=faker.boolean(),
-    )
-    session.add(user)
-    await session.commit()
-    return user
-
-
-@pytest.fixture
 async def test_refresh_token(
-    session: AsyncSession, test_user: User, faker: Faker
+    session: AsyncSession, regular_user: User, faker: Faker
 ) -> RefreshToken:
     token = RefreshToken(
         token=faker.uuid4(),
-        user_id=test_user.id,
+        user_id=regular_user.id,
         expires_at=datetime.now(UTC) + timedelta(days=7),
         revoked=False,
     )
@@ -49,13 +35,13 @@ async def test_refresh_token(
 
 @pytest.fixture
 async def test_refresh_tokens(
-    session: AsyncSession, test_user: User, faker: Faker
+    session: AsyncSession, regular_user: User, faker: Faker
 ) -> list[RefreshToken]:
     tokens = []
     for _ in range(3):
         token = RefreshToken(
             token=faker.uuid4(),
-            user_id=test_user.id,
+            user_id=regular_user.id,
             expires_at=datetime.now(UTC) + timedelta(days=7),
             revoked=False,
         )
@@ -69,7 +55,7 @@ async def test_refresh_tokens(
 async def test_create(
     session: AsyncSession,
     refresh_token_repository: RefreshTokenRepository,
-    test_user: User,
+    regular_user: User,
     faker: Faker,
 ) -> None:
     token_value = faker.uuid4()
@@ -77,7 +63,7 @@ async def test_create(
 
     token = RefreshToken(
         token=token_value,
-        user_id=test_user.id,
+        user_id=regular_user.id,
         expires_at=expires_at,
         revoked=False,
     )
@@ -91,7 +77,7 @@ async def test_create(
 
     assert saved_token.id == token.id
     assert saved_token.token == token_value
-    assert saved_token.user_id == test_user.id
+    assert saved_token.user_id == regular_user.id
     assert saved_token.expires_at == expires_at
     assert saved_token.revoked is False
 
@@ -118,15 +104,15 @@ async def test_get_by_token_not_found(
 
 async def test_get_by_user_id(
     refresh_token_repository: RefreshTokenRepository,
-    test_user: User,
+    regular_user: User,
     test_refresh_tokens: list[RefreshToken],
 ) -> None:
-    result = await refresh_token_repository.get_by_user_id(test_user.id)
+    result = await refresh_token_repository.get_by_user_id(regular_user.id)
 
     assert len(result) == len(test_refresh_tokens)
 
     for token in result:
-        assert token.user_id == test_user.id
+        assert token.user_id == regular_user.id
 
 
 async def test_get_by_user_id_not_found(
@@ -157,7 +143,7 @@ async def test_revoke(
 async def test_revoke_all_for_user(
     session: AsyncSession,
     refresh_token_repository: RefreshTokenRepository,
-    test_user: User,
+    regular_user: User,
     test_refresh_tokens: list[RefreshToken],
 ) -> None:
     other_user = User(
@@ -178,10 +164,10 @@ async def test_revoke_all_for_user(
     session.add(other_token)
     await session.commit()
 
-    await refresh_token_repository.revoke_all_for_user(test_user.id)
+    await refresh_token_repository.revoke_all_for_user(regular_user.id)
     await session.commit()
 
-    stmt = select(RefreshToken).where(RefreshToken.user_id == test_user.id)
+    stmt = select(RefreshToken).where(RefreshToken.user_id == regular_user.id)
     result = await session.execute(stmt)
     user_tokens = list(result.scalars())
 
@@ -199,14 +185,14 @@ async def test_revoke_all_for_user(
 async def test_delete_expired(
     session: AsyncSession,
     refresh_token_repository: RefreshTokenRepository,
-    test_user: User,
+    regular_user: User,
     faker: Faker,
 ) -> None:
     expired_tokens = []
     for _ in range(2):
         token = RefreshToken(
             token=faker.uuid4(),
-            user_id=test_user.id,
+            user_id=regular_user.id,
             expires_at=datetime.now(UTC) - timedelta(days=1),
             revoked=False,
         )
@@ -215,7 +201,7 @@ async def test_delete_expired(
 
     active_token = RefreshToken(
         token=faker.uuid4(),
-        user_id=test_user.id,
+        user_id=regular_user.id,
         expires_at=datetime.now(UTC) + timedelta(days=7),
         revoked=False,
     )

@@ -1,12 +1,12 @@
+from faker import Faker
 from httpx import AsyncClient
-
-from isp_compare.models import User
-from tests.utils import check_response
 
 from isp_compare.core.exceptions import (
     EmailAlreadyExistsException,
     UsernameAlreadyExistsException,
 )
+from isp_compare.models import User
+from tests.utils import check_response
 
 
 async def test_register_user_success(client: AsyncClient) -> None:
@@ -38,13 +38,13 @@ async def test_register_with_weak_password(client: AsyncClient) -> None:
 
 
 async def test_register_with_existing_username(
-    client: AsyncClient, regular_user: User
+    client: AsyncClient, regular_user: User, faker: Faker
 ) -> None:
     user_data = {
-        "fullname": "Duplicate Username",
-        "username": "user",
-        "password": "Password123",
-        "email": "different@example.com",
+        "fullname": faker.name(),
+        "username": regular_user.username,
+        "password": "Password123!",
+        "email": faker.email(),
     }
 
     response = await client.post("/auth/register", json=user_data)
@@ -52,13 +52,15 @@ async def test_register_with_existing_username(
 
 
 async def test_register_with_existing_email(
-    client: AsyncClient, regular_user: User
+    client: AsyncClient,
+    regular_user: User,
+    faker: Faker,
 ) -> None:
     user_data = {
-        "fullname": "Duplicate Email",
-        "username": "differentuser",
-        "password": "Password123",
-        "email": "user@example.com",
+        "fullname": faker.name(),
+        "username": faker.user_name(),
+        "password": "Password123!",
+        "email": regular_user.email,
     }
 
     response = await client.post("/auth/register", json=user_data)

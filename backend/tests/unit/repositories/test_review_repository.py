@@ -19,20 +19,6 @@ async def review_repository(session: AsyncSession) -> ReviewRepository:
 
 
 @pytest.fixture
-async def test_user(session: AsyncSession, faker: Faker) -> User:
-    user = User(
-        fullname=faker.name(),
-        username=faker.user_name(),
-        hashed_password=faker.sha256(),
-        email=faker.email(),
-        is_admin=faker.boolean(),
-    )
-    session.add(user)
-    await session.commit()
-    return user
-
-
-@pytest.fixture
 async def test_provider(session: AsyncSession, faker: Faker) -> Provider:
     provider = Provider(
         name=faker.company(),
@@ -48,10 +34,10 @@ async def test_provider(session: AsyncSession, faker: Faker) -> Provider:
 
 @pytest.fixture
 async def test_review(
-    session: AsyncSession, test_user: User, test_provider: Provider, faker: Faker
+    session: AsyncSession, regular_user: User, test_provider: Provider, faker: Faker
 ) -> Review:
     review = Review(
-        user_id=test_user.id,
+        user_id=regular_user.id,
         provider_id=test_provider.id,
         rating=faker.pyint(min_value=1, max_value=5),
         comment=faker.paragraph(),
@@ -93,12 +79,12 @@ async def test_reviews(
 async def test_create(
     session: AsyncSession,
     review_repository: ReviewRepository,
-    test_user: User,
+    regular_user: User,
     test_provider: Provider,
     faker: Faker,
 ) -> None:
     review = Review(
-        user_id=test_user.id,
+        user_id=regular_user.id,
         provider_id=test_provider.id,
         rating=faker.pyint(min_value=1, max_value=5),
         comment=faker.paragraph(),
@@ -112,7 +98,7 @@ async def test_create(
     saved_review = result.scalar_one()
 
     assert saved_review.id == review.id
-    assert saved_review.user_id == test_user.id
+    assert saved_review.user_id == regular_user.id
     assert saved_review.provider_id == test_provider.id
     assert saved_review.rating == review.rating
     assert saved_review.comment == review.comment
@@ -259,7 +245,7 @@ async def test_calculate_average_rating(
     session: AsyncSession,
     review_repository: ReviewRepository,
     test_provider: Provider,
-    test_user: User,
+    regular_user: User,
     faker: Faker,
 ) -> None:
     ratings = [3, 4, 5]
