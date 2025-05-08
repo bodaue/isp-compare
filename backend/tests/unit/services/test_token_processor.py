@@ -30,7 +30,7 @@ def test_create_refresh_token(token_processor: TokenProcessor) -> None:
     token, expires_at = token_processor.create_refresh_token()
 
     assert isinstance(token, str)
-    assert len(token) == 64  # 32 bytes as hex = 64 chars
+    assert len(token) == 64
     assert isinstance(expires_at, datetime)
     assert expires_at > datetime.now(UTC)
     # Verify it expires in approximately 7 days

@@ -123,7 +123,6 @@ def mock_user(faker: Faker) -> User:
     )
 
 
-# Register tests
 async def test_register_success(
     auth_service: AuthService,
     response_mock: MagicMock,
@@ -219,7 +218,6 @@ async def test_register_email_already_exists(
     user_repository_mock.create.assert_not_called()
 
 
-# Login tests
 async def test_login_success(
     auth_service: AuthService,
     response_mock: MagicMock,
@@ -326,7 +324,6 @@ async def test_login_rate_limit_exceeded(
     rate_limiter_mock.login_rate_limit.assert_called_once()
 
 
-# Refresh token tests
 async def test_refresh_token_success(
     auth_service: AuthService,
     request_mock: MagicMock,
@@ -385,7 +382,6 @@ async def test_refresh_token_rate_limit_exceeded(
         await auth_service.refresh_token(response_mock)
 
 
-# Logout tests
 async def test_logout_success(
     auth_service: AuthService,
     request_mock: MagicMock,
@@ -421,7 +417,6 @@ async def test_logout_no_tokens(
     response_mock.delete_cookie.assert_called_once()
 
 
-# Change password tests
 async def test_change_password_success(
     auth_service: AuthService,
     identity_provider_mock: AsyncMock,

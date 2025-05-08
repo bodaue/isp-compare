@@ -147,7 +147,7 @@ async def test_get_user_search_history_with_pagination(
     mock_search_histories: list[SearchHistory],
 ) -> None:
     identity_provider_mock.get_current_user.return_value = mock_user
-    # Return only 2 items for limit=2
+
     search_history_repository_mock.get_by_user.return_value = mock_search_histories[:2]
 
     limit = 2
@@ -209,7 +209,7 @@ async def test_delete_search_history_wrong_user(
     mock_user: User,
     mock_search_history: SearchHistory,
 ) -> None:
-    mock_search_history.user_id = uuid.uuid4()  # Different user_id
+    mock_search_history.user_id = uuid.uuid4()
     identity_provider_mock.get_current_user.return_value = mock_user
     search_history_repository_mock.get_by_id.return_value = mock_search_history
 
@@ -244,7 +244,6 @@ async def test_clear_search_history_no_history(
     transaction_manager_mock: AsyncMock,
     mock_user: User,
 ) -> None:
-    # Even if user has no history, the method should work
     identity_provider_mock.get_current_user.return_value = mock_user
 
     await search_history_service.clear_search_history()
@@ -255,14 +254,12 @@ async def test_clear_search_history_no_history(
     transaction_manager_mock.commit.assert_called_once()
 
 
-# Edge cases
 async def test_delete_nonexistent_search_history(
     search_history_service: SearchHistoryService,
     identity_provider_mock: AsyncMock,
     search_history_repository_mock: AsyncMock,
     mock_user: User,
 ) -> None:
-    # Generate a random UUID that doesn't exist
     nonexistent_id = uuid.uuid4()
     identity_provider_mock.get_current_user.return_value = mock_user
     search_history_repository_mock.get_by_id.return_value = None
@@ -280,7 +277,6 @@ async def test_get_user_search_history_with_complex_params(
     mock_user: User,
     faker: Faker,
 ) -> None:
-    # Create search history with complex parameters
     complex_search_history = SearchHistory(
         id=uuid.uuid4(),
         user_id=mock_user.id,

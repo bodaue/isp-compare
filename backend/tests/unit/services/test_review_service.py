@@ -360,7 +360,7 @@ async def test_update_review_not_owner_not_admin(
     mock_user: User,
     mock_review: Review,
 ) -> None:
-    mock_review.user_id = uuid.uuid4()  # Different user
+    mock_review.user_id = uuid.uuid4()
     identity_provider_mock.get_current_user.return_value = mock_user
     review_repository_mock.get_by_id.return_value = mock_review
 
@@ -444,7 +444,7 @@ async def test_delete_review_not_owner_not_admin(
     mock_user: User,
     mock_review: Review,
 ) -> None:
-    mock_review.user_id = uuid.uuid4()  # Different user
+    mock_review.user_id = uuid.uuid4()
     identity_provider_mock.get_current_user.return_value = mock_user
     review_repository_mock.get_by_id.return_value = mock_review
 
