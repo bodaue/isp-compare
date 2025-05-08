@@ -8,11 +8,15 @@ class AppException(HTTPException):
     headers: dict[str, str] | None = None
 
     def __init__(
-        self, detail: str | None = None, headers: dict[str, str] | None = None
+        self,
+        status_code: int | None = None,
+        detail: str | None = None,
+        headers: dict[str, str] | None = None,
     ) -> None:
+        _status_code = status_code or self.status_code
         _detail = detail or self.detail
         _headers = headers or self.headers
-        super().__init__(status_code=self.status_code, detail=_detail, headers=_headers)
+        super().__init__(status_code=_status_code, detail=_detail, headers=_headers)
 
 
 class AdminAccessDeniedException(AppException):
