@@ -33,17 +33,20 @@ class RateLimiter:
         return is_allowed, remaining_attempts
 
     async def login_rate_limit(
-        self, ip_address: str, username: str
+        self,
+        ip_address: str,
     ) -> tuple[bool, int]:
-        key = f"login_limit:{ip_address}:{username}"
+        key = f"login_limit:{ip_address}"
         return await self.check_rate_limit(key, 5, 5)  # 5 попыток в течение 5 минут
 
     async def password_change_rate_limit(self, user_id: UUID) -> tuple[bool, int]:
         key = f"password_change_limit:{user_id}"
         return await self.check_rate_limit(key, 2, 1440)  # 2 смены в течение 24 часов
 
-    async def token_refresh_rate_limit(self, user_id: UUID) -> tuple[bool, int]:
-        key = f"token_refresh_limit:{user_id}"
+    async def refresh_token_rate_limit_by_user_id(
+        self, user_id: UUID
+    ) -> tuple[bool, int]:
+        key = f"refresh_token_limit:{user_id}"
         return await self.check_rate_limit(key, 10, 60)  # 10 обновлений в час
 
     async def refresh_token_rate_limit_by_ip(self, ip_address: str) -> tuple[bool, int]:

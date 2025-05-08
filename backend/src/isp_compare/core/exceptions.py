@@ -21,83 +21,83 @@ class AppException(HTTPException):
 
 class AdminAccessDeniedException(AppException):
     status_code = status.HTTP_403_FORBIDDEN
-    detail = "You don't have administrator privileges to perform this action"
+    detail = "У вас нет прав администратора для выполнения этого действия"
 
 
 class InvalidCredentialsException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Invalid username or password"
+    detail = "Неверное имя пользователя или пароль"
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class TokenExpiredException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Token has expired"
+    detail = "Срок действия токена истек"
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class TokenRevokedException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Token has been revoked"
+    detail = "Токен был отозван"
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class InvalidTokenException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Could not validate credentials"
+    detail = "Не удалось проверить учетные данные"
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class TokenSubjectMissingException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Invalid token: missing subject"
+    detail = "Недействительный токен: отсутствует идентификатор"
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class RefreshTokenMissingException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Refresh token missing"
+    detail = "Отсутствует токен обновления"
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class UserNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "User not found"
+    detail = "Пользователь не найден"
 
 
 class UsernameAlreadyExistsException(AppException):
     status_code = status.HTTP_409_CONFLICT
-    detail = "Username already registered"
+    detail = "Пользователь с таким именем уже зарегистрирован"
 
 
 class EmailAlreadyExistsException(AppException):
     status_code = status.HTTP_409_CONFLICT
-    detail = "Email already registered"
+    detail = "Пользователь с таким email уже зарегистрирован"
 
 
 class IncorrectPasswordException(AppException):
     status_code = status.HTTP_400_BAD_REQUEST
-    detail = "Current password is incorrect"
+    detail = "Текущий пароль неверный"
 
 
 class ProviderNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Provider not found"
+    detail = "Провайдер не найден"
 
 
 class TariffNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Tariff not found"
+    detail = "Тариф не найден"
 
 
 class ReviewNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Review not found"
+    detail = "Отзыв не найден"
 
 
 class SearchHistoryNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Search history not found"
+    detail = "История поиска не найдена"
 
 
 class RateLimitExceededException(AppException):

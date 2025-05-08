@@ -94,7 +94,7 @@ class AuthService:
     async def login(self, data: UserLogin, response: Response) -> TokenResponse:
         client_ip = self._request.client.host if self._request.client else "unknown"
         is_allowed, remaining = await self._rate_limiter.login_rate_limit(
-            ip_address=client_ip, username=data.username
+            ip_address=client_ip
         )
         if not is_allowed:
             raise LoginRateLimitExceededException

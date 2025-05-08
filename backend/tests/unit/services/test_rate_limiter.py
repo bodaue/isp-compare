@@ -21,7 +21,6 @@ def rate_limiter(redis_mock: AsyncMock) -> RateLimiter:
     return RateLimiter(redis_mock)
 
 
-@pytest.mark.asyncio
 async def test_check_rate_limit_allowed(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
@@ -38,7 +37,6 @@ async def test_check_rate_limit_allowed(
     redis_mock.expire.assert_called_once()
 
 
-@pytest.mark.asyncio
 async def test_check_rate_limit_exceeded(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
@@ -55,19 +53,17 @@ async def test_check_rate_limit_exceeded(
     redis_mock.expire.assert_called_once()
 
 
-@pytest.mark.asyncio
 async def test_login_rate_limit(rate_limiter: RateLimiter) -> None:
     with patch.object(
         rate_limiter, "check_rate_limit", return_value=(True, 4)
     ) as mock_check:
-        result = await rate_limiter.login_rate_limit("127.0.0.1", "test_user")
+        result = await rate_limiter.login_rate_limit("127.0.0.1")
 
         assert result == (True, 4)
 
-        mock_check.assert_called_once_with("login_limit:127.0.0.1:test_user", 5, 5)
+        mock_check.assert_called_once_with("login_limit:127.0.0.1", 5, 5)
 
 
-@pytest.mark.asyncio
 async def test_password_change_rate_limit(rate_limiter: RateLimiter) -> None:
     user_id = uuid.uuid4()
 
@@ -81,15 +77,29 @@ async def test_password_change_rate_limit(rate_limiter: RateLimiter) -> None:
         mock_check.assert_called_once_with(f"password_change_limit:{user_id}", 2, 1440)
 
 
-@pytest.mark.asyncio
 async def test_token_refresh_rate_limit(rate_limiter: RateLimiter) -> None:
     user_id = uuid.uuid4()
 
     with patch.object(
         rate_limiter, "check_rate_limit", return_value=(False, 0)
     ) as mock_check:
-        result = await rate_limiter.token_refresh_rate_limit(user_id)
+        result = await rate_limiter.refresh_token_rate_limit_by_user_id(user_id)
 
         assert result == (False, 0)
 
-        mock_check.assert_called_once_with(f"token_refresh_limit:{user_id}", 10, 60)
+        mock_check.assert_called_once_with(f"refresh_token_limit:{user_id}", 10, 60)
+
+
+async def test_token_refresh_rate_limit_by_ip(rate_limiter: RateLimiter) -> None:
+    ip_address = "127.0.0.1"
+
+    with patch.object(
+        rate_limiter, "check_rate_limit", return_value=(False, 0)
+    ) as mock_check:
+        result = await rate_limiter.refresh_token_rate_limit_by_ip(ip_address)
+
+        assert result == (False, 0)
+
+        mock_check.assert_called_once_with(
+            f"refresh_token_limit:ip:{ip_address}", 10, 60
+        )
