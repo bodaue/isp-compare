@@ -3,7 +3,9 @@ from typing import TYPE_CHECKING
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 
+from isp_compare.admin import setup_admin
 from isp_compare.api.v1.auth import router as auth_router
 from isp_compare.api.v1.provider import router as provider_router
 from isp_compare.api.v1.review import router as review_router
@@ -30,7 +32,10 @@ def setup_routers(app: FastAPI) -> None:
 def create_application() -> FastAPI:
     config: Config = create_config()
     app: FastAPI = FastAPI(title=config.app.title, debug=config.app.debug)
-
+    app.add_middleware(
+        SessionMiddleware,
+        secret_key=config.jwt.secret_key.get_secret_value(),
+    )
     # Setup CORS
     app.add_middleware(
         CORSMiddleware,
@@ -44,5 +49,5 @@ def create_application() -> FastAPI:
     setup_dishka(container, app)
 
     setup_routers(app)
-
+    setup_admin(app, config)
     return app
