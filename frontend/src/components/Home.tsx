@@ -3,7 +3,11 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import './Home.css';
 
-const Home: React.FC = () => {
+interface HomeProps {
+    isLoggedIn: boolean;
+}
+
+const Home: React.FC<HomeProps> = ({ isLoggedIn }) => {
     return (
         <div className="home-page">
             {/* Hero Section */}
@@ -83,16 +87,18 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="cta-section">
-                <div className="cta-content">
-                    <h2>Готовы найти лучший интернет?</h2>
-                    <p>Присоединяйтесь к тысячам пользователей, которые уже нашли идеального провайдера</p>
-                    <Link to="/register" className="btn btn-primary">
-                        Создать аккаунт
-                    </Link>
-                </div>
-            </section>
+            {/* CTA Section - показываем только для неавторизованных пользователей */}
+            {!isLoggedIn && (
+                <section className="cta-section">
+                    <div className="cta-content">
+                        <h2>Готовы найти лучший интернет?</h2>
+                        <p>Присоединяйтесь к тысячам пользователей, которые уже нашли идеального провайдера</p>
+                        <Link to="/register" className="btn btn-primary">
+                            Создать аккаунт
+                        </Link>
+                    </div>
+                </section>
+            )}
         </div>
     );
 };

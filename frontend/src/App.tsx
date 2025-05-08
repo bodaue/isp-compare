@@ -110,7 +110,7 @@ const App: React.FC = () => {
 
             <main>
                 <Routes>
-                    <Route path="/" element={<Home/>}/>
+                    <Route path="/" element={<Home isLoggedIn={isLoggedIn} />}/>
                     <Route path="/providers" element={<ProviderList/>}/>
                     <Route path="/comparison" element={<TariffComparison/>}/>
                     <Route path="/login" element={<Login/>}/>
