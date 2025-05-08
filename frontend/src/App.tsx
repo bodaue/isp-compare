@@ -1,11 +1,15 @@
+// frontend/src/App.tsx
 import React, {useEffect, useState} from 'react';
-import {Link, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
+import {Route, Routes, useNavigate} from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './components/Home';
 import Profile from './components/profile/Profile';
 
 import './App.css';
+
 // Placeholder components with modern styling
 const ProviderList = () => (
     <div className="page animate-fade-in">
@@ -21,12 +25,10 @@ const TariffComparison = () => (
     </div>
 );
 
-
 const App: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
         // Проверяем наличие токена при загрузке
@@ -53,98 +55,11 @@ const App: React.FC = () => {
 
     return (
         <div className="app">
-            <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
-                <div className="header-container">
-                    <div className="logo-section">
-                        <Link to="/" className="logo-link">
-                            <div className="logo-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                                    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                                    <line x1="12" y1="20" x2="12" y2="20.01"></line>
-                                </svg>
-                            </div>
-                            <span>ISP Compare</span>
-                        </Link>
-                    </div>
-                    <nav>
-                        <ul>
-                            <li>
-                                <Link to="/providers" className={location.pathname === '/providers' ? 'active' : ''}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <rect x="3" y="3" width="7" height="7"></rect>
-                                        <rect x="14" y="3" width="7" height="7"></rect>
-                                        <rect x="14" y="14" width="7" height="7"></rect>
-                                        <rect x="3" y="14" width="7" height="7"></rect>
-                                    </svg>
-                                    Провайдеры
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/comparison" className={location.pathname === '/comparison' ? 'active' : ''}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M3 3v18h18"></path>
-                                        <path d="M9.5 17V9"></path>
-                                        <path d="M13 17V5"></path>
-                                        <path d="M17 17V11"></path>
-                                    </svg>
-                                    Сравнение
-                                </Link>
-                            </li>
-                            {isLoggedIn ? (
-                                <>
-                                    <li>
-                                        <Link to="/profile"
-                                              className={location.pathname === '/profile' ? 'active' : ''}>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                <circle cx="12" cy="7" r="4"></circle>
-                                            </svg>
-                                            Профиль
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <button onClick={handleLogout} className="logout-btn">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                                <polyline points="16 17 21 12 16 7"></polyline>
-                                                <line x1="21" y1="12" x2="9" y2="12"></line>
-                                            </svg>
-                                            Выход
-                                        </button>
-                                    </li>
-                                </>
-                            ) : (
-                                <>
-                                    <li>
-                                        <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                                <polyline points="10 17 15 12 10 7"></polyline>
-                                                <line x1="15" y1="12" x2="3" y2="12"></line>
-                                            </svg>
-                                            Вход
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/register"
-                                              className={`nav-link-register ${location.pathname === '/register' ? 'active' : ''}`}>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                                <circle cx="8.5" cy="7" r="4"></circle>
-                                                <line x1="20" y1="8" x2="20" y2="14"></line>
-                                                <line x1="23" y1="11" x2="17" y2="11"></line>
-                                            </svg>
-                                            Регистрация
-                                        </Link>
-                                    </li>
-                                </>
-                            )}
-                        </ul>
-                    </nav>
-                </div>
-            </header>
+            <Header
+                isLoggedIn={isLoggedIn}
+                isScrolled={isScrolled}
+                onLogout={handleLogout}
+            />
 
             <main>
                 <Routes>
@@ -157,9 +72,7 @@ const App: React.FC = () => {
                 </Routes>
             </main>
 
-            <footer>
-                <p>© 2025 ISP Compare | Керимов Тимур Илгарович | ВКР ПРИН-467</p>
-            </footer>
+            <Footer/>
         </div>
     );
 };
