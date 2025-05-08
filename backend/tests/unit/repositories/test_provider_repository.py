@@ -8,8 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from isp_compare.models.provider import Provider
 from isp_compare.repositories.provider import ProviderRepository
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 async def provider_repository(session: AsyncSession) -> ProviderRepository:

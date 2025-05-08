@@ -9,8 +9,6 @@ from isp_compare.models.provider import Provider
 from isp_compare.models.tariff import ConnectionType, Tariff
 from isp_compare.repositories.tariff import TariffRepository
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 async def tariff_repository(session: AsyncSession) -> TariffRepository:

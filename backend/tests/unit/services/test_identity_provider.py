@@ -18,8 +18,6 @@ from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.token_service import TokenService
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 def request_mock() -> MagicMock:

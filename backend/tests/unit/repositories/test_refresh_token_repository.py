@@ -10,8 +10,6 @@ from isp_compare.models.token import RefreshToken
 from isp_compare.models.user import User
 from isp_compare.repositories.token import RefreshTokenRepository
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 async def refresh_token_repository(session: AsyncSession) -> RefreshTokenRepository:

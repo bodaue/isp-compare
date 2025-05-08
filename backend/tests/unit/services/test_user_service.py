@@ -12,8 +12,6 @@ from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.transaction_manager import TransactionManager
 from isp_compare.services.user import UserService
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 def user_repository_mock() -> AsyncMock:

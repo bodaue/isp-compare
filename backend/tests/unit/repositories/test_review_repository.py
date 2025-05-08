@@ -10,8 +10,6 @@ from isp_compare.models.review import Review
 from isp_compare.models.user import User
 from isp_compare.repositories.review import ReviewRepository
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 async def review_repository(session: AsyncSession) -> ReviewRepository:

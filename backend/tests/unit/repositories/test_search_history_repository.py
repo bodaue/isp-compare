@@ -9,8 +9,6 @@ from isp_compare.models.search_history import SearchHistory
 from isp_compare.models.user import User
 from isp_compare.repositories.search_history import SearchHistoryRepository
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 async def search_history_repository(session: AsyncSession) -> SearchHistoryRepository:

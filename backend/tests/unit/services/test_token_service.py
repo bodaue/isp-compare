@@ -21,8 +21,6 @@ from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.token_service import TokenService
 from isp_compare.services.transaction_manager import TransactionManager
 
-pytestmark = pytest.mark.asyncio
-
 
 @pytest.fixture
 def token_processor_mock() -> MagicMock:
