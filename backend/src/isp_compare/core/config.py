@@ -57,7 +57,7 @@ class PostgresConfig(BaseSettings, env_prefix="POSTGRES_"):
 class RedisConfig(BaseSettings, env_prefix="REDIS_"):
     host: str
     port: int
-    password: str
+    password: SecretStr
 
 
 class Config(BaseModel):

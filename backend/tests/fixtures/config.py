@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from pydantic import SecretStr
 
@@ -16,11 +14,11 @@ from isp_compare.core.config import (
 @pytest.fixture(scope="session")
 def postgres_config() -> PostgresConfig:
     return PostgresConfig(
-        host=os.getenv("TEST_POSTGRES_HOST", "localhost"),
-        port=int(os.getenv("TEST_POSTGRES_PORT", "5433")),
-        user=os.getenv("TEST_POSTGRES_USER", "postgres"),
-        password=SecretStr(os.getenv("TEST_POSTGRES_PASSWORD", "postgres")),
-        db=os.getenv("TEST_POSTGRES_DB", "isp_compare_test"),
+        host="localhost",
+        port=5433,
+        user="postgres",
+        password=SecretStr("postgres"),
+        db="isp_compare_test",
         enable_logging=False,
     )
 
@@ -28,9 +26,9 @@ def postgres_config() -> PostgresConfig:
 @pytest.fixture(scope="session")
 def redis_config() -> RedisConfig:
     return RedisConfig(
-        host=os.getenv("TEST_REDIS_HOST", "localhost"),
-        port=int(os.getenv("TEST_REDIS_PORT", "6379")),
-        password=os.getenv("TEST_REDIS_PASSWORD", "redis_password"),
+        host="localhost",
+        port=6379,
+        password=SecretStr("redis_password"),
     )
 
 

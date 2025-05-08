@@ -19,6 +19,7 @@ redis = "^6.0.0"
 python-jose = "^3.4.0"
 bcrypt = "^4.3.0"
 pydantic = { extras = ["email"], version = "^2.11.3" }
+sqladmin = "^0.20.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"

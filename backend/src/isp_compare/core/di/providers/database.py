@@ -34,7 +34,7 @@ class DatabaseProvider(Provider):
         return Redis(
             host=config.host,
             port=config.port,
-            password=config.password,
+            password=config.password.get_secret_value(),
         )
 
     transaction_manager = provide(TransactionManager, scope=Scope.REQUEST)
