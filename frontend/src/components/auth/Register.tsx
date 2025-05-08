@@ -1,4 +1,4 @@
-// frontend/src/components/auth/Register.tsx
+// Modern Register.tsx with improved design
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import axios from 'axios';
@@ -14,13 +14,36 @@ const Register: React.FC = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [passwordStrength, setPasswordStrength] = useState('');
     const navigate = useNavigate();
 
+    const checkPasswordStrength = (password: string) => {
+        if (password.length < 8) {
+            setPasswordStrength('');
+            return;
+        }
+
+        let strength = 0;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/\d/.test(password)) strength++;
+        if (/[@$!%*?&]/.test(password)) strength++;
+
+        if (strength < 2) setPasswordStrength('weak');
+        else if (strength < 3) setPasswordStrength('medium');
+        else setPasswordStrength('strong');
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         });
+
+        if (name === 'password') {
+            checkPasswordStrength(value);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -82,6 +105,7 @@ const Register: React.FC = () => {
                             onChange={handleChange}
                             required
                             disabled={loading}
+                            placeholder="Введите ваше полное имя"
                         />
                     </div>
 
@@ -96,6 +120,8 @@ const Register: React.FC = () => {
                             required
                             minLength={4}
                             disabled={loading}
+                            placeholder="Минимум 4 символа"
+                            autoComplete="username"
                         />
                     </div>
 
@@ -109,6 +135,8 @@ const Register: React.FC = () => {
                             onChange={handleChange}
                             required
                             disabled={loading}
+                            placeholder="example@email.com"
+                            autoComplete="email"
                         />
                     </div>
 
@@ -123,7 +151,12 @@ const Register: React.FC = () => {
                             required
                             minLength={8}
                             disabled={loading}
+                            placeholder="Минимум 8 символов"
+                            autoComplete="new-password"
                         />
+                        {formData.password && (
+                            <div className={`password-strength ${passwordStrength}`}></div>
+                        )}
                     </div>
 
                     <div className="form-group">
@@ -136,11 +169,20 @@ const Register: React.FC = () => {
                             onChange={handleChange}
                             required
                             disabled={loading}
+                            placeholder="Повторите пароль"
+                            autoComplete="new-password"
                         />
                     </div>
 
                     <button type="submit" className="btn btn-primary" disabled={loading}>
-                        {loading ? 'Регистрация...' : 'Зарегистрироваться'}
+                        {loading ? (
+                            <>
+                                <span className="loading-spinner"></span>
+                                Регистрация...
+                            </>
+                        ) : (
+                            'Зарегистрироваться'
+                        )}
                     </button>
                 </form>
 

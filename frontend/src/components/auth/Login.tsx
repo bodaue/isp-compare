@@ -1,4 +1,4 @@
-// frontend/src/components/auth/Login.tsx
+// Modern Login.tsx with improved design
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import axios from 'axios';
@@ -49,6 +49,8 @@ const Login: React.FC = () => {
                             onChange={(e) => setUsername(e.target.value)}
                             required
                             disabled={loading}
+                            placeholder="Введите имя пользователя"
+                            autoComplete="username"
                         />
                     </div>
 
@@ -61,11 +63,20 @@ const Login: React.FC = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             disabled={loading}
+                            placeholder="Введите пароль"
+                            autoComplete="current-password"
                         />
                     </div>
 
                     <button type="submit" className="btn btn-primary" disabled={loading}>
-                        {loading ? 'Вход...' : 'Войти'}
+                        {loading ? (
+                            <>
+                                <span className="loading-spinner"></span>
+                                Вход...
+                            </>
+                        ) : (
+                            'Войти'
+                        )}
                     </button>
                 </form>
 

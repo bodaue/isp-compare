@@ -1,24 +1,53 @@
-// frontend/src/App.tsx
+// Modern App.tsx with clickable logo and fixed navigation
 import React, {useEffect, useState} from 'react';
-import {Link, Route, Routes, useNavigate} from 'react-router-dom';
+import {Link, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import Home from './components/Home';
 import './App.css';
 
-// Placeholder components
-const Home = () => <div className="page">Главная страница</div>;
-const ProviderList = () => <div className="page">Список провайдеров</div>;
-const TariffComparison = () => <div className="page">Сравнение тарифов</div>;
-const Profile = () => <div className="page">Профиль пользователя</div>;
+// Placeholder components with modern styling
+const ProviderList = () => (
+    <div className="page animate-fade-in">
+        <h2>Список провайдеров</h2>
+        <p>Выберите провайдера для просмотра тарифов</p>
+    </div>
+);
+
+const TariffComparison = () => (
+    <div className="page animate-fade-in">
+        <h2>Сравнение тарифов</h2>
+        <p>Сравните тарифы разных провайдеров</p>
+    </div>
+);
+
+const Profile = () => (
+    <div className="page animate-fade-in">
+        <h2>Профиль пользователя</h2>
+        <p>Управление вашим аккаунтом</p>
+    </div>
+);
 
 const App: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         // Проверяем наличие токена при загрузке
         const token = localStorage.getItem('accessToken');
         setIsLoggedIn(!!token);
+    }, []);
+
+    useEffect(() => {
+        // Handle scroll effect for header
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     const handleLogout = () => {
@@ -30,28 +59,53 @@ const App: React.FC = () => {
 
     return (
         <div className="app">
-            <header className="app-header">
-                <h1>ISP Compare</h1>
-                <nav>
-                    <ul>
-                        <li><Link to="/">Главная</Link></li>
-                        <li><Link to="/providers">Провайдеры</Link></li>
-                        <li><Link to="/comparison">Сравнение</Link></li>
-                        {isLoggedIn ? (
-                            <>
-                                <li><Link to="/profile">Профиль</Link></li>
-                                <li>
-                                    <button onClick={handleLogout}>Выход</button>
-                                </li>
-                            </>
-                        ) : (
-                            <>
-                                <li><Link to="/login">Вход</Link></li>
-                                <li><Link to="/register">Регистрация</Link></li>
-                            </>
-                        )}
-                    </ul>
-                </nav>
+            <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
+                <div className="header-container">
+                    <h1>
+                        <Link to="/">ISP Compare</Link>
+                    </h1>
+                    <nav>
+                        <ul>
+                            <li>
+                                <Link to="/providers" className={location.pathname === '/providers' ? 'active' : ''}>
+                                    Провайдеры
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/comparison" className={location.pathname === '/comparison' ? 'active' : ''}>
+                                    Сравнение
+                                </Link>
+                            </li>
+                            {isLoggedIn ? (
+                                <>
+                                    <li>
+                                        <Link to="/profile"
+                                              className={location.pathname === '/profile' ? 'active' : ''}>
+                                            Профиль
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <button onClick={handleLogout}>Выход</button>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li>
+                                        <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}>
+                                            Вход
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/register"
+                                              className={location.pathname === '/register' ? 'active' : ''}>
+                                            Регистрация
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+                        </ul>
+                    </nav>
+                </div>
             </header>
 
             <main>
