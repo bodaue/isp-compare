@@ -9,15 +9,16 @@
     overflow: hidden;
 }
 
-/* Animated background elements */
 .auth-container::before,
 .auth-container::after {
     content: '';
     position: absolute;
     border-radius: 50%;
-    filter: blur(100px); /* Увеличиваем размытие */
-    opacity: 0.1; /* Сильно уменьшаем непрозрачность */
-    animation: float 10s ease-in-out infinite; /* Замедляем анимацию */
+    filter: blur(100px);
+    opacity: 0.1;
+    animation: float 10s ease-in-out infinite;
+    pointer-events: none; /* Добавьте эту строку */
+    z-index: -1; /* Добавьте эту строку */
 }
 
 .auth-container::before {
@@ -62,6 +63,7 @@
     position: relative;
     overflow: hidden;
     animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1; /* Добавьте эту строку */
 }
 
 @keyframes slideUp {
@@ -233,6 +235,8 @@
     text-decoration: none;
     font-weight: 600;
     transition: var(--transition-fast);
+    position: relative; /* Добавьте */
+    z-index: 1; /* Добавьте */
 }
 
 .auth-footer a:hover {

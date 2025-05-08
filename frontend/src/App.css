@@ -62,8 +62,11 @@ nav a, nav button {
     border-radius: 0.5rem;
     transition: var(--transition-fast);
     position: relative;
-    display: inline-block;
+    display: inline-flex; /* изменено с inline-block */
+    align-items: center; /* добавлено для центрирования */
     font-size: 0.875rem;
+    line-height: 1.5; /* явно задаем line-height */
+    min-height: 38px; /* минимальная высота для всех элементов */
 }
 
 nav button {
@@ -71,6 +74,10 @@ nav button {
     border: none;
     cursor: pointer;
     font-family: inherit;
+    line-height: 1.5;
+    vertical-align: middle;
+    box-sizing: border-box;
+    margin: 0;
 }
 
 nav a:hover, nav button:hover {
