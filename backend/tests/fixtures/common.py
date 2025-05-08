@@ -8,6 +8,7 @@ from dishka import AsyncContainer, Provider, make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from fastapi import FastAPI
 
+from isp_compare.admin import setup_admin
 from isp_compare.api.v1.auth import router as auth_router
 from isp_compare.api.v1.provider import router as provider_router
 from isp_compare.api.v1.review import router as review_router
@@ -53,4 +54,5 @@ async def fastapi_app(container: AsyncContainer) -> FastAPI:
     app.include_router(search_history_router)
 
     setup_dishka(container, app)
+    await setup_admin(app)
     return app

@@ -55,7 +55,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 def create_application() -> FastAPI:
     config: Config = create_config()
     app: FastAPI = FastAPI(
-        title=config.app.title, debug=config.app.debug, lifespan=lifespan
+        title=config.app.title,
+        debug=config.app.debug,
+        lifespan=lifespan,
     )
 
     container: AsyncContainer = create_container(config)
