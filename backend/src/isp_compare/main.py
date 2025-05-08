@@ -1,6 +1,6 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
-from collections.abc import AsyncGenerator
 
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
@@ -33,8 +33,7 @@ def setup_routers(app: FastAPI) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    config: Config = app.state.config
-    await setup_admin(app, config)
+    await setup_admin(app)
     yield
 
 
@@ -43,7 +42,6 @@ def create_application() -> FastAPI:
     app: FastAPI = FastAPI(
         title=config.app.title, debug=config.app.debug, lifespan=lifespan
     )
-    app.state.config = config
 
     app.add_middleware(
         SessionMiddleware,
