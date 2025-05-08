@@ -31,18 +31,7 @@ def setup_routers(app: FastAPI) -> None:
     app.include_router(search_history_router)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    await setup_admin(app)
-    yield
-
-
-def create_application() -> FastAPI:
-    config: Config = create_config()
-    app: FastAPI = FastAPI(
-        title=config.app.title, debug=config.app.debug, lifespan=lifespan
-    )
-
+def setup_middlewares(app: FastAPI, config: Config) -> None:
     app.add_middleware(
         SessionMiddleware,
         secret_key=config.jwt.secret_key.get_secret_value(),
@@ -56,9 +45,23 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
+    await setup_admin(app)
+    yield
+
+
+def create_application() -> FastAPI:
+    config: Config = create_config()
+    app: FastAPI = FastAPI(
+        title=config.app.title, debug=config.app.debug, lifespan=lifespan
+    )
+
     container: AsyncContainer = create_container(config)
     setup_dishka(container, app)
 
     setup_routers(app)
+    setup_middlewares(app, config)
 
     return app
