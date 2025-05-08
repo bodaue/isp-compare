@@ -155,7 +155,6 @@ async def test_update_profile_same_username(
 ) -> None:
     identity_provider_mock.get_current_user.return_value = mock_user
 
-    # Using the same username but updating other fields
     update_data = UserProfileUpdate(fullname="New Name", username=mock_user.username)
 
     result = await user_service.update_profile(update_data)
@@ -181,7 +180,6 @@ async def test_update_profile_empty_data(
 ) -> None:
     identity_provider_mock.get_current_user.return_value = mock_user
 
-    # Empty update data
     update_data = UserProfileUpdate()
 
     result = await user_service.update_profile(update_data)

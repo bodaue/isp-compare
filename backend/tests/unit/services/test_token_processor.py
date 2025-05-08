@@ -49,7 +49,6 @@ def test_get_user_id_from_token(token_processor: TokenProcessor) -> None:
 def test_get_user_id_from_token_missing_subject(
     token_processor: TokenProcessor,
 ) -> None:
-    # Create a token with no subject
     token = jwt.encode(
         {"exp": datetime.now(UTC) + timedelta(minutes=30)},
         "test_secret_key",
