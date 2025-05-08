@@ -4,8 +4,9 @@ import {Link, Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './components/Home';
-import './App.css';
+import Profile from './components/profile/Profile';
 
+import './App.css';
 // Placeholder components with modern styling
 const ProviderList = () => (
     <div className="page animate-fade-in">
@@ -21,12 +22,6 @@ const TariffComparison = () => (
     </div>
 );
 
-const Profile = () => (
-    <div className="page animate-fade-in">
-        <h2>Профиль пользователя</h2>
-        <p>Управление вашим аккаунтом</p>
-    </div>
-);
 
 const App: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -110,7 +105,7 @@ const App: React.FC = () => {
 
             <main>
                 <Routes>
-                    <Route path="/" element={<Home isLoggedIn={isLoggedIn} />}/>
+                    <Route path="/" element={<Home isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/providers" element={<ProviderList/>}/>
                     <Route path="/comparison" element={<TariffComparison/>}/>
                     <Route path="/login" element={<Login/>}/>
