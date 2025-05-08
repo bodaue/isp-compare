@@ -115,3 +115,10 @@ class PasswordChangeRateLimitExceededException(RateLimitExceededException):
 
 class TokenRefreshRateLimitExceededException(RateLimitExceededException):
     detail = "Слишком много попыток обновления токена. Пожалуйста, попробуйте позже."
+
+
+class UsernameChangeRateLimitExceededException(RateLimitExceededException):
+    detail = (
+        "Слишком много попыток изменения имени пользователя. "
+        "Пожалуйста, попробуйте позже."
+    )

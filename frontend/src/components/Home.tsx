@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {Link} from 'react-router-dom';
 import './Home.css';
@@ -7,7 +6,7 @@ interface HomeProps {
     isLoggedIn: boolean;
 }
 
-const Home: React.FC<HomeProps> = ({ isLoggedIn }) => {
+const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
     return (
         <div className="home-page">
             {}
