@@ -10,7 +10,7 @@ from isp_compare.services.password_hasher import PasswordHasher
 @pytest.fixture
 async def admin_user(session: AsyncSession, faker: Faker) -> User:
     password_hasher = PasswordHasher()
-    hashed_password = password_hasher.hash("Admin123")
+    hashed_password = password_hasher.hash("AdminPassword123!")
 
     user = User(
         fullname=faker.name(),
@@ -83,7 +83,8 @@ async def user_2_token(client: AsyncClient, regular_user_2: User) -> str:
 @pytest.fixture
 async def admin_token(client: AsyncClient, admin_user: User) -> str:
     response = await client.post(
-        "/auth/login", json={"username": admin_user.username, "password": "Admin123"}
+        "/auth/login",
+        json={"username": admin_user.username, "password": "AdminPassword123!"},
     )
     assert response.status_code == 200, f"Login failed: {response.json()}"
     return response.json()["access_token"]

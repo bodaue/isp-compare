@@ -64,8 +64,6 @@ omit = [
     "src/isp_compare/main.py",
     "src/isp_compare/core/config.py",
     "src/isp_compare/core/di/main.py",
-    "src/isp_compare/admin/*",
-    "src/isp_compare/main.py",
     "*/__init__.py",
     "*/migrations/*",
     "*/alembic/*",

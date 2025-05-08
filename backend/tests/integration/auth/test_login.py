@@ -25,7 +25,7 @@ async def test_login_success(client: AsyncClient, regular_user: User) -> None:
 async def test_login_admin_success(client: AsyncClient, admin_user: User) -> None:
     login_data = {
         "username": admin_user.username,
-        "password": "Admin123",
+        "password": "AdminPassword123!",
     }
 
     response = await client.post("/auth/login", json=login_data)
