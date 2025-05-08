@@ -1,38 +1,42 @@
+from typing import TYPE_CHECKING
+
 from jose import JWTError, jwt
 from sqladmin.authentication import AuthenticationBackend
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from starlette.requests import Request
 
 from isp_compare.core.config import JWTConfig
 from isp_compare.repositories.user import UserRepository
 from isp_compare.services.password_hasher import PasswordHasher
 
+if TYPE_CHECKING:
+    from dishka import AsyncContainer
+
 
 class AdminAuth(AuthenticationBackend):
     def __init__(
         self,
         secret_key: str,
-        session_maker: async_sessionmaker[AsyncSession],
         jwt_config: JWTConfig,
-        password_hasher: PasswordHasher,
     ) -> None:
         super().__init__(secret_key)
         self.secret_key = secret_key
-        self.session_maker = session_maker
         self.jwt_config = jwt_config
-        self.password_hasher = password_hasher
 
     async def login(self, request: Request) -> bool:
         form = await request.form()
-        username = form.get("username")
-        password = form.get("password")
-        async with self.session_maker() as session:
-            user_repository = UserRepository(session)
+        username: str | None = form.get("username")
+        password: str | None = form.get("password")
+        if not username or not password:
+            return False
+
+        container: AsyncContainer = request.state.dishka_container
+        async with container() as nested_container:
+            user_repository = await nested_container.get(UserRepository)
+            password_hasher = await nested_container.get(PasswordHasher)
+
             user = await user_repository.get_by_username(username)
 
-            if not user or not self.password_hasher.verify(
-                password, user.hashed_password
-            ):
+            if not user or not password_hasher.verify(password, user.hashed_password):
                 return False
 
             if not user.is_admin:

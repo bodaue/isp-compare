@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from isp_compare.admin.auth import AdminAuth
 from isp_compare.admin.views import ProviderAdmin, ReviewAdmin, TariffAdmin, UserAdmin
 from isp_compare.core.config import JWTConfig
-from isp_compare.services.password_hasher import PasswordHasher
 
 if TYPE_CHECKING:
     from dishka import AsyncContainer
@@ -19,13 +18,11 @@ async def setup_admin(app: FastAPI) -> None:
     session_maker: async_sessionmaker[AsyncSession] = await container.get(
         async_sessionmaker[AsyncSession]
     )
-    password_hasher: PasswordHasher = await container.get(PasswordHasher)
     jwt_config: JWTConfig = await container.get(JWTConfig)
+
     auth_backend = AdminAuth(
         secret_key=jwt_config.secret_key.get_secret_value(),
-        session_maker=session_maker,
         jwt_config=jwt_config,
-        password_hasher=password_hasher,
     )
 
     admin = Admin(
