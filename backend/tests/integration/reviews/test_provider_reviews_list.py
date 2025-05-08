@@ -73,4 +73,4 @@ async def test_get_provider_reviews_empty_list(
 
     assert isinstance(data, list)
 
-    assert len(data) >= 0
+    assert len(data) == 0
