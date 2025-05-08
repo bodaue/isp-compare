@@ -15,15 +15,15 @@
     content: '';
     position: absolute;
     border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.6;
-    animation: float 6s ease-in-out infinite;
+    filter: blur(100px); /* Увеличиваем размытие */
+    opacity: 0.1; /* Сильно уменьшаем непрозрачность */
+    animation: float 10s ease-in-out infinite; /* Замедляем анимацию */
 }
 
 .auth-container::before {
     width: 300px;
     height: 300px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background: var(--primary-light); /* Используем более светлый цвет */
     top: -150px;
     right: -150px;
 }
@@ -31,10 +31,10 @@
 .auth-container::after {
     width: 200px;
     height: 200px;
-    background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+    background: var(--secondary-light); /* Используем более светлый цвет */
     bottom: -100px;
     left: -100px;
-    animation-delay: 3s;
+    animation-delay: 5s;
 }
 
 @keyframes float {
@@ -75,7 +75,6 @@
     }
 }
 
-/* Card gradient border */
 .auth-card::before {
     content: '';
     position: absolute;
@@ -84,13 +83,13 @@
     right: 0;
     bottom: 0;
     border-radius: 1.5rem;
-    padding: 2px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+    padding: 1px; /* Уменьшаем толщину рамки */
+    background: linear-gradient(45deg, var(--primary-light), var(--secondary-light));
     -webkit-mask: linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    opacity: 0.5;
+    opacity: 0.3; /* Уменьшаем непрозрачность рамки */
 }
 
 .auth-card h2 {

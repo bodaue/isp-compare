@@ -53,10 +53,9 @@
 .hero-illustration {
     width: 100%;
     height: 400px;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
+    background: transparent; /* Убираем стеклянный фон */
     border-radius: 2rem;
-    border: var(--glass-border);
+    border: none; /* Убираем границу */
     position: relative;
     overflow: hidden;
 }
@@ -64,15 +63,15 @@
 .floating-element {
     position: absolute;
     border-radius: 50%;
-    filter: blur(40px);
-    opacity: 0.6;
+    filter: blur(60px); /* Увеличиваем размытие */
+    opacity: 0.15; /* Сильно уменьшаем непрозрачность */
     animation: float 6s ease-in-out infinite;
 }
 
 .element-1 {
     width: 150px;
     height: 150px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background: var(--primary-light); /* Используем более светлый цвет */
     top: 20%;
     left: 10%;
 }
@@ -80,7 +79,7 @@
 .element-2 {
     width: 100px;
     height: 100px;
-    background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+    background: var(--secondary-light); /* Используем более светлый цвет */
     bottom: 20%;
     right: 20%;
     animation-delay: 2s;
@@ -89,10 +88,11 @@
 .element-3 {
     width: 80px;
     height: 80px;
-    background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+    background: var(--accent-color);
     top: 50%;
     right: 40%;
     animation-delay: 4s;
+    opacity: 0.1; /* Еще больше уменьшаем непрозрачность для этого элемента */
 }
 
 /* Features Section */
