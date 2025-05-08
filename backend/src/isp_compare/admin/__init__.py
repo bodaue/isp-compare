@@ -1,31 +1,36 @@
+from typing import TYPE_CHECKING
+
 from fastapi import FastAPI
 from sqladmin import Admin
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from isp_compare.admin.auth import AdminAuth
 from isp_compare.admin.views import ProviderAdmin, ReviewAdmin, TariffAdmin, UserAdmin
-from isp_compare.core.config import Config
-from isp_compare.core.di.providers.database import DatabaseProvider
+from isp_compare.core.config import JWTConfig
 from isp_compare.services.password_hasher import PasswordHasher
 
+if TYPE_CHECKING:
+    from dishka import AsyncContainer
 
-def setup_admin(app: FastAPI, config: Config) -> None:
-    db_provider = DatabaseProvider()
-    engine = db_provider.engine(config.postgres)
-    session_maker = db_provider.session_maker(engine)
 
-    password_hasher = PasswordHasher()
+async def setup_admin(app: FastAPI) -> None:
+    container: AsyncContainer = app.state.dishka_container
 
-    # Create auth backend
+    session_maker: async_sessionmaker[AsyncSession] = await container.get(
+        async_sessionmaker[AsyncSession]
+    )
+    password_hasher: PasswordHasher = await container.get(PasswordHasher)
+    jwt_config: JWTConfig = await container.get(JWTConfig)
     auth_backend = AdminAuth(
-        secret_key=config.jwt.secret_key.get_secret_value(),
+        secret_key=jwt_config.secret_key.get_secret_value(),
         session_maker=session_maker,
-        jwt_config=config.jwt,
+        jwt_config=jwt_config,
         password_hasher=password_hasher,
     )
 
     admin = Admin(
         app,
-        engine,
+        session_maker=session_maker,
         title="ISP Compare Admin",
         authentication_backend=auth_backend,
         base_url="/admin",

@@ -38,7 +38,6 @@ class AdminAuth(AuthenticationBackend):
             if not user.is_admin:
                 return False
 
-            # Create JWT token for admin
             token = jwt.encode(
                 {"sub": str(user.id), "is_admin": True},
                 self.secret_key,
@@ -52,7 +51,7 @@ class AdminAuth(AuthenticationBackend):
         request.session.clear()
         return True
 
-    async def authenticate(self, request: Request) -> bool | None:
+    async def authenticate(self, request: Request) -> bool:
         token = request.session.get("token")
         if not token:
             return False
