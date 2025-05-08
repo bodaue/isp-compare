@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from jose import JWTError, jwt
 from sqladmin.authentication import AuthenticationBackend
@@ -43,7 +44,7 @@ class AdminAuth(AuthenticationBackend):
                 return False
 
             token = jwt.encode(
-                {"sub": str(user.id), "is_admin": True},
+                {"sub": str(user.id)},
                 self.secret_key,
                 algorithm=self.jwt_config.algorithm,
             )
@@ -66,9 +67,18 @@ class AdminAuth(AuthenticationBackend):
                 self.secret_key,
                 algorithms=[self.jwt_config.algorithm],
             )
-            if not payload.get("is_admin"):
-                return False
-
         except JWTError:
             return False
+
+        user_id: str | None = payload.get("sub")
+        if not user_id:
+            return False
+
+        container: AsyncContainer = request.state.dishka_container
+        async with container() as nested_container:
+            user_repository = await nested_container.get(UserRepository)
+            user = await user_repository.get_by_id(UUID(user_id))
+            if not user or not user.is_admin:
+                return False
+
         return True
