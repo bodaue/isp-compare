@@ -1,13 +1,10 @@
-/* frontend/src/App.css */
-
-/* Modern App Styles */
 .app {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
-/* Main Content Area */
+
 main {
     flex: 1;
     padding: 2rem;
@@ -16,7 +13,7 @@ main {
     width: 100%;
 }
 
-/* Modern Page Container */
+
 .page {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
@@ -28,7 +25,7 @@ main {
     animation: fadeIn 0.5s ease;
 }
 
-/* Page transitions */
+
 .page-enter {
     opacity: 0;
     transform: translateY(20px);
@@ -51,7 +48,7 @@ main {
     transition: var(--transition-normal);
 }
 
-/* Loading states */
+
 .loading {
     display: inline-block;
     width: 20px;
@@ -68,7 +65,7 @@ main {
     }
 }
 
-/* Toast notifications */
+
 .toast {
     position: fixed;
     bottom: 2rem;
@@ -105,7 +102,7 @@ main {
     }
 }
 
-/* Animations */
+
 @keyframes fadeIn {
     from {
         opacity: 0;

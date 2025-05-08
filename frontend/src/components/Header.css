@@ -1,6 +1,4 @@
-/* frontend/src/components/Header.css */
 
-/* Modern Header with Enhanced Design */
 .app-header {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: saturate(180%) blur(14px);
@@ -28,7 +26,7 @@
     gap: 2rem;
 }
 
-/* Logo Section */
+
 .logo-section {
     flex-shrink: 0;
 }
@@ -93,7 +91,7 @@
     letter-spacing: -0.02em;
 }
 
-/* Modern Navigation */
+
 nav ul {
     display: flex;
     list-style: none;
@@ -151,7 +149,7 @@ nav a:hover svg, nav button:hover svg {
     opacity: 1;
 }
 
-/* Active nav link indicator */
+
 nav a.active {
     color: var(--primary-color);
     background: rgba(99, 102, 241, 0.1);
@@ -162,7 +160,7 @@ nav a.active svg {
     opacity: 1;
 }
 
-/* Register button special style */
+
 .nav-link-register {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white !important;
@@ -208,7 +206,7 @@ nav a.active svg {
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-/* Logout button special style */
+
 .logout-btn {
     color: var(--error-color) !important;
 }
@@ -222,7 +220,7 @@ nav a.active svg {
     stroke: var(--error-color);
 }
 
-/* Responsive Header */
+
 @media (max-width: 768px) {
     .app-header {
         padding: 0.75rem 0;
@@ -274,7 +272,7 @@ nav a.active svg {
     }
 }
 
-/* Extra small devices */
+
 @media (max-width: 480px) {
     nav ul {
         width: 100%;

@@ -1,4 +1,4 @@
-// frontend/src/App.tsx
+
 import React, {useEffect, useState} from 'react';
 import {Route, Routes, useNavigate} from 'react-router-dom';
 import Header from './components/Header';
@@ -10,7 +10,7 @@ import Profile from './components/profile/Profile';
 
 import './App.css';
 
-// Placeholder components with modern styling
+
 const ProviderList = () => (
     <div className="page animate-fade-in">
         <h2>Список провайдеров</h2>
@@ -31,13 +31,13 @@ const App: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Проверяем наличие токена при загрузке
+
         const token = localStorage.getItem('accessToken');
         setIsLoggedIn(!!token);
     }, []);
 
     useEffect(() => {
-        // Handle scroll effect for header
+
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 10);
         };
@@ -47,7 +47,7 @@ const App: React.FC = () => {
     }, []);
 
     const handleLogout = () => {
-        // Удаляем токен
+
         localStorage.removeItem('accessToken');
         setIsLoggedIn(false);
         navigate('/');

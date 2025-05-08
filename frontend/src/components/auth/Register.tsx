@@ -1,4 +1,4 @@
-// Modern Register.tsx with improved design
+
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import axios from 'axios';
@@ -50,13 +50,13 @@ const Register: React.FC = () => {
         e.preventDefault();
         setError('');
 
-        // Проверка паролей
+
         if (formData.password !== formData.confirmPassword) {
             setError('Пароли не совпадают');
             return;
         }
 
-        // Проверка сложности пароля
+
         if (formData.password.length < 8) {
             setError('Пароль должен содержать минимум 8 символов');
             return;

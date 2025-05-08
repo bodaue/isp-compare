@@ -1,4 +1,4 @@
-// frontend/src/components/profile/ProfileInfo.tsx
+
 import React from 'react';
 
 interface ProfileInfoProps {

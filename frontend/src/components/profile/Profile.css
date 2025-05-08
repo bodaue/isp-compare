@@ -1,4 +1,4 @@
-/* frontend/src/components/profile/Profile.css */
+
 .profile-container {
     max-width: 800px;
     margin: 0 auto;
@@ -19,7 +19,7 @@
     background-clip: text;
 }
 
-/* Profile Navigation */
+
 .profile-nav {
     display: flex;
     gap: 1rem;
@@ -68,18 +68,13 @@
     stroke: white;
 }
 
-/* Profile Content - более мягкий дизайн */
+
 .profile-content {
-    background: var(--glass-bg);  /* Используем стеклянный эффект как везде */
-    backdrop-filter: var(--glass-blur);
-    border: var(--glass-border);
-    border-radius: 1rem;
     padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     animation: fadeIn 0.3s ease;
 }
 
-/* Profile Info - более интегрированный дизайн */
+
 .profile-info .info-card {
     display: grid;
     gap: 1rem;
@@ -118,7 +113,7 @@
     word-break: break-all;
 }
 
-/* Form Styling - более мягкий стиль */
+
 .edit-profile form,
 .change-password form {
     max-width: 500px;
@@ -160,7 +155,7 @@
     opacity: 0.7;
 }
 
-/* Button Styling - более интегрированный */
+
 .btn-primary {
     width: 100%;
     padding: 0.75rem;
@@ -192,7 +187,7 @@
     box-shadow: none;
 }
 
-/* Messages - более мягкие */
+
 .success-message,
 .error-message {
     padding: 0.875rem 1rem;
@@ -215,7 +210,7 @@
     border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-/* Loading States */
+
 .profile-loading {
     text-align: center;
     padding: 3rem;
@@ -232,7 +227,7 @@
     margin: 0 auto 1rem;
 }
 
-/* Animations - более плавные */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -242,7 +237,7 @@
     }
 }
 
-/* Responsive Design */
+
 @media (max-width: 600px) {
     .profile-nav {
         gap: 0.5rem;

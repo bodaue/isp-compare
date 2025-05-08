@@ -1,4 +1,4 @@
-// Modern Login.tsx with improved design
+
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import axios from 'axios';
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
             localStorage.setItem('accessToken', response.data.access_token);
             navigate('/');
-            window.location.reload(); // Чтобы обновить шапку
+            window.location.reload();
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Произошла ошибка при входе');
         } finally {

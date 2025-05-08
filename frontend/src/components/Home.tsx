@@ -1,4 +1,4 @@
-// Modern Home page component
+
 import React from 'react';
 import {Link} from 'react-router-dom';
 import './Home.css';
@@ -10,7 +10,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ isLoggedIn }) => {
     return (
         <div className="home-page">
-            {/* Hero Section */}
+            {}
             <section className="hero-section">
                 <div className="hero-content">
                     <h1 className="hero-title">
@@ -37,7 +37,7 @@ const Home: React.FC<HomeProps> = ({ isLoggedIn }) => {
                 </div>
             </section>
 
-            {/* Features Section */}
+            {}
             <section className="features-section">
                 <h2 className="section-title">Почему выбирают нас</h2>
                 <div className="features-grid">
@@ -87,7 +87,7 @@ const Home: React.FC<HomeProps> = ({ isLoggedIn }) => {
                 </div>
             </section>
 
-            {/* CTA Section - показываем только для неавторизованных пользователей */}
+            {}
             {!isLoggedIn && (
                 <section className="cta-section">
                     <div className="cta-content">

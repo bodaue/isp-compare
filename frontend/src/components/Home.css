@@ -1,9 +1,9 @@
-/* Home Page Styles */
+
 .home-page {
     animation: fadeIn 0.5s ease;
 }
 
-/* Hero Section */
+
 .hero-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -53,9 +53,9 @@
 .hero-illustration {
     width: 100%;
     height: 400px;
-    background: transparent; /* Убираем стеклянный фон */
+    background: transparent;
     border-radius: 2rem;
-    border: none; /* Убираем границу */
+    border: none;
     position: relative;
     overflow: hidden;
 }
@@ -63,15 +63,15 @@
 .floating-element {
     position: absolute;
     border-radius: 50%;
-    filter: blur(60px); /* Увеличиваем размытие */
-    opacity: 0.15; /* Сильно уменьшаем непрозрачность */
+    filter: blur(60px);
+    opacity: 0.15;
     animation: float 6s ease-in-out infinite;
 }
 
 .element-1 {
     width: 150px;
     height: 150px;
-    background: var(--primary-light); /* Используем более светлый цвет */
+    background: var(--primary-light);
     top: 20%;
     left: 10%;
 }
@@ -79,7 +79,7 @@
 .element-2 {
     width: 100px;
     height: 100px;
-    background: var(--secondary-light); /* Используем более светлый цвет */
+    background: var(--secondary-light);
     bottom: 20%;
     right: 20%;
     animation-delay: 2s;
@@ -92,10 +92,10 @@
     top: 50%;
     right: 40%;
     animation-delay: 4s;
-    opacity: 0.1; /* Еще больше уменьшаем непрозрачность для этого элемента */
+    opacity: 0.1;
 }
 
-/* Features Section */
+
 .features-section {
     margin-bottom: 6rem;
 }
@@ -172,7 +172,7 @@
     line-height: 1.6;
 }
 
-/* CTA Section */
+
 .cta-section {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     border-radius: 1.5rem;
@@ -219,7 +219,7 @@
     background: rgba(255, 255, 255, 0.9);
 }
 
-/* Animations */
+
 @keyframes slideInLeft {
     from {
         opacity: 0;
@@ -253,7 +253,7 @@
     }
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
     .hero-section {
         grid-template-columns: 1fr;
