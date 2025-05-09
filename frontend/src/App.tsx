@@ -25,13 +25,12 @@ const TariffComparison = () => (
 );
 
 const App: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => {
+        return authService.isAuthenticated();
+    });
     const [isScrolled, setIsScrolled] = useState(false);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        setIsLoggedIn(authService.isAuthenticated());
-    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
