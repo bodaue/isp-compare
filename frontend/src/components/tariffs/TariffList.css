@@ -28,10 +28,12 @@
 .tariff-controls {
     display: flex;
     justify-content: flex-end;
+    gap: 1rem;
     margin-bottom: 1.5rem;
 }
 
-.filter-toggle {
+.filter-toggle,
+.history-toggle {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -47,7 +49,8 @@
     transition: var(--transition-normal);
 }
 
-.filter-toggle:hover {
+.filter-toggle:hover,
+.history-toggle:hover {
     background: rgba(255, 255, 255, 0.9);
     border-color: var(--primary-color);
     transform: translateY(-1px);
@@ -258,6 +261,17 @@
 
     .filter-range span {
         text-align: center;
+    }
+
+    .tariff-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-toggle,
+    .history-toggle {
+        width: 100%;
+        justify-content: center;
     }
 }
 
