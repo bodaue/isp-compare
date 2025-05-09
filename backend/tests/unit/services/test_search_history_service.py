@@ -68,7 +68,6 @@ def mock_search_history(mock_user: User, faker: Faker) -> SearchHistory:
                 faker.pydecimal(min_value=51, max_value=100, right_digits=2)
             ),
             "min_speed": faker.pyint(min_value=50, max_value=100),
-            "connection_type": "FTTH",
             "has_tv": faker.pybool(),
         },
         created_at=datetime.now(UTC),
@@ -90,7 +89,6 @@ def mock_search_histories(mock_user: User, faker: Faker) -> list[SearchHistory]:
                     faker.pydecimal(min_value=51, max_value=100, right_digits=2)
                 ),
                 "min_speed": faker.pyint(min_value=50, max_value=100),
-                "connection_type": faker.random_element(["FTTH", "ADSL", "ETHERNET"]),
                 "has_tv": faker.pybool(),
             },
             created_at=datetime.now(UTC),
@@ -275,7 +273,6 @@ async def test_get_user_search_history_with_complex_params(
     identity_provider_mock: AsyncMock,
     search_history_repository_mock: AsyncMock,
     mock_user: User,
-    faker: Faker,
 ) -> None:
     complex_search_history = SearchHistory(
         id=uuid.uuid4(),
@@ -285,7 +282,6 @@ async def test_get_user_search_history_with_complex_params(
             "max_price": "100.00",
             "min_speed": 100,
             "max_speed": 1000,
-            "connection_type": "FTTH",
             "has_tv": True,
             "has_phone": False,
             "limit": 50,
