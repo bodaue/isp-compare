@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {userService} from '../../services/userService';
+import React from 'react';
+import {useForm, useUser} from '../../hooks';
 
 interface EditProfileProps {
     userData: {
@@ -10,35 +10,33 @@ interface EditProfileProps {
 }
 
 const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
-    const [formData, setFormData] = useState({
+    const {updateProfile} = useUser();
+    const {
+        values,
+        errors,
+        loading,
+        handleChange,
+        setErrors,
+        setLoading
+    } = useForm({
         fullname: userData.fullname,
         username: userData.username
     });
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState('');
-    const [error, setError] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-        setError('');
-        setSuccess('');
-    };
+    const [success, setSuccess] = React.useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
+        setErrors({});
         setSuccess('');
 
         try {
-            await userService.updateProfile(formData);
+            await updateProfile(values);
             setSuccess('Профиль успешно обновлен');
             onUpdate();
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Ошибка при обновлении профиля');
+            setErrors({form: err.response?.data?.detail || 'Ошибка при обновлении профиля'});
         } finally {
             setLoading(false);
         }
@@ -47,7 +45,7 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
     return (
         <div className="edit-profile">
             {success && <div className="success-message">{success}</div>}
-            {error && <div className="error-message">{error}</div>}
+            {errors.form && <div className="error-message">{errors.form}</div>}
 
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
@@ -56,7 +54,7 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
                         type="text"
                         id="fullname"
                         name="fullname"
-                        value={formData.fullname}
+                        value={values.fullname}
                         onChange={handleChange}
                         disabled={loading}
                     />
@@ -68,7 +66,7 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
                         type="text"
                         id="username"
                         name="username"
-                        value={formData.username}
+                        value={values.username}
                         onChange={handleChange}
                         disabled={loading}
                         minLength={4}

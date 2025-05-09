@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Route, Routes, useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './components/auth/Login';
@@ -9,10 +9,9 @@ import Profile from './components/profile/Profile';
 import ProviderList from './components/providers/ProviderList';
 import ProviderDetail from './components/providers/ProviderDetail';
 import TariffList from './components/tariffs/TariffList';
-import {authService} from './services/authService';
+import { useAuth } from './hooks/useAuth';
 
 import './App.css';
-
 
 const TariffComparison = () => (
     <div className="page animate-fade-in">
@@ -22,12 +21,8 @@ const TariffComparison = () => (
 );
 
 const App: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(() => {
-        return authService.isAuthenticated();
-    });
+    const { isLoggedIn, logout } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
-    const navigate = useNavigate();
-
 
     useEffect(() => {
         const handleScroll = () => {
@@ -38,27 +33,16 @@ const App: React.FC = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const handleLogout = async () => {
-        try {
-            await authService.logout();
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            setIsLoggedIn(false);
-            navigate('/');
-        }
-    };
-
     return (
         <div className="app">
             <Header
                 isLoggedIn={isLoggedIn}
                 isScrolled={isScrolled}
-                onLogout={handleLogout}
+                onLogout={logout}
             />
 
             <main>
-          <Routes>
+                <Routes>
                     <Route path="/" element={<Home isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/providers" element={<ProviderList/>}/>
                     <Route path="/providers/:id" element={<ProviderDetail/>}/>

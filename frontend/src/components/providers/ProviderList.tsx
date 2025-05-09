@@ -1,30 +1,10 @@
-// frontend/src/components/providers/ProviderList.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { providerService } from '../../services/providerService';
-import { Provider } from '../../types/provider.types';
+import { useProviders } from '../../hooks';
 import './ProviderList.css';
 
 const ProviderList: React.FC = () => {
-    const [providers, setProviders] = useState<Provider[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    useEffect(() => {
-        fetchProviders();
-    }, []);
-
-    const fetchProviders = async () => {
-        try {
-            const data = await providerService.getAllProviders();
-            setProviders(data);
-            setError('');
-        } catch (err: any) {
-            setError('Ошибка при загрузке провайдеров');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { providers, loading, error, fetchProviders } = useProviders();
 
     if (loading) {
         return (

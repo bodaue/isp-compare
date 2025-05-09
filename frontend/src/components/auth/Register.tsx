@@ -1,20 +1,26 @@
 import React, {useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import './Auth.css';
-import {authService} from '../../services/authService';
+import {useAuth, useForm} from '../../hooks';
 
 const Register: React.FC = () => {
-    const [formData, setFormData] = useState({
+    const {register} = useAuth();
+    const {
+        values,
+        errors,
+        loading,
+        handleChange,
+        setErrors,
+        setLoading
+    } = useForm({
         fullname: '',
         username: '',
         email: '',
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+
     const [passwordStrength, setPasswordStrength] = useState('');
-    const navigate = useNavigate();
 
     const checkPasswordStrength = (password: string) => {
         if (password.length < 8) {
@@ -33,51 +39,43 @@ const Register: React.FC = () => {
         else setPasswordStrength('strong');
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-
-        if (name === 'password') {
-            checkPasswordStrength(value);
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleChange(e);
+        if (e.target.name === 'password') {
+            checkPasswordStrength(e.target.value);
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setErrors({});
 
-        if (formData.password !== formData.confirmPassword) {
-            setError('Пароли не совпадают');
+        if (values.password !== values.confirmPassword) {
+            setErrors({form: 'Пароли не совпадают'});
             return;
         }
 
-        if (formData.password.length < 8) {
-            setError('Пароль должен содержать минимум 8 символов');
+        if (values.password.length < 8) {
+            setErrors({form: 'Пароль должен содержать минимум 8 символов'});
             return;
         }
 
-        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-            setError('Пароль должен содержать заглавные и строчные буквы, а также цифры');
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(values.password)) {
+            setErrors({form: 'Пароль должен содержать заглавные и строчные буквы, а также цифры'});
             return;
         }
 
         setLoading(true);
 
         try {
-            await authService.register({
-                fullname: formData.fullname,
-                username: formData.username,
-                email: formData.email,
-                password: formData.password
+            await register({
+                fullname: values.fullname,
+                username: values.username,
+                email: values.email,
+                password: values.password
             });
-
-            navigate('/');
-            window.location.reload();
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Произошла ошибка при регистрации');
+            setErrors({form: err.response?.data?.detail || 'Произошла ошибка при регистрации'});
         } finally {
             setLoading(false);
         }
@@ -88,7 +86,7 @@ const Register: React.FC = () => {
             <div className="auth-card">
                 <h2>Регистрация</h2>
 
-                {error && <div className="error-message">{error}</div>}
+                {errors.form && <div className="error-message">{errors.form}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -97,7 +95,7 @@ const Register: React.FC = () => {
                             type="text"
                             id="fullname"
                             name="fullname"
-                            value={formData.fullname}
+                            value={values.fullname}
                             onChange={handleChange}
                             required
                             disabled={loading}
@@ -111,7 +109,7 @@ const Register: React.FC = () => {
                             type="text"
                             id="username"
                             name="username"
-                            value={formData.username}
+                            value={values.username}
                             onChange={handleChange}
                             required
                             minLength={4}
@@ -127,7 +125,7 @@ const Register: React.FC = () => {
                             type="email"
                             id="email"
                             name="email"
-                            value={formData.email}
+                            value={values.email}
                             onChange={handleChange}
                             required
                             disabled={loading}
@@ -142,15 +140,15 @@ const Register: React.FC = () => {
                             type="password"
                             id="password"
                             name="password"
-                            value={formData.password}
-                            onChange={handleChange}
+                            value={values.password}
+                            onChange={handlePasswordChange}
                             required
                             minLength={8}
                             disabled={loading}
                             placeholder="Минимум 8 символов"
                             autoComplete="new-password"
                         />
-                        {formData.password && (
+                        {values.password && (
                             <div className={`password-strength ${passwordStrength}`}></div>
                         )}
                     </div>
@@ -161,7 +159,7 @@ const Register: React.FC = () => {
                             type="password"
                             id="confirmPassword"
                             name="confirmPassword"
-                            value={formData.confirmPassword}
+                            value={values.confirmPassword}
                             onChange={handleChange}
                             required
                             disabled={loading}

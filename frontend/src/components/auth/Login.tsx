@@ -1,31 +1,34 @@
 import React, {useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import './Auth.css';
-import {authService} from '../../services/authService';
+import {useAuth, useForm} from '../../hooks';
 
 const Login: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const {login} = useAuth();
+    const {
+        values,
+        errors,
+        loading,
+        handleChange,
+        setErrors,
+        setLoading
+    } = useForm({username: '', password: ''});
+
     const [attemptsRemaining, setAttemptsRemaining] = useState<number | null>(null);
-    const [loading, setLoading] = useState(false);
     const [retryAfter, setRetryAfter] = useState<number | null>(null);
-    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setErrors({});
         setLoading(true);
         setRetryAfter(null);
         setAttemptsRemaining(null);
 
         try {
-            await authService.login({username, password});
-            navigate('/');
-            window.location.reload();
+            await login(values.username, values.password);
         } catch (err: any) {
             const errorMessage = err.response?.data?.detail || 'Произошла ошибка при входе';
-            setError(errorMessage);
+            setErrors({form: errorMessage});
 
             // Проверяем заголовки rate limiting
             if (err.response?.headers) {
@@ -49,9 +52,9 @@ const Login: React.FC = () => {
             <div className="auth-card">
                 <h2>Вход в систему</h2>
 
-                {error && (
+                {errors.form && (
                     <div className="error-message">
-                        {error.split('\n').map((line, index) => (
+                        {errors.form.split('\n').map((line, index) => (
                             <div key={index}>{line}</div>
                         ))}
                         {attemptsRemaining !== null && attemptsRemaining > 0 && (
@@ -73,8 +76,9 @@ const Login: React.FC = () => {
                         <input
                             type="text"
                             id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            name="username"
+                            value={values.username}
+                            onChange={handleChange}
                             required
                             disabled={loading}
                             placeholder="Введите имя пользователя"
@@ -87,8 +91,9 @@ const Login: React.FC = () => {
                         <input
                             type="password"
                             id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            name="password"
+                            value={values.password}
+                            onChange={handleChange}
                             required
                             disabled={loading}
                             placeholder="Введите пароль"

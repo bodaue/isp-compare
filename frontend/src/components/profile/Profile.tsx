@@ -1,44 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import ProfileInfo from './ProfileInfo';
 import EditProfile from './EditProfile';
 import ChangePassword from './ChangePassword';
 import './Profile.css';
-import { userService } from '../../services/userService';
-import { authService } from '../../services/authService';
+import {useAuth, useUser} from '../../hooks';
 
 const Profile: React.FC = () => {
     const [activeTab, setActiveTab] = useState('info');
-    const [userData, setUserData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const {userData, loading, error, fetchUserData} = useUser();
+    const {isLoggedIn} = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!authService.isAuthenticated()) {
+        if (!isLoggedIn) {
             navigate('/login');
-            return;
         }
-
-        fetchUserData();
-    }, [navigate]);
-
-    const fetchUserData = async () => {
-        try {
-            const data = await userService.getProfile();
-            setUserData(data);
-            setError('');
-        } catch (err: any) {
-            if (err.response?.status === 401) {
-                // Интерцептор должен обработать это автоматически
-                navigate('/login');
-            } else {
-                setError('Ошибка при загрузке профиля');
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [isLoggedIn, navigate]);
 
     if (loading) {
         return (
@@ -58,6 +36,10 @@ const Profile: React.FC = () => {
                 </button>
             </div>
         );
+    }
+
+    if (!userData) {
+        return null;
     }
 
     return (
@@ -101,13 +83,13 @@ const Profile: React.FC = () => {
 
             <div className="profile-content">
                 {activeTab === 'info' && (
-                    <ProfileInfo userData={userData} />
+                    <ProfileInfo userData={userData}/>
                 )}
                 {activeTab === 'edit' && (
-                    <EditProfile userData={userData} onUpdate={fetchUserData} />
+                    <EditProfile userData={userData} onUpdate={fetchUserData}/>
                 )}
                 {activeTab === 'password' && (
-                    <ChangePassword />
+                    <ChangePassword/>
                 )}
             </div>
         </div>

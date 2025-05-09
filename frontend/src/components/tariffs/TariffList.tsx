@@ -1,37 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {tariffService} from '../../services/tariffService';
-import {providerService} from '../../services/providerService';
-import {Provider, Tariff, TariffSearchParams} from '../../types/provider.types';
+import React, {useState} from 'react';
+import {useProviders, useTariffs} from '../../hooks';
+import {TariffSearchParams} from '../../types/provider.types';
 import TariffCard from './TariffCard';
 import './TariffList.css';
 
 const TariffList: React.FC = () => {
-    const [tariffs, setTariffs] = useState<Tariff[]>([]);
-    const [providers, setProviders] = useState<Provider[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+    const {tariffs, loading, error, searchTariffs, fetchTariffs} = useTariffs();
+    const {getProviderById} = useProviders();
     const [filters, setFilters] = useState<TariffSearchParams>({});
     const [showFilters, setShowFilters] = useState(false);
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            const [tariffsData, providersData] = await Promise.all([
-                tariffService.getAllTariffs(),
-                providerService.getAllProviders()
-            ]);
-            setTariffs(tariffsData);
-            setProviders(providersData);
-            setError('');
-        } catch (err: any) {
-            setError('Ошибка при загрузке данных');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleFilterChange = (name: keyof TariffSearchParams, value: any) => {
         setFilters(prev => ({
@@ -41,25 +18,12 @@ const TariffList: React.FC = () => {
     };
 
     const applyFilters = async () => {
-        setLoading(true);
-        try {
-            const filteredTariffs = await tariffService.searchTariffs(filters);
-            setTariffs(filteredTariffs);
-            setError('');
-        } catch (err: any) {
-            setError('Ошибка при применении фильтров');
-        } finally {
-            setLoading(false);
-        }
+        await searchTariffs(filters);
     };
 
     const resetFilters = () => {
         setFilters({});
-        fetchData();
-    };
-
-    const getProviderById = (providerId: string) => {
-        return providers.find(p => p.id === providerId);
+        fetchTariffs();
     };
 
     if (loading) {
@@ -75,7 +39,7 @@ const TariffList: React.FC = () => {
         return (
             <div className="tariff-error">
                 <p>{error}</p>
-                <button onClick={fetchData} className="btn btn-primary">
+                <button onClick={fetchTariffs} className="btn btn-primary">
                     Повторить попытку
                 </button>
             </div>
