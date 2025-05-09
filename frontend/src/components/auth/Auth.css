@@ -1,4 +1,4 @@
-
+/* frontend/src/components/auth/Auth.css */
 .auth-container {
     min-height: calc(100vh - 200px);
     display: flex;
@@ -143,6 +143,14 @@
     opacity: 0.7;
 }
 
+/* Стили для ошибок полей */
+.form-group .error-message {
+    font-size: 0.875rem;
+    color: var(--error-color);
+    margin-top: 0.25rem;
+    animation: none;
+}
+
 
 .btn-primary {
     width: 100%;
@@ -165,7 +173,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 0;
     height: 100%;
     background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
     transform: translateX(-100%) skew(-45deg);

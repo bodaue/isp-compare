@@ -1,3 +1,4 @@
+// frontend/src/components/auth/Register.tsx
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import './Auth.css';
@@ -76,7 +77,47 @@ const Register: React.FC = () => {
                 password: values.password
             });
         } catch (err: any) {
-            setErrors({form: err.response?.data?.detail || 'Произошла ошибка при регистрации'});
+            if (err.response?.status === 422 && err.response?.data?.detail) {
+                const newErrors: Record<string, string> = {};
+
+                if (Array.isArray(err.response.data.detail)) {
+                    err.response.data.detail.forEach((error: any) => {
+                        const field = error.loc[error.loc.length - 1];
+
+                        // Маппинг сообщений об ошибках на русский язык
+                        let message = error.msg;
+                        if (message.includes('Password must contain at least one uppercase letter')) {
+                            message = 'Пароль должен содержать хотя бы одну заглавную букву';
+                        } else if (message.includes('Password must contain at least one lowercase letter')) {
+                            message = 'Пароль должен содержать хотя бы одну строчную букву';
+                        } else if (message.includes('Password must contain at least one digit')) {
+                            message = 'Пароль должен содержать хотя бы одну цифру';
+                        } else if (message.includes('field required')) {
+                            message = 'Это поле обязательно';
+                        } else if (message.includes('value is not a valid email address')) {
+                            message = 'Некорректный email адрес';
+                        } else if (message.includes('ensure this value has at least')) {
+                            const match = message.match(/at least (\d+) characters/);
+                            if (match) {
+                                message = `Минимальная длина: ${match[1]} символов`;
+                            }
+                        } else if (message.includes('ensure this value has at most')) {
+                            const match = message.match(/at most (\d+) characters/);
+                            if (match) {
+                                message = `Максимальная длина: ${match[1]} символов`;
+                            }
+                        }
+
+                        newErrors[field] = message;
+                    });
+
+                    setErrors(newErrors);
+                } else {
+                    setErrors({form: err.response.data.detail});
+                }
+            } else {
+                setErrors({form: err.response?.data?.detail || 'Произошла ошибка при регистрации'});
+            }
         } finally {
             setLoading(false);
         }
@@ -102,6 +143,7 @@ const Register: React.FC = () => {
                             disabled={loading}
                             placeholder="Введите ваше полное имя"
                         />
+                        {errors.fullname && <div className="error-message">{errors.fullname}</div>}
                     </div>
 
                     <div className="form-group">
@@ -118,6 +160,7 @@ const Register: React.FC = () => {
                             placeholder="Минимум 4 символа"
                             autoComplete="username"
                         />
+                        {errors.username && <div className="error-message">{errors.username}</div>}
                     </div>
 
                     <div className="form-group">
@@ -133,6 +176,7 @@ const Register: React.FC = () => {
                             placeholder="example@email.com"
                             autoComplete="email"
                         />
+                        {errors.email && <div className="error-message">{errors.email}</div>}
                     </div>
 
                     <div className="form-group">
@@ -152,6 +196,7 @@ const Register: React.FC = () => {
                         {values.password && (
                             <div className={`password-strength ${passwordStrength}`}></div>
                         )}
+                        {errors.password && <div className="error-message">{errors.password}</div>}
                     </div>
 
                     <div className="form-group">
@@ -167,6 +212,7 @@ const Register: React.FC = () => {
                             placeholder="Повторите пароль"
                             autoComplete="new-password"
                         />
+                        {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
                     </div>
 
                     <button type="submit" className="btn btn-primary" disabled={loading}>
