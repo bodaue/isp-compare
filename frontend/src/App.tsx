@@ -6,16 +6,13 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './components/Home';
 import Profile from './components/profile/Profile';
+import ProviderList from './components/providers/ProviderList';
+import ProviderDetail from './components/providers/ProviderDetail';
+import TariffList from './components/tariffs/TariffList';
 import {authService} from './services/authService';
 
 import './App.css';
 
-const ProviderList = () => (
-    <div className="page animate-fade-in">
-        <h2>Список провайдеров</h2>
-        <p>Выберите провайдера для просмотра тарифов</p>
-    </div>
-);
 
 const TariffComparison = () => (
     <div className="page animate-fade-in">
@@ -61,9 +58,11 @@ const App: React.FC = () => {
             />
 
             <main>
-                <Routes>
+          <Routes>
                     <Route path="/" element={<Home isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/providers" element={<ProviderList/>}/>
+                    <Route path="/providers/:id" element={<ProviderDetail/>}/>
+                    <Route path="/tariffs" element={<TariffList/>}/>
                     <Route path="/comparison" element={<TariffComparison/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/register" element={<Register/>}/>
