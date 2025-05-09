@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
-import {providerService} from '../../services/providerService';
-import {tariffService} from '../../services/tariffService';
-import {Provider, Tariff} from '../../types/provider.types';
+import {providerService} from '@/services/providerService.ts';
+import {tariffService} from '@/services/tariffService.ts';
+import {Provider, Tariff} from '@/types/provider.types.ts';
 import TariffCard from '../tariffs/TariffCard';
 import styles from './ProviderDetail.module.css';
 
@@ -94,13 +94,13 @@ const ProviderDetail: React.FC = () => {
                         </div>
                     )}
                     {provider.website && (
-
+                        <a
                             href={provider.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={styles.providerWebsite}
-                        >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            className={styles.providerWebsite}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2">
                                 <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                                 <path d="M2 17l10 5 10-5"></path>
                                 <path d="M2 12l10 5 10-5"></path>
