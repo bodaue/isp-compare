@@ -47,8 +47,13 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest: AxiosRequestConfig & { _retry?: boolean } = error.config;
 
-        // Если ошибка 401 и мы еще не пытались обновить токен
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Проверяем, что это не запрос на логин или рефреш токена
+        const isAuthEndpoint = originalRequest.url?.includes('/auth/login') ||
+            originalRequest.url?.includes('/auth/refresh') ||
+            originalRequest.url?.includes('/auth/register');
+
+        // Если ошибка 401 и мы еще не пытались обновить токен, и это НЕ запрос на логин/регистрацию
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             if (isRefreshing) {
                 // Если уже идет процесс обновления, добавляем запрос в очередь
                 return new Promise((resolve, reject) => {
@@ -86,7 +91,11 @@ api.interceptors.response.use(
 
                 // Если не удалось обновить токен, перенаправляем на логин
                 localStorage.removeItem('accessToken');
-                window.location.href = '/login';
+
+                // Перенаправляем только если это не страница логина уже
+                if (!window.location.pathname.includes('/login')) {
+                    window.location.href = '/login';
+                }
 
                 return Promise.reject(refreshError);
             } finally {
