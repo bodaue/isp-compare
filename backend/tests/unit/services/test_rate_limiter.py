@@ -103,3 +103,29 @@ async def test_token_refresh_rate_limit_by_ip(rate_limiter: RateLimiter) -> None
         mock_check.assert_called_once_with(
             f"refresh_token_limit:ip:{ip_address}", 10, 60
         )
+
+
+async def test_username_change_rate_limit(rate_limiter: RateLimiter) -> None:
+    user_id = uuid.uuid4()
+
+    with patch.object(
+        rate_limiter, "check_rate_limit", return_value=(True, 1)
+    ) as mock_check:
+        result = await rate_limiter.username_change_rate_limit(user_id)
+
+        assert result == (True, 1)
+
+        mock_check.assert_called_once_with(f"username_change_limit:{user_id}", 2, 60)
+
+
+async def test_username_change_rate_limit_exceeded(rate_limiter: RateLimiter) -> None:
+    user_id = uuid.uuid4()
+
+    with patch.object(
+        rate_limiter, "check_rate_limit", return_value=(False, 0)
+    ) as mock_check:
+        result = await rate_limiter.username_change_rate_limit(user_id)
+
+        assert result == (False, 0)
+
+        mock_check.assert_called_once_with(f"username_change_limit:{user_id}", 2, 60)

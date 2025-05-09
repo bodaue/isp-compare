@@ -39,7 +39,7 @@ def user_service(
     user_repository_mock: AsyncMock,
     transaction_manager_mock: AsyncMock,
     identity_provider_mock: AsyncMock,
-    rate_limiter_mock: RateLimiter,
+    rate_limiter_mock: AsyncMock,
 ) -> UserService:
     return UserService(
         user_repository=user_repository_mock,
@@ -82,15 +82,21 @@ async def test_update_profile_success(
     identity_provider_mock: AsyncMock,
     user_repository_mock: AsyncMock,
     transaction_manager_mock: AsyncMock,
+    rate_limiter_mock: AsyncMock,  # Добавляем этот параметр
     mock_user: User,
 ) -> None:
     identity_provider_mock.get_current_user.return_value = mock_user
     user_repository_mock.get_by_username.return_value = None
+    rate_limiter_mock.username_change_rate_limit.return_value = (
+        True,
+        2,
+    )
     update_data = UserProfileUpdate(fullname="Updated Name", username="updated_user")
 
     result = await user_service.update_profile(update_data)
 
     identity_provider_mock.get_current_user.assert_called_once()
+    rate_limiter_mock.username_change_rate_limit.assert_called_once_with(mock_user.id)
     user_repository_mock.get_by_username.assert_called_once_with("updated_user")
     user_repository_mock.update_profile.assert_called_once_with(
         mock_user.id, {"fullname": "Updated Name", "username": "updated_user"}
@@ -134,12 +140,14 @@ async def test_update_profile_duplicate_username(
     identity_provider_mock: AsyncMock,
     user_repository_mock: AsyncMock,
     transaction_manager_mock: AsyncMock,
+    rate_limiter_mock: AsyncMock,
     mock_user: User,
 ) -> None:
     identity_provider_mock.get_current_user.return_value = mock_user
+    rate_limiter_mock.username_change_rate_limit.return_value = (True, 2)
 
     existing_user = MagicMock(spec=User)
-    existing_user.id = uuid.uuid4()  # Different ID than mock_user
+    existing_user.id = uuid.uuid4()
     user_repository_mock.get_by_username.return_value = existing_user
 
     update_data = UserProfileUpdate(username="existing_username")
@@ -148,6 +156,7 @@ async def test_update_profile_duplicate_username(
         await user_service.update_profile(update_data)
 
     identity_provider_mock.get_current_user.assert_called_once()
+    rate_limiter_mock.username_change_rate_limit.assert_called_once_with(mock_user.id)
     user_repository_mock.get_by_username.assert_called_once_with("existing_username")
     user_repository_mock.update_profile.assert_not_called()
     transaction_manager_mock.commit.assert_not_called()
@@ -203,3 +212,29 @@ async def test_update_profile_empty_data(
     assert result.fullname == mock_user.fullname
     assert result.username == mock_user.username
     assert result.email == mock_user.email
+
+
+async def test_update_profile_username_rate_limit_exceeded(
+    user_service: UserService,
+    identity_provider_mock: AsyncMock,
+    rate_limiter_mock: AsyncMock,
+    user_repository_mock: AsyncMock,
+    mock_user: User,
+) -> None:
+    from isp_compare.core.exceptions import UsernameChangeRateLimitExceededException
+
+    identity_provider_mock.get_current_user.return_value = mock_user
+    rate_limiter_mock.username_change_rate_limit.return_value = (
+        False,
+        0,
+    )
+
+    update_data = UserProfileUpdate(username="new_username")
+
+    with pytest.raises(UsernameChangeRateLimitExceededException):
+        await user_service.update_profile(update_data)
+
+    identity_provider_mock.get_current_user.assert_called_once()
+    rate_limiter_mock.username_change_rate_limit.assert_called_once_with(mock_user.id)
+    user_repository_mock.get_by_username.assert_not_called()
+    user_repository_mock.update_profile.assert_not_called()
