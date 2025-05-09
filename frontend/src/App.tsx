@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Route, Routes} from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './components/auth/Login';
@@ -9,8 +9,7 @@ import Profile from './components/profile/Profile';
 import ProviderList from './components/providers/ProviderList';
 import ProviderDetail from './components/providers/ProviderDetail';
 import TariffList from './components/tariffs/TariffList';
-import { useAuth } from './hooks/useAuth';
-
+import {useAuth} from './contexts/AuthContext';
 import './App.css';
 
 const TariffComparison = () => (
@@ -21,7 +20,7 @@ const TariffComparison = () => (
 );
 
 const App: React.FC = () => {
-    const { isLoggedIn, logout } = useAuth();
+    const {isLoggedIn, logout} = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
