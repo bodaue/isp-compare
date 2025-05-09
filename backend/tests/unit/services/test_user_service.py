@@ -9,6 +9,7 @@ from isp_compare.models.user import User
 from isp_compare.repositories.user import UserRepository
 from isp_compare.schemas.user import UserProfile, UserProfileUpdate
 from isp_compare.services.identity_provider import IdentityProvider
+from isp_compare.services.rate_limiter import RateLimiter
 from isp_compare.services.transaction_manager import TransactionManager
 from isp_compare.services.user import UserService
 
@@ -29,15 +30,22 @@ def identity_provider_mock() -> AsyncMock:
 
 
 @pytest.fixture
+def rate_limiter_mock() -> AsyncMock:
+    return AsyncMock(spec=RateLimiter)
+
+
+@pytest.fixture
 def user_service(
     user_repository_mock: AsyncMock,
     transaction_manager_mock: AsyncMock,
     identity_provider_mock: AsyncMock,
+    rate_limiter_mock: RateLimiter,
 ) -> UserService:
     return UserService(
         user_repository=user_repository_mock,
         transaction_manager=transaction_manager_mock,
         identity_provider=identity_provider_mock,
+        rate_limiter=rate_limiter_mock,
     )
 
 

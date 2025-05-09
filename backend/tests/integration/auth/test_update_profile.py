@@ -1,6 +1,10 @@
+from faker import Faker
 from httpx import AsyncClient
 
-from isp_compare.core.exceptions import UsernameAlreadyExistsException
+from isp_compare.core.exceptions import (
+    UsernameAlreadyExistsException,
+    UsernameChangeRateLimitExceededException,
+)
 from isp_compare.models import User
 from tests.utils import check_response
 
@@ -61,3 +65,19 @@ async def test_update_profile_invalid_username(auth_client: AsyncClient) -> None
 
     response = await auth_client.patch("/users/profile", json=update_data)
     check_response(response, 422)
+
+
+async def test_update_profile_rate_limit(
+    auth_client: AsyncClient,
+    regular_user: User,
+    faker: Faker,
+) -> None:
+    for _ in range(2):
+        update_data = {"username": faker.unique.user_name()}
+        await auth_client.patch("/users/profile", json=update_data)
+
+    update_data = {"username": faker.unique.user_name()}
+    response = await auth_client.patch("/users/profile", json=update_data)
+    check_response(
+        response, 429, expected_detail=UsernameChangeRateLimitExceededException.detail
+    )
