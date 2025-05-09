@@ -1,8 +1,7 @@
-
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-import axios from 'axios';
 import './Auth.css';
+import {authService} from '../../services/authService';
 
 const Register: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -35,7 +34,7 @@ const Register: React.FC = () => {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData({
             ...formData,
             [name]: value
@@ -50,12 +49,10 @@ const Register: React.FC = () => {
         e.preventDefault();
         setError('');
 
-
         if (formData.password !== formData.confirmPassword) {
             setError('Пароли не совпадают');
             return;
         }
-
 
         if (formData.password.length < 8) {
             setError('Пароль должен содержать минимум 8 символов');
@@ -70,14 +67,13 @@ const Register: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('/api/auth/register', {
+            await authService.register({
                 fullname: formData.fullname,
                 username: formData.username,
                 email: formData.email,
                 password: formData.password
             });
 
-            localStorage.setItem('accessToken', response.data.access_token);
             navigate('/');
             window.location.reload();
         } catch (err: any) {

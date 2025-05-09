@@ -1,6 +1,5 @@
-
 import React, {useState} from 'react';
-import axios from 'axios';
+import {userService} from '../../services/userService';
 
 interface EditProfileProps {
     userData: {
@@ -35,12 +34,7 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
         setSuccess('');
 
         try {
-            const token = localStorage.getItem('accessToken');
-            await axios.patch('/api/users/profile', formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            await userService.updateProfile(formData);
             setSuccess('Профиль успешно обновлен');
             onUpdate();
         } catch (err: any) {

@@ -1,11 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import ProfileInfo from './ProfileInfo';
 import EditProfile from './EditProfile';
 import ChangePassword from './ChangePassword';
 import './Profile.css';
+import { userService } from '../../services/userService';
+import { authService } from '../../services/authService';
 
 const Profile: React.FC = () => {
     const [activeTab, setActiveTab] = useState('info');
@@ -15,8 +15,7 @@ const Profile: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
+        if (!authService.isAuthenticated()) {
             navigate('/login');
             return;
         }
@@ -26,17 +25,12 @@ const Profile: React.FC = () => {
 
     const fetchUserData = async () => {
         try {
-            const token = localStorage.getItem('accessToken');
-            const response = await axios.get('/api/users/me', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setUserData(response.data);
+            const data = await userService.getProfile();
+            setUserData(data);
             setError('');
         } catch (err: any) {
             if (err.response?.status === 401) {
-                localStorage.removeItem('accessToken');
+                // Интерцептор должен обработать это автоматически
                 navigate('/login');
             } else {
                 setError('Ошибка при загрузке профиля');

@@ -1,6 +1,5 @@
-
 import React, {useState} from 'react';
-import axios from 'axios';
+import { userService } from '../../services/userService';
 
 const ChangePassword: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -44,14 +43,9 @@ const ChangePassword: React.FC = () => {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('accessToken');
-            await axios.post('/api/users/change-password', {
+            await userService.changePassword({
                 current_password: formData.currentPassword,
                 new_password: formData.newPassword
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
             });
             setSuccess('Пароль успешно изменен');
             setFormData({

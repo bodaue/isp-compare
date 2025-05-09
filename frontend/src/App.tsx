@@ -1,4 +1,3 @@
-
 import React, {useEffect, useState} from 'react';
 import {Route, Routes, useNavigate} from 'react-router-dom';
 import Header from './components/Header';
@@ -7,9 +6,9 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Home from './components/Home';
 import Profile from './components/profile/Profile';
+import {authService} from './services/authService';
 
 import './App.css';
-
 
 const ProviderList = () => (
     <div className="page animate-fade-in">
@@ -31,13 +30,10 @@ const App: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-
-        const token = localStorage.getItem('accessToken');
-        setIsLoggedIn(!!token);
+        setIsLoggedIn(authService.isAuthenticated());
     }, []);
 
     useEffect(() => {
-
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 10);
         };
@@ -46,11 +42,15 @@ const App: React.FC = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const handleLogout = () => {
-
-        localStorage.removeItem('accessToken');
-        setIsLoggedIn(false);
-        navigate('/');
+    const handleLogout = async () => {
+        try {
+            await authService.logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            setIsLoggedIn(false);
+            navigate('/');
+        }
     };
 
     return (

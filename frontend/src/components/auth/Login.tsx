@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-import axios from 'axios';
 import './Auth.css';
+import {authService} from '../../services/authService';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -20,12 +20,7 @@ const Login: React.FC = () => {
         setAttemptsRemaining(null);
 
         try {
-            const response = await axios.post('/api/auth/login', {
-                username,
-                password
-            });
-
-            localStorage.setItem('accessToken', response.data.access_token);
+            await authService.login({username, password});
             navigate('/');
             window.location.reload();
         } catch (err: any) {
