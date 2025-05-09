@@ -97,13 +97,18 @@ class AuthService:
             ip_address=client_ip
         )
         if not is_allowed:
-            raise LoginRateLimitExceededException
+            raise LoginRateLimitExceededException(retry_after=300)
 
         user = await self._user_repository.get_by_username(data.username)
         if not user or not self._password_hasher.verify(
             data.password, user.hashed_password
         ):
-            raise InvalidCredentialsException
+            if remaining == 0:
+                raise LoginRateLimitExceededException(retry_after=300)
+
+            raise InvalidCredentialsException(
+                remaining_attempts=remaining, max_attempts=5
+            )
 
         (
             access_token,

@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from fastapi import HTTPException
 from starlette import status
 
@@ -25,9 +27,18 @@ class AdminAccessDeniedException(AppException):
 
 
 class InvalidCredentialsException(AppException):
-    status_code = status.HTTP_401_UNAUTHORIZED
     detail = "Неверное имя пользователя или пароль"
-    headers = {"WWW-Authenticate": "Bearer"}
+    status_code = status.HTTP_401_UNAUTHORIZED
+
+    def __init__(self, remaining_attempts: int, max_attempts: int = 5) -> None:
+        headers = {
+            "WWW-Authenticate": "Bearer",
+            "X-RateLimit-Limit": str(max_attempts),
+            "X-RateLimit-Remaining": str(remaining_attempts),
+        }
+        super().__init__(
+            status_code=self.status_code, detail=self.detail, headers=headers
+        )
 
 
 class TokenExpiredException(AppException):
@@ -107,6 +118,15 @@ class RateLimitExceededException(AppException):
 
 class LoginRateLimitExceededException(RateLimitExceededException):
     detail = "Слишком много попыток входа. Пожалуйста, попробуйте позже."
+
+    def __init__(self, retry_after: int = 300) -> None:  # 5 минут по умолчанию
+        headers = {
+            "Retry-After": str(retry_after),
+            "X-RateLimit-Limit": "5",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": str(int(datetime.now(UTC).timestamp()) + retry_after),
+        }
+        super().__init__(headers=headers)
 
 
 class PasswordChangeRateLimitExceededException(RateLimitExceededException):
