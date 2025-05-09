@@ -1,8 +1,7 @@
-// frontend/src/components/tariffs/TariffList.tsx
 import React, {useEffect, useState} from 'react';
 import {tariffService} from '../../services/tariffService';
 import {providerService} from '../../services/providerService';
-import {ConnectionType, Provider, Tariff, TariffSearchParams} from '../../types/provider.types';
+import {Provider, Tariff, TariffSearchParams} from '../../types/provider.types';
 import TariffCard from './TariffCard';
 import './TariffList.css';
 
@@ -140,22 +139,6 @@ const TariffList: React.FC = () => {
                                 onChange={(e) => handleFilterChange('max_speed', e.target.value ? Number(e.target.value) : undefined)}
                             />
                         </div>
-                    </div>
-
-                    <div className="filter-group">
-                        <label>Тип подключения</label>
-                        <select
-                            value={filters.connection_type || ''}
-                            onChange={(e) => handleFilterChange('connection_type', e.target.value || undefined)}
-                        >
-                            <option value="">Все типы</option>
-                            <option value={ConnectionType.FTTH}>Оптоволокно</option>
-                            <option value={ConnectionType.ADSL}>ADSL</option>
-                            <option value={ConnectionType.PON}>PON</option>
-                            <option value={ConnectionType.ETHERNET}>Ethernet</option>
-                            <option value={ConnectionType.WIMAX}>WiMAX</option>
-                            <option value={ConnectionType.LTE}>LTE</option>
-                        </select>
                     </div>
 
                     <div className="filter-group">

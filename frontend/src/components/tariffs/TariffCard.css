@@ -156,6 +156,29 @@
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
+
+/* Добавить в существующий файл TariffCard.css */
+
+.price-promo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--error-color);
+}
+
+.price-original {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.tariff-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.125rem;
+}
+
 @media (max-width: 480px) {
     .tariff-card {
         padding: 1.25rem;

@@ -14,22 +14,12 @@ export interface Tariff {
     description: string | null;
     price: number;
     speed: number;
-    connection_type: ConnectionType;
     has_tv: boolean;
     has_phone: boolean;
-    additional_services: Record<string, any> | null;
     connection_cost: number;
-    contract_period: number | null;
+    promo_price: number | null;
+    promo_period: number | null;
     is_active: boolean;
-}
-
-export enum ConnectionType {
-    FTTH = 'FTTH',
-    ADSL = 'ADSL',
-    PON = 'PON',
-    ETHERNET = 'ETHERNET',
-    WIMAX = 'WIMAX',
-    LTE = 'LTE'
 }
 
 export interface TariffSearchParams {
@@ -37,7 +27,6 @@ export interface TariffSearchParams {
     max_price?: number;
     min_speed?: number;
     max_speed?: number;
-    connection_type?: ConnectionType;
     has_tv?: boolean;
     has_phone?: boolean;
     limit?: number;
