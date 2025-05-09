@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import './Auth.css';
-import {useAuth, useForm} from '../../hooks';
+import {useForm} from '../../hooks';
+import {useAuth} from '../../contexts/AuthContext';
 
 const Register: React.FC = () => {
     const {register} = useAuth();

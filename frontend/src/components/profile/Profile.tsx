@@ -4,7 +4,8 @@ import ProfileInfo from './ProfileInfo';
 import EditProfile from './EditProfile';
 import ChangePassword from './ChangePassword';
 import './Profile.css';
-import {useAuth, useUser} from '../../hooks';
+import {useUser} from '../../hooks';
+import {useAuth} from '../../contexts/AuthContext';
 
 const Profile: React.FC = () => {
     const [activeTab, setActiveTab] = useState('info');
