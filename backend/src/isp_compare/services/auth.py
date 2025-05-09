@@ -104,8 +104,12 @@ class AuthService:
             data.password, user.hashed_password
         ):
             if remaining == 0:
-                raise LoginRateLimitExceededException(retry_after=300)
-
+                raise InvalidCredentialsException(
+                    remaining_attempts=0,
+                    max_attempts=5,
+                    is_last_attempt=True,
+                    retry_after=300,
+                )
             raise InvalidCredentialsException(
                 remaining_attempts=remaining, max_attempts=5
             )

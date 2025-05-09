@@ -56,7 +56,9 @@ const Login: React.FC = () => {
 
                 {error && (
                     <div className="error-message">
-                        {error}
+                        {error.split('\n').map((line, index) => (
+                            <div key={index}>{line}</div>
+                        ))}
                         {attemptsRemaining !== null && attemptsRemaining > 0 && (
                             <div className="attempts-info">
                                 Осталось попыток: {attemptsRemaining}
@@ -79,7 +81,7 @@ const Login: React.FC = () => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
-                            disabled={loading || retryAfter !== null}
+                            disabled={loading}
                             placeholder="Введите имя пользователя"
                             autoComplete="username"
                         />
@@ -93,7 +95,7 @@ const Login: React.FC = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            disabled={loading || retryAfter !== null}
+                            disabled={loading}
                             placeholder="Введите пароль"
                             autoComplete="current-password"
                         />
@@ -102,15 +104,13 @@ const Login: React.FC = () => {
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        disabled={loading || retryAfter !== null}
+                        disabled={loading}
                     >
                         {loading ? (
                             <>
                                 <span className="loading-spinner"></span>
                                 Вход...
                             </>
-                        ) : retryAfter !== null ? (
-                            'Подождите...'
                         ) : (
                             'Войти'
                         )}

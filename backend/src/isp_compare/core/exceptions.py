@@ -30,15 +30,30 @@ class InvalidCredentialsException(AppException):
     detail = "Неверное имя пользователя или пароль"
     status_code = status.HTTP_401_UNAUTHORIZED
 
-    def __init__(self, remaining_attempts: int, max_attempts: int = 5) -> None:
+    def __init__(
+        self,
+        remaining_attempts: int,
+        max_attempts: int = 5,
+        is_last_attempt: bool = False,
+        retry_after: int | None = None,
+    ) -> None:
         headers = {
             "WWW-Authenticate": "Bearer",
             "X-RateLimit-Limit": str(max_attempts),
             "X-RateLimit-Remaining": str(remaining_attempts),
         }
-        super().__init__(
-            status_code=self.status_code, detail=self.detail, headers=headers
-        )
+
+        if retry_after is not None:
+            headers["Retry-After"] = str(retry_after)
+
+        detail = self.detail
+        if is_last_attempt:
+            detail = (
+                f"{self.detail}\nСлишком много попыток входа."
+                f" Пожалуйста, попробуйте позже."
+            )
+
+        super().__init__(status_code=self.status_code, detail=detail, headers=headers)
 
 
 class TokenExpiredException(AppException):
