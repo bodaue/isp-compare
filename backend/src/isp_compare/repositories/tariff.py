@@ -52,7 +52,6 @@ class TariffRepository:
         max_price: float | None,
         min_speed: int | None,
         max_speed: int | None,
-        connection_type: str | None,
         has_tv: bool | None,
         has_phone: bool | None,
         limit: int,
@@ -68,8 +67,6 @@ class TariffRepository:
             query = query.where(Tariff.speed >= min_speed)
         if max_speed is not None:
             query = query.where(Tariff.speed <= max_speed)
-        if connection_type is not None:
-            query = query.where(Tariff.connection_type == connection_type)
         if has_tv is not None:
             query = query.where(Tariff.has_tv == has_tv)
         if has_phone is not None:

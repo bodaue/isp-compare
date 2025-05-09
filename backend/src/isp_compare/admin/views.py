@@ -36,8 +36,9 @@ class TariffAdmin(ModelView, model=Tariff):
         Tariff.name,
         Tariff.provider,
         Tariff.price,
+        Tariff.promo_price,
+        Tariff.promo_period,
         Tariff.speed,
-        Tariff.connection_type,
         Tariff.is_active,
     ]
     column_searchable_list = [Tariff.name]
@@ -50,12 +51,9 @@ class TariffAdmin(ModelView, model=Tariff):
         Tariff.description,
         Tariff.price,
         Tariff.speed,
-        Tariff.connection_type,
         Tariff.has_tv,
         Tariff.has_phone,
-        Tariff.additional_services,
         Tariff.connection_cost,
-        Tariff.contract_period,
         Tariff.is_active,
     ]
 

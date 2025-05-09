@@ -104,9 +104,6 @@ class TariffService:
             max_price=search_params.max_price,
             min_speed=search_params.min_speed,
             max_speed=search_params.max_speed,
-            connection_type=search_params.connection_type.value
-            if search_params.connection_type
-            else None,
             has_tv=search_params.has_tv,
             has_phone=search_params.has_phone,
             limit=search_params.limit,

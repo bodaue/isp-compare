@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from isp_compare.models.provider import Provider
-from isp_compare.models.tariff import ConnectionType, Tariff
+from isp_compare.models.tariff import Tariff
 
 
 @pytest.fixture
@@ -58,7 +58,6 @@ async def inactive_provider(session: AsyncSession) -> Provider:
         description="This plan is no longer available",
         price=19.99,
         speed=10,
-        connection_type=ConnectionType.ADSL,
         has_tv=False,
         has_phone=False,
         is_active=False,

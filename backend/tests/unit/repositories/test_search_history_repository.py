@@ -29,7 +29,6 @@ async def test_search_history(
                 faker.pydecimal(min_value=51, max_value=100, right_digits=2)
             ),
             "min_speed": faker.pyint(min_value=50, max_value=100),
-            "connection_type": "FTTH",
             "has_tv": faker.pybool(),
         },
     )
@@ -55,7 +54,6 @@ async def test_search_histories(
                     faker.pydecimal(min_value=51, max_value=100, right_digits=2)
                 ),
                 "min_speed": faker.pyint(min_value=50, max_value=100),
-                "connection_type": faker.random_element(["FTTH", "ADSL", "ETHERNET"]),
                 "has_tv": faker.pybool(),
             },
         )
@@ -76,7 +74,6 @@ async def test_create(
         "min_price": str(faker.pydecimal(min_value=10, max_value=50, right_digits=2)),
         "max_price": str(faker.pydecimal(min_value=51, max_value=100, right_digits=2)),
         "min_speed": faker.pyint(min_value=50, max_value=100),
-        "connection_type": "FTTH",
     }
 
     search_history = SearchHistory(
@@ -179,7 +176,6 @@ async def test_get_by_user_ordered_by_date(
     session: AsyncSession,
     search_history_repository: SearchHistoryRepository,
     regular_user: User,
-    faker: Faker,
 ) -> None:
     search_histories = []
 

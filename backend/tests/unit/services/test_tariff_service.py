@@ -11,7 +11,7 @@ from isp_compare.core.exceptions import (
     TariffNotFoundException,
 )
 from isp_compare.models import Provider, User
-from isp_compare.models.tariff import ConnectionType, Tariff
+from isp_compare.models.tariff import Tariff
 from isp_compare.repositories.provider import ProviderRepository
 from isp_compare.repositories.search_history import SearchHistoryRepository
 from isp_compare.repositories.tariff import TariffRepository
@@ -89,12 +89,11 @@ def mock_tariff(mock_provider: Provider) -> Tariff:
         description="Test Description",
         price=29.99,
         speed=100,
-        connection_type=ConnectionType.FTTH,
         has_tv=True,
         has_phone=False,
-        additional_services={"vpn": True},
         connection_cost=10.00,
-        contract_period=12,
+        promo_price=19.99,
+        promo_period=3,
         is_active=True,
     )
 
@@ -124,12 +123,11 @@ async def test_create_tariff_success(
         description="New Description",
         price=39.99,
         speed=200,
-        connection_type=ConnectionType.FTTH,
         has_tv=True,
         has_phone=False,
-        additional_services={"vpn": True},
         connection_cost=15.00,
-        contract_period=24,
+        promo_price=29.99,
+        promo_period=3,
         is_active=True,
     )
 
@@ -152,7 +150,10 @@ async def test_create_tariff_success(
     assert result.description == tariff_data.description
     assert result.price == tariff_data.price
     assert result.speed == tariff_data.speed
-    assert result.connection_type == tariff_data.connection_type
+    assert result.has_tv == tariff_data.has_tv
+    assert result.has_phone == tariff_data.has_phone
+    assert result.promo_price == tariff_data.promo_price
+    assert result.promo_period == tariff_data.promo_period
     assert result.provider_id == provider_id
     assert result.id is not None
 
@@ -167,7 +168,6 @@ async def test_create_tariff_not_admin(
         name="New Tariff",
         price=39.99,
         speed=200,
-        connection_type=ConnectionType.FTTH,
     )
 
     identity_provider_mock.ensure_is_admin.side_effect = AdminAccessDeniedException()
@@ -188,7 +188,6 @@ async def test_create_tariff_provider_not_found(
         name="New Tariff",
         price=39.99,
         speed=200,
-        connection_type=ConnectionType.FTTH,
     )
 
     provider_repository_mock.get_by_id.return_value = None
@@ -423,12 +422,10 @@ async def test_search_tariffs_authenticated_user(
         min_price=20.0,
         max_price=50.0,
         min_speed=100,
-        connection_type=ConnectionType.FTTH,
         has_tv=True,
         limit=10,
         offset=0,
     )
-
     tariffs = [mock_tariff, mock_tariff]
     tariff_repository_mock.search.return_value = tariffs
     identity_provider_mock.get_current_user.return_value = mock_user
@@ -440,13 +437,11 @@ async def test_search_tariffs_authenticated_user(
         max_price=search_params.max_price,
         min_speed=search_params.min_speed,
         max_speed=search_params.max_speed,
-        connection_type=search_params.connection_type.value,
         has_tv=search_params.has_tv,
         has_phone=search_params.has_phone,
         limit=search_params.limit,
         offset=search_params.offset,
     )
-
     identity_provider_mock.get_current_user.assert_called_once()
     search_history_repository_mock.create.assert_called_once()
     transaction_manager_mock.commit.assert_called_once()
@@ -484,7 +479,6 @@ async def test_search_tariffs_unauthenticated_user(
         max_price=None,
         min_speed=search_params.min_speed,
         max_speed=None,
-        connection_type=None,
         has_tv=search_params.has_tv,
         has_phone=None,
         limit=search_params.limit,
@@ -498,38 +492,3 @@ async def test_search_tariffs_unauthenticated_user(
     assert len(result) == len(tariffs)
     for tariff_response in result:
         assert isinstance(tariff_response, TariffResponse)
-
-
-async def test_search_tariffs_with_none_connection_type(
-    tariff_service: TariffService,
-    tariff_repository_mock: AsyncMock,
-    identity_provider_mock: AsyncMock,
-    mock_tariff: Tariff,
-) -> None:
-    search_params = TariffSearchParams(
-        connection_type=None,
-        limit=10,
-        offset=0,
-    )
-
-    tariffs = [mock_tariff]
-    tariff_repository_mock.search.return_value = tariffs
-    identity_provider_mock.get_current_user.side_effect = AppException(
-        status_code=401, detail="Unauthorized"
-    )
-
-    result = await tariff_service.search_tariffs(search_params)
-
-    tariff_repository_mock.search.assert_called_once_with(
-        min_price=None,
-        max_price=None,
-        min_speed=None,
-        max_speed=None,
-        connection_type=None,
-        has_tv=None,
-        has_phone=None,
-        limit=search_params.limit,
-        offset=search_params.offset,
-    )
-
-    assert len(result) == len(tariffs)

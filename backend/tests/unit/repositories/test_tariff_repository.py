@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from isp_compare.models.provider import Provider
-from isp_compare.models.tariff import ConnectionType, Tariff
+from isp_compare.models.tariff import Tariff
 from isp_compare.repositories.tariff import TariffRepository
 
 
@@ -38,12 +38,13 @@ async def test_tariff(
         description=faker.paragraph(),
         price=faker.pyfloat(min_value=10, max_value=100, right_digits=2),
         speed=faker.pyint(min_value=50, max_value=1000),
-        connection_type=ConnectionType.FTTH,
         has_tv=faker.pybool(),
         has_phone=faker.pybool(),
-        additional_services={"vpn": faker.pybool(), "static_ip": faker.pybool()},
         connection_cost=faker.pyfloat(min_value=0, max_value=50, right_digits=2),
-        contract_period=faker.pyint(min_value=0, max_value=24),
+        promo_price=faker.pyfloat(min_value=5, max_value=90, right_digits=2)
+        if faker.pybool()
+        else None,
+        promo_period=faker.pyint(min_value=1, max_value=12) if faker.pybool() else None,
         is_active=True,
     )
     session.add(tariff)
@@ -55,7 +56,6 @@ async def test_tariff(
 async def test_tariffs(
     session: AsyncSession, test_provider: Provider, faker: Faker
 ) -> list[Tariff]:
-    connection_types = list(ConnectionType)
     tariffs = []
 
     for i in range(5):
@@ -65,12 +65,13 @@ async def test_tariffs(
             description=faker.paragraph(),
             price=faker.pyfloat(min_value=10, max_value=100, right_digits=2),
             speed=faker.pyint(min_value=50, max_value=1000),
-            connection_type=connection_types[i % len(connection_types)],
             has_tv=i % 2 == 0,
             has_phone=i % 3 == 0,
-            additional_services={"vpn": i % 2 == 0, "static_ip": i % 3 == 0},
             connection_cost=faker.pyfloat(min_value=0, max_value=50, right_digits=2),
-            contract_period=None if i % 2 else faker.pyint(min_value=6, max_value=24),
+            promo_price=faker.pyfloat(min_value=5, max_value=90, right_digits=2)
+            if i % 2 == 0
+            else None,
+            promo_period=faker.pyint(min_value=1, max_value=12) if i % 2 == 0 else None,
             is_active=True,
         )
         tariffs.append(tariff)
@@ -82,7 +83,6 @@ async def test_tariffs(
         description=faker.paragraph(),
         price=faker.pyfloat(min_value=10, max_value=100, right_digits=2),
         speed=faker.pyint(min_value=50, max_value=1000),
-        connection_type=ConnectionType.LTE,
         has_tv=False,
         has_phone=False,
         is_active=False,
@@ -106,12 +106,13 @@ async def test_create_tariff(
         description=faker.paragraph(),
         price=faker.pyfloat(min_value=10, max_value=100, right_digits=2),
         speed=faker.pyint(min_value=50, max_value=1000),
-        connection_type=ConnectionType.FTTH,
         has_tv=faker.pybool(),
         has_phone=faker.pybool(),
-        additional_services={"vpn": faker.pybool(), "static_ip": faker.pybool()},
         connection_cost=faker.pyfloat(min_value=0, max_value=50, right_digits=2),
-        contract_period=faker.pyint(min_value=0, max_value=24),
+        promo_price=faker.pyfloat(min_value=5, max_value=90, right_digits=2)
+        if faker.pybool()
+        else None,
+        promo_period=faker.pyint(min_value=1, max_value=12) if faker.pybool() else None,
         is_active=True,
     )
 
@@ -127,11 +128,11 @@ async def test_create_tariff(
     assert saved_tariff.name == tariff.name
     assert saved_tariff.price == tariff.price
     assert saved_tariff.speed == tariff.speed
-    assert saved_tariff.connection_type == tariff.connection_type
     assert saved_tariff.has_tv == tariff.has_tv
     assert saved_tariff.has_phone == tariff.has_phone
-    assert saved_tariff.additional_services == tariff.additional_services
     assert saved_tariff.is_active == tariff.is_active
+    assert saved_tariff.promo_price == tariff.promo_price
+    assert saved_tariff.promo_period == tariff.promo_period
 
 
 async def test_get_by_id(
@@ -230,7 +231,6 @@ async def test_update(
         "name": new_name,
         "price": new_price,
         "speed": new_speed,
-        "connection_type": ConnectionType.ADSL,
     }
 
     await tariff_repository.update(test_tariff.id, update_data)
@@ -243,7 +243,6 @@ async def test_update(
     assert updated_tariff.name == new_name
     assert updated_tariff.price == new_price
     assert updated_tariff.speed == new_speed
-    assert updated_tariff.connection_type == ConnectionType.ADSL
     assert updated_tariff.has_tv == test_tariff.has_tv
     assert updated_tariff.provider_id == test_tariff.provider_id
 
@@ -267,7 +266,6 @@ async def test_update_partial(
     assert updated_tariff.name == new_name
     assert updated_tariff.price == test_tariff.price
     assert updated_tariff.speed == test_tariff.speed
-    assert updated_tariff.connection_type == test_tariff.connection_type
 
 
 async def test_delete(
@@ -287,25 +285,22 @@ async def test_search(
     tariff_repository: TariffRepository, test_tariffs: list[Tariff]
 ) -> None:
     active_tariffs = [t for t in test_tariffs if t.is_active]
-    ftth_tariffs = [
-        t for t in active_tariffs if t.connection_type == ConnectionType.FTTH
-    ]
+    tv_tariffs = [t for t in active_tariffs if t.has_tv]
 
     result = await tariff_repository.search(
         min_price=None,
         max_price=None,
         min_speed=None,
         max_speed=None,
-        connection_type=ConnectionType.FTTH.value,
-        has_tv=None,
+        has_tv=True,
         has_phone=None,
         limit=10,
         offset=0,
     )
 
-    assert len(result) == len(ftth_tariffs)
+    assert len(result) == len(tv_tariffs)
     for tariff in result:
-        assert tariff.connection_type == ConnectionType.FTTH
+        assert tariff.has_tv is True
         assert tariff.is_active is True
 
 
@@ -320,7 +315,6 @@ async def test_search_price_range(
         max_price=max_price,
         min_speed=None,
         max_speed=None,
-        connection_type=None,
         has_tv=None,
         has_phone=None,
         limit=10,
@@ -348,7 +342,6 @@ async def test_search_with_tv(
         max_price=None,
         min_speed=None,
         max_speed=None,
-        connection_type=None,
         has_tv=True,
         has_phone=None,
         limit=10,
@@ -374,7 +367,6 @@ async def test_search_complex(
         max_price=None,
         min_speed=min_speed,
         max_speed=None,
-        connection_type=None,
         has_tv=None,
         has_phone=has_phone,
         limit=10,
@@ -405,7 +397,6 @@ async def test_search_limit_offset(
         max_price=None,
         min_speed=None,
         max_speed=None,
-        connection_type=None,
         has_tv=None,
         has_phone=None,
         limit=limit,

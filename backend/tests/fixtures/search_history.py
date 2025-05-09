@@ -16,7 +16,6 @@ async def user_search_history(
                 "min_price": 20.0,
                 "max_price": 50.0,
                 "min_speed": 100,
-                "connection_type": "FTTH",
                 "has_tv": True,
             },
         ),
@@ -30,7 +29,6 @@ async def user_search_history(
         SearchHistory(
             user_id=regular_user.id,
             search_params={
-                "connection_type": "ADSL",
                 "max_price": 30.0,
             },
         ),

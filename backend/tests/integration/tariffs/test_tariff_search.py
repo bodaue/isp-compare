@@ -1,7 +1,7 @@
 from httpx import AsyncClient
-from tests.utils import check_response
 
 from isp_compare.models.tariff import Tariff
+from tests.utils import check_response
 
 
 async def test_search_tariffs_success(
@@ -12,7 +12,6 @@ async def test_search_tariffs_success(
         "max_price": 40,
         "min_speed": 50,
         "max_speed": 150,
-        "connection_type": "FTTH",
         "has_tv": True,
         "has_phone": False,
     }
@@ -27,7 +26,6 @@ async def test_search_tariffs_success(
         assert float(tariff_data["price"]) <= search_params["max_price"]
         assert tariff_data["speed"] >= search_params["min_speed"]
         assert tariff_data["speed"] <= search_params["max_speed"]
-        assert tariff_data["connection_type"] == search_params["connection_type"]
         assert tariff_data["has_tv"] == search_params["has_tv"]
         assert tariff_data["has_phone"] == search_params["has_phone"]
         assert tariff_data["is_active"] is True
@@ -111,11 +109,6 @@ async def test_search_tariffs_invalid_params(auth_client: AsyncClient) -> None:
     response = await auth_client.get("/tariffs/search", params=invalid_params)
     check_response(response, 422)
 
-    invalid_params = {"connection_type": "INVALID_TYPE"}
-
-    response = await auth_client.get("/tariffs/search", params=invalid_params)
-    check_response(response, 422)
-
 
 async def test_search_tariffs_creates_history(
     auth_client: AsyncClient, tariffs: list[Tariff]
@@ -127,7 +120,7 @@ async def test_search_tariffs_creates_history(
     search_params = {
         "min_price": 25,
         "max_speed": 200,
-        "connection_type": "FTTH",
+        "has_tv": True,
     }
 
     await auth_client.get("/tariffs/search", params=search_params)
@@ -141,7 +134,7 @@ async def test_search_tariffs_creates_history(
     assert latest_history["search_params"] == {
         "min_price": "25",
         "max_speed": 200,
-        "connection_type": "FTTH",
+        "has_tv": True,
         "limit": 50,
         "offset": 0,
     }

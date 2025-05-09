@@ -16,12 +16,14 @@ async def test_get_tariff_success(client: AsyncClient, tariff: Tariff) -> None:
     assert data["description"] == tariff.description
     assert float(data["price"]) == tariff.price
     assert data["speed"] == tariff.speed
-    assert data["connection_type"] == tariff.connection_type.value
     assert data["has_tv"] == tariff.has_tv
     assert data["has_phone"] == tariff.has_phone
-    assert data["additional_services"] == tariff.additional_services
     assert float(data["connection_cost"]) == tariff.connection_cost
-    assert data["contract_period"] == tariff.contract_period
+    if tariff.promo_price:
+        assert float(data["promo_price"]) == tariff.promo_price
+    else:
+        assert data["promo_price"] is None
+    assert data["promo_period"] == tariff.promo_period
     assert data["is_active"] == tariff.is_active
     assert data["provider_id"] == str(tariff.provider_id)
 
