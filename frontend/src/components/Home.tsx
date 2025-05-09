@@ -16,7 +16,7 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                         Найдите идеального <span className="gradient-text">интернет-провайдера</span>
                     </h1>
                     <p className="hero-subtitle">
-                        Сравните тарифы, скорость и качество услуг интернет-провайдеров в вашем районе
+                        Сравните тарифы, скорость и качество услуг интернет-провайдеров в Волгограде
                     </p>
                     <div className="hero-buttons">
                         <Link to="/providers" className="btn btn-primary">
