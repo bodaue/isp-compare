@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import Home from './components/Home';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import Home from './components/pages/Home';
+import {Login, Register} from './components/auth';
 import Profile from './components/profile/Profile';
 import ProviderList from './components/providers/ProviderList';
 import ProviderDetail from './components/providers/ProviderDetail';
