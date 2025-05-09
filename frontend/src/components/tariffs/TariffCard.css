@@ -149,11 +149,15 @@
     cursor: pointer;
     transition: var(--transition-normal);
     margin-top: auto;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
 }
 
 .tariff-button:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    text-decoration: none;
 }
 
 

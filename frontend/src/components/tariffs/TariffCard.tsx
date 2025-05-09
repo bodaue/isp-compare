@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import {Provider, Tariff} from '../../types/provider.types';
 import './TariffCard.css';
 
@@ -83,9 +84,12 @@ const TariffCard: React.FC<TariffCardProps> = ({tariff, provider, showProvider =
                 )}
             </div>
 
-            <button className="tariff-button">
+            <Link
+                to={`/tariffs/${tariff.id}`}
+                className="tariff-button"
+            >
                 Подробнее
-            </button>
+            </Link>
         </div>
     );
 };
