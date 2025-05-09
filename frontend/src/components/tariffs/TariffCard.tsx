@@ -1,6 +1,6 @@
 import React from 'react';
-import {Provider, Tariff} from '@/types/provider.types.ts';
-import styles from './TariffCard.module.css';
+import {Provider, Tariff} from '../../types/provider.types';
+import './TariffCard.css';
 
 interface TariffCardProps {
     tariff: Tariff;
@@ -10,13 +10,13 @@ interface TariffCardProps {
 
 const TariffCard: React.FC<TariffCardProps> = ({tariff, provider, showProvider = false}) => {
     return (
-        <div className={styles.tariffCard}>
+        <div className="tariff-card">
             {showProvider && provider && (
-                <div className={styles.tariffProvider}>
+                <div className="tariff-provider">
                     {provider.logo_url ? (
                         <img src={provider.logo_url} alt={provider.name}/>
                     ) : (
-                        <div className={styles.providerMiniPlaceholder}>
+                        <div className="provider-mini-placeholder">
                             {provider.name.charAt(0)}
                         </div>
                     )}
@@ -24,27 +24,27 @@ const TariffCard: React.FC<TariffCardProps> = ({tariff, provider, showProvider =
                 </div>
             )}
 
-            <div className={styles.tariffHeader}>
+            <div className="tariff-header">
                 <h3>{tariff.name}</h3>
-                <div className={styles.tariffPrice}>
+                <div className="tariff-price">
                     {tariff.promo_price ? (
                         <>
-                            <span className={styles.pricePromo}>{tariff.promo_price}</span>
-                            <span className={styles.priceOriginal}>{tariff.price}</span>
+                            <span className="price-promo">{tariff.promo_price}</span>
+                            <span className="price-original">{tariff.price}</span>
                         </>
                     ) : (
-                        <span className={styles.priceValue}>{tariff.price}</span>
+                        <span className="price-value">{tariff.price}</span>
                     )}
-                    <span className={styles.priceCurrency}>₽/мес</span>
+                    <span className="price-currency">₽/мес</span>
                 </div>
             </div>
 
             {tariff.description && (
-                <p className={styles.tariffDescription}>{tariff.description}</p>
+                <p className="tariff-description">{tariff.description}</p>
             )}
 
-            <div className={styles.tariffFeatures}>
-                <div className={styles.tariffFeature}>
+            <div className="tariff-features">
+                <div className="tariff-feature">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
                     </svg>
@@ -52,7 +52,7 @@ const TariffCard: React.FC<TariffCardProps> = ({tariff, provider, showProvider =
                 </div>
 
                 {(tariff.has_tv || tariff.has_phone) && (
-                    <div className={styles.tariffFeature}>
+                    <div className="tariff-feature">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              strokeWidth="2">
                             <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
@@ -68,22 +68,22 @@ const TariffCard: React.FC<TariffCardProps> = ({tariff, provider, showProvider =
                 )}
             </div>
 
-            <div className={styles.tariffFooter}>
+            <div className="tariff-footer">
                 {tariff.promo_period && (
-                    <div className={styles.tariffDetail}>
+                    <div className="tariff-detail">
                         <span>Акция:</span>
                         <span>{tariff.promo_period} мес.</span>
                     </div>
                 )}
                 {tariff.connection_cost > 0 && (
-                    <div className={styles.tariffDetail}>
+                    <div className="tariff-detail">
                         <span>Подключение:</span>
                         <span>{tariff.connection_cost} ₽</span>
                     </div>
                 )}
             </div>
 
-            <button className={styles.tariffButton}>
+            <button className="tariff-button">
                 Подробнее
             </button>
         </div>

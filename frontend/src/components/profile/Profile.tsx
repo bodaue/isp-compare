@@ -3,8 +3,8 @@ import {useNavigate} from 'react-router-dom';
 import ProfileInfo from './ProfileInfo';
 import EditProfile from './EditProfile';
 import ChangePassword from './ChangePassword';
-import styles from './Profile.module.css';
-import {useUser} from '@/hooks';
+import './Profile.css';
+import {useUser} from '../../hooks';
 import {useAuth} from '../../contexts/AuthContext';
 
 const Profile: React.FC = () => {
@@ -21,8 +21,8 @@ const Profile: React.FC = () => {
 
     if (loading) {
         return (
-            <div className={styles.profileLoading}>
-                <div className={styles.loadingSpinner}></div>
+            <div className="profile-loading">
+                <div className="loading-spinner"></div>
                 Загрузка профиля...
             </div>
         );
@@ -30,7 +30,7 @@ const Profile: React.FC = () => {
 
     if (error) {
         return (
-            <div className={styles.profileError}>
+            <div className="profile-error">
                 <p>{error}</p>
                 <button onClick={fetchUserData} className="btn btn-primary">
                     Повторить попытку
@@ -44,14 +44,14 @@ const Profile: React.FC = () => {
     }
 
     return (
-        <div className={styles.profileContainer}>
-            <div className={styles.profileHeader}>
+        <div className="profile-container">
+            <div className="profile-header">
                 <h2>Личный кабинет</h2>
             </div>
 
-            <div className={styles.profileNav}>
+            <div className="profile-nav">
                 <button
-                    className={`${styles.navButton} ${activeTab === 'info' ? styles.active : ''}`}
+                    className={`nav-button ${activeTab === 'info' ? 'active' : ''}`}
                     onClick={() => setActiveTab('info')}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -62,7 +62,7 @@ const Profile: React.FC = () => {
                     Профиль
                 </button>
                 <button
-                    className={`${styles.navButton} ${activeTab === 'edit' ? styles.active : ''}`}
+                    className={`nav-button ${activeTab === 'edit' ? 'active' : ''}`}
                     onClick={() => setActiveTab('edit')}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -71,7 +71,7 @@ const Profile: React.FC = () => {
                     Редактировать
                 </button>
                 <button
-                    className={`${styles.navButton} ${activeTab === 'password' ? styles.active : ''}`}
+                    className={`nav-button ${activeTab === 'password' ? 'active' : ''}`}
                     onClick={() => setActiveTab('password')}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -82,7 +82,7 @@ const Profile: React.FC = () => {
                 </button>
             </div>
 
-            <div className={styles.profileContent}>
+            <div className="profile-content">
                 {activeTab === 'info' && (
                     <ProfileInfo userData={userData}/>
                 )}

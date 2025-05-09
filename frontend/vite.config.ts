@@ -9,12 +9,6 @@ export default defineConfig({
             '@': path.resolve(__dirname, './src'),
         },
     },
-    css: {
-        modules: {
-            localsConvention: 'camelCase',
-            generateScopedName: '[name]__[local]___[hash:base64:5]'
-        }
-    },
     server: {
         host: true,
         port: 5173,

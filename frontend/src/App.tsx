@@ -9,10 +9,10 @@ import ProviderList from './components/providers/ProviderList';
 import ProviderDetail from './components/providers/ProviderDetail';
 import TariffList from './components/tariffs/TariffList';
 import {useAuth} from './contexts/AuthContext';
-import styles from './App.module.css';
+import './App.css';
 
 const TariffComparison = () => (
-    <div className={`${styles.page} ${styles.animateFadeIn}`}>
+    <div className="page animate-fade-in">
         <h2>Сравнение тарифов</h2>
         <p>Сравните тарифы разных провайдеров</p>
     </div>
@@ -32,14 +32,14 @@ const App: React.FC = () => {
     }, []);
 
     return (
-        <div className={styles.app}>
+        <div className="app">
             <Header
                 isLoggedIn={isLoggedIn}
                 isScrolled={isScrolled}
                 onLogout={logout}
             />
 
-            <main className={styles.main}>
+            <main>
                 <Routes>
                     <Route path="/" element={<Home isLoggedIn={isLoggedIn}/>}/>
                     <Route path="/providers" element={<ProviderList/>}/>

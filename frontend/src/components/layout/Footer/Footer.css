@@ -1,15 +1,16 @@
+
 .footer {
     margin-top: auto;
     padding-top: 2rem;
 }
 
-.footerContent {
+.footer-content {
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     padding: 1.5rem 2rem;
     text-align: center;
 }
 
-.footerContent p {
+.footer-content p {
     margin: 0;
     font-size: 0.8125rem;
     color: var(--text-secondary);
@@ -18,12 +19,13 @@
     letter-spacing: 0.01em;
 }
 
+
 @media (max-width: 768px) {
-    .footerContent {
+    .footer-content {
         padding: 1.25rem 1rem;
     }
 
-    .footerContent p {
+    .footer-content p {
         font-size: 0.75rem;
     }
 }
