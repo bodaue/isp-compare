@@ -50,6 +50,8 @@ class TariffAdmin(ModelView, model=Tariff):
         Tariff.name,
         Tariff.description,
         Tariff.price,
+        Tariff.promo_price,  # добавить
+        Tariff.promo_period,  # добавить
         Tariff.speed,
         Tariff.has_tv,
         Tariff.has_phone,

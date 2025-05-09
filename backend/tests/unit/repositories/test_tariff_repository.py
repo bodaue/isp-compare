@@ -408,3 +408,14 @@ async def test_search_limit_offset(
 
     assert len(result) == expected_count
     assert result[0].id == active_tariffs[offset].id
+
+
+async def test_promo_fields(
+    session: AsyncSession,
+    tariff_repository: TariffRepository,
+    test_tariff: Tariff,
+    test_provider: Provider,
+) -> None:
+    retrieved = await tariff_repository.get_by_id(test_tariff.id)
+    assert retrieved.promo_price == test_tariff.promo_price
+    assert retrieved.promo_period == test_tariff.promo_period
