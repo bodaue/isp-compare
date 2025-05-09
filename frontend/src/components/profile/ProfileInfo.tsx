@@ -1,5 +1,5 @@
-
 import React from 'react';
+import styles from './Profile.module.css';
 
 interface ProfileInfoProps {
     userData: {
@@ -12,21 +12,21 @@ interface ProfileInfoProps {
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({userData}) => {
     return (
-        <div className="profile-info">
-            <div className="info-card">
-                <div className="info-item">
+        <div className={styles.profileInfo}>
+            <div className={styles.infoCard}>
+                <div className={styles.infoItem}>
                     <label>Полное имя:</label>
                     <span>{userData.fullname}</span>
                 </div>
-                <div className="info-item">
+                <div className={styles.infoItem}>
                     <label>Имя пользователя:</label>
                     <span>{userData.username}</span>
                 </div>
-                <div className="info-item">
+                <div className={styles.infoItem}>
                     <label>Email:</label>
                     <span>{userData.email}</span>
                 </div>
-                <div className="info-item">
+                <div className={styles.infoItem}>
                     <label>ID пользователя:</label>
                     <span>{userData.id}</span>
                 </div>

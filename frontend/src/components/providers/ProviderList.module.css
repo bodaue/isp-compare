@@ -1,16 +1,15 @@
-/* frontend/src/components/providers/ProviderList.css */
-.provider-list-container {
+.providerListContainer {
     max-width: 1200px;
     margin: 0 auto;
     animation: fadeIn 0.5s ease;
 }
 
-.provider-header {
+.providerHeader {
     text-align: center;
     margin-bottom: 3rem;
 }
 
-.provider-header h2 {
+.providerHeader h2 {
     font-size: 2.5rem;
     font-weight: 700;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -19,19 +18,19 @@
     background-clip: text;
 }
 
-.provider-header p {
+.providerHeader p {
     color: var(--text-secondary);
     font-size: 1.125rem;
     margin-top: 0.5rem;
 }
 
-.providers-grid {
+.providersGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-.provider-card {
+.providerCard {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     border: var(--glass-border);
@@ -47,13 +46,13 @@
     overflow: hidden;
 }
 
-.provider-card:hover {
+.providerCard:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
     border-color: var(--primary-color);
 }
 
-.provider-logo {
+.providerLogo {
     width: 80px;
     height: 80px;
     flex-shrink: 0;
@@ -62,13 +61,13 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
-.provider-logo img {
+.providerLogo img {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.provider-placeholder {
+.providerPlaceholder {
     width: 100%;
     height: 100%;
     display: flex;
@@ -80,17 +79,17 @@
     font-weight: 700;
 }
 
-.provider-info {
+.providerInfo {
     flex: 1;
 }
 
-.provider-info h3 {
+.providerInfo h3 {
     font-size: 1.25rem;
     font-weight: 600;
     margin: 0 0 0.5rem 0;
 }
 
-.provider-description {
+.providerDescription {
     color: var(--text-secondary);
     font-size: 0.875rem;
     line-height: 1.4;
@@ -101,14 +100,14 @@
     overflow: hidden;
 }
 
-.provider-rating {
+.providerRating {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-top: 0.5rem;
 }
 
-.rating-stars {
+.ratingStars {
     display: flex;
     gap: 0.125rem;
 }
@@ -122,29 +121,29 @@
     color: #fbbf24;
 }
 
-.rating-value {
+.ratingValue {
     font-weight: 600;
     color: var(--text-secondary);
     font-size: 0.875rem;
 }
 
-.provider-arrow {
+.providerArrow {
     color: var(--text-secondary);
     transition: var(--transition-fast);
 }
 
-.provider-card:hover .provider-arrow {
+.providerCard:hover .providerArrow {
     color: var(--primary-color);
     transform: translateX(4px);
 }
 
-.provider-loading,
-.provider-error {
+.providerLoading,
+.providerError {
     text-align: center;
     padding: 3rem;
 }
 
-.loading-spinner {
+.loadingSpinner {
     width: 36px;
     height: 36px;
     border: 3px solid rgba(0, 0, 0, 0.1);
@@ -154,7 +153,7 @@
     margin: 0 auto 1rem;
 }
 
-.no-providers {
+.noProviders {
     text-align: center;
     padding: 3rem;
     color: var(--text-secondary);
@@ -178,20 +177,20 @@
 }
 
 @media (max-width: 768px) {
-    .provider-header h2 {
+    .providerHeader h2 {
         font-size: 2rem;
     }
 
-    .providers-grid {
+    .providersGrid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
 
-    .provider-card {
+    .providerCard {
         padding: 1.25rem;
     }
 
-    .provider-logo {
+    .providerLogo {
         width: 60px;
         height: 60px;
     }

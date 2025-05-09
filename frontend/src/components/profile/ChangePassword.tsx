@@ -1,5 +1,6 @@
 import React from 'react';
 import {useForm, useUser} from '../../hooks';
+import styles from './Profile.module.css';
 
 const ChangePassword: React.FC = () => {
     const {changePassword} = useUser();
@@ -56,12 +57,12 @@ const ChangePassword: React.FC = () => {
     };
 
     return (
-        <div className="change-password">
-            {success && <div className="success-message">{success}</div>}
-            {errors.form && <div className="error-message">{errors.form}</div>}
+        <div className={styles.changePassword}>
+            {success && <div className={styles.successMessage}>{success}</div>}
+            {errors.form && <div className={styles.errorMessage}>{errors.form}</div>}
 
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label htmlFor="currentPassword">Текущий пароль</label>
                     <input
                         type="password"
@@ -74,7 +75,7 @@ const ChangePassword: React.FC = () => {
                     />
                 </div>
 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label htmlFor="newPassword">Новый пароль</label>
                     <input
                         type="password"
@@ -88,7 +89,7 @@ const ChangePassword: React.FC = () => {
                     />
                 </div>
 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label htmlFor="confirmPassword">Подтвердите новый пароль</label>
                     <input
                         type="password"
@@ -101,7 +102,7 @@ const ChangePassword: React.FC = () => {
                     />
                 </div>
 
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                <button type="submit" className={styles.btnPrimary} disabled={loading}>
                     {loading ? 'Изменение...' : 'Изменить пароль'}
                 </button>
             </form>

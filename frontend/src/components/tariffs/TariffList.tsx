@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useProviders, useTariffs} from '../../hooks';
 import {TariffSearchParams} from '../../types/provider.types';
 import TariffCard from './TariffCard';
-import './TariffList.css';
+import styles from './TariffList.module.css';
 
 const TariffList: React.FC = () => {
     const {tariffs, loading, error, searchTariffs, fetchTariffs} = useTariffs();
@@ -28,8 +28,8 @@ const TariffList: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="tariff-loading">
-                <div className="loading-spinner"></div>
+            <div className={styles.tariffLoading}>
+                <div className={styles.loadingSpinner}></div>
                 Загрузка тарифов...
             </div>
         );
@@ -37,7 +37,7 @@ const TariffList: React.FC = () => {
 
     if (error) {
         return (
-            <div className="tariff-error">
+            <div className={styles.tariffError}>
                 <p>{error}</p>
                 <button onClick={fetchTariffs} className="btn btn-primary">
                     Повторить попытку
@@ -47,15 +47,15 @@ const TariffList: React.FC = () => {
     }
 
     return (
-        <div className="tariff-list-container">
-            <div className="tariff-header">
+        <div className={styles.tariffListContainer}>
+            <div className={styles.tariffHeader}>
                 <h2>Тарифные планы</h2>
                 <p>Найдите подходящий тариф среди всех провайдеров</p>
             </div>
 
-            <div className="tariff-controls">
+            <div className={styles.tariffControls}>
                 <button
-                    className="filter-toggle"
+                    className={styles.filterToggle}
                     onClick={() => setShowFilters(!showFilters)}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -66,10 +66,10 @@ const TariffList: React.FC = () => {
             </div>
 
             {showFilters && (
-                <div className="filter-panel">
-                    <div className="filter-group">
+                <div className={styles.filterPanel}>
+                    <div className={styles.filterGroup}>
                         <label>Цена (₽/мес)</label>
-                        <div className="filter-range">
+                        <div className={styles.filterRange}>
                             <input
                                 type="number"
                                 placeholder="От"
@@ -86,9 +86,9 @@ const TariffList: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="filter-group">
+                    <div className={styles.filterGroup}>
                         <label>Скорость (Мбит/с)</label>
-                        <div className="filter-range">
+                        <div className={styles.filterRange}>
                             <input
                                 type="number"
                                 placeholder="От"
@@ -105,9 +105,9 @@ const TariffList: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="filter-group">
+                    <div className={styles.filterGroup}>
                         <label>Дополнительные услуги</label>
-                        <div className="filter-checkboxes">
+                        <div className={styles.filterCheckboxes}>
                             <label>
                                 <input
                                     type="checkbox"
@@ -127,18 +127,18 @@ const TariffList: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="filter-actions">
-                        <button onClick={applyFilters} className="btn btn-primary">
+                    <div className={styles.filterActions}>
+                        <button onClick={applyFilters} className={`${styles.btn} ${styles.btnPrimary}`}>
                             Применить
                         </button>
-                        <button onClick={resetFilters} className="btn btn-secondary">
+                        <button onClick={resetFilters} className={`${styles.btn} ${styles.btnSecondary}`}>
                             Сбросить
                         </button>
                     </div>
                 </div>
             )}
 
-            <div className="tariffs-grid">
+            <div className={styles.tariffsGrid}>
                 {tariffs.map((tariff) => (
                     <TariffCard
                         key={tariff.id}
@@ -150,7 +150,7 @@ const TariffList: React.FC = () => {
             </div>
 
             {tariffs.length === 0 && (
-                <div className="no-tariffs">
+                <div className={styles.noTariffs}>
                     <p>Тарифы не найдены. Попробуйте изменить параметры поиска.</p>
                 </div>
             )}

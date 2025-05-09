@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
-import './Auth.css';
-import {useForm} from '../../hooks';
+import styles from './Auth.module.css';
+import {useForm} from '@/hooks';
 import {useAuth} from '../../contexts/AuthContext';
 
 const Login: React.FC = () => {
@@ -49,22 +49,22 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
+        <div className={styles.authContainer}>
+            <div className={styles.authCard}>
                 <h2>Вход в систему</h2>
 
                 {errors.form && (
-                    <div className="error-message">
+                    <div className={styles.errorMessage}>
                         {errors.form.split('\n').map((line, index) => (
                             <div key={index}>{line}</div>
                         ))}
                         {attemptsRemaining !== null && attemptsRemaining > 0 && (
-                            <div className="attempts-info">
+                            <div className={styles.attemptsInfo}>
                                 Осталось попыток: {attemptsRemaining}
                             </div>
                         )}
                         {retryAfter && (
-                            <div className="retry-info">
+                            <div className={styles.retryInfo}>
                                 Попробуйте снова через {Math.ceil(retryAfter / 60)} минут
                             </div>
                         )}
@@ -72,7 +72,7 @@ const Login: React.FC = () => {
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="username">Имя пользователя</label>
                         <input
                             type="text"
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="password">Пароль</label>
                         <input
                             type="password"
@@ -104,12 +104,12 @@ const Login: React.FC = () => {
 
                     <button
                         type="submit"
-                        className="btn btn-primary"
+                        className={styles.btnPrimary}
                         disabled={loading}
                     >
                         {loading ? (
                             <>
-                                <span className="loading-spinner"></span>
+                                <span className={styles.loadingSpinner}></span>
                                 Вход...
                             </>
                         ) : (
@@ -118,7 +118,7 @@ const Login: React.FC = () => {
                     </button>
                 </form>
 
-                <div className="auth-footer">
+                <div className={styles.authFooter}>
                     <p>Нет аккаунта? <Link to="/register">Зарегистрируйтесь</Link></p>
                 </div>
             </div>

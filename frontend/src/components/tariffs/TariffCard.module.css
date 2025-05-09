@@ -1,5 +1,4 @@
-/* frontend/src/components/tariffs/TariffCard.css */
-.tariff-card {
+.tariffCard {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     border: var(--glass-border);
@@ -10,13 +9,13 @@
     flex-direction: column;
 }
 
-.tariff-card:hover {
+.tariffCard:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
     border-color: var(--primary-color);
 }
 
-.tariff-provider {
+.tariffProvider {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -25,14 +24,14 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.tariff-provider img {
+.tariffProvider img {
     width: 32px;
     height: 32px;
     object-fit: contain;
     border-radius: 0.5rem;
 }
 
-.provider-mini-placeholder {
+.providerMiniPlaceholder {
     width: 32px;
     height: 32px;
     display: flex;
@@ -45,45 +44,58 @@
     border-radius: 0.5rem;
 }
 
-.tariff-provider span {
+.tariffProvider span {
     font-weight: 500;
     color: var(--text-secondary);
     font-size: 0.875rem;
 }
 
-.tariff-header {
+.tariffHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
 }
 
-.tariff-header h3 {
+.tariffHeader h3 {
     font-size: 1.125rem;
     font-weight: 600;
     margin: 0;
     flex: 1;
 }
 
-.tariff-price {
+.tariffPrice {
     display: flex;
-    align-items: baseline;
-    gap: 0.25rem;
-    white-space: nowrap;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.125rem;
 }
 
-.price-value {
+.pricePromo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--error-color);
+}
+
+.priceOriginal {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.priceValue {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary-color);
 }
 
-.price-currency {
+.priceCurrency {
     font-size: 0.875rem;
     color: var(--text-secondary);
 }
 
-.tariff-description {
+.tariffDescription {
     color: var(--text-secondary);
     font-size: 0.875rem;
     line-height: 1.4;
@@ -94,14 +106,14 @@
     overflow: hidden;
 }
 
-.tariff-features {
+.tariffFeatures {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     margin-bottom: 1rem;
 }
 
-.tariff-feature {
+.tariffFeature {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -109,21 +121,21 @@
     color: var(--text-secondary);
 }
 
-.tariff-feature svg {
+.tariffFeature svg {
     width: 16px;
     height: 16px;
     stroke: var(--primary-color);
     flex-shrink: 0;
 }
 
-.tariff-footer {
+.tariffFooter {
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     padding-top: 1rem;
     margin-bottom: 1rem;
     flex: 1;
 }
 
-.tariff-detail {
+.tariffDetail {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -132,12 +144,12 @@
     margin-bottom: 0.5rem;
 }
 
-.tariff-detail span:last-child {
+.tariffDetail span:last-child {
     font-weight: 500;
     color: var(--text-primary);
 }
 
-.tariff-button {
+.tariffButton {
     width: 100%;
     padding: 0.75rem;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -151,44 +163,22 @@
     margin-top: auto;
 }
 
-.tariff-button:hover {
+.tariffButton:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-
-/* Добавить в существующий файл TariffCard.css */
-
-.price-promo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--error-color);
-}
-
-.price-original {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    text-decoration: line-through;
-    opacity: 0.7;
-}
-
-.tariff-price {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.125rem;
-}
-
 @media (max-width: 480px) {
-    .tariff-card {
+    .tariffCard {
         padding: 1.25rem;
     }
 
-    .tariff-header h3 {
+    .tariffHeader h3 {
         font-size: 1rem;
     }
 
-    .price-value {
+    .priceValue,
+    .pricePromo {
         font-size: 1.25rem;
     }
 }

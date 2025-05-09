@@ -1,5 +1,6 @@
 import React from 'react';
 import {useForm, useUser} from '../../hooks';
+import styles from './Profile.module.css';
 
 interface EditProfileProps {
     userData: {
@@ -43,12 +44,12 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
     };
 
     return (
-        <div className="edit-profile">
-            {success && <div className="success-message">{success}</div>}
-            {errors.form && <div className="error-message">{errors.form}</div>}
+        <div className={styles.editProfile}>
+            {success && <div className={styles.successMessage}>{success}</div>}
+            {errors.form && <div className={styles.errorMessage}>{errors.form}</div>}
 
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label htmlFor="fullname">Полное имя</label>
                     <input
                         type="text"
@@ -60,7 +61,7 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
                     />
                 </div>
 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                     <label htmlFor="username">Имя пользователя</label>
                     <input
                         type="text"
@@ -73,7 +74,7 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
                     />
                 </div>
 
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                <button type="submit" className={styles.btnPrimary} disabled={loading}>
                     {loading ? 'Сохранение...' : 'Сохранить изменения'}
                 </button>
             </form>

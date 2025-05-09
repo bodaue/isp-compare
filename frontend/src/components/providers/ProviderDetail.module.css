@@ -1,5 +1,4 @@
-/* frontend/src/components/providers/ProviderDetail.css */
-.provider-detail-container {
+.providerDetailContainer {
     max-width: 1200px;
     margin: 0 auto;
     animation: fadeIn 0.5s ease;
@@ -20,7 +19,7 @@
     text-decoration: underline;
 }
 
-.provider-detail-header {
+.providerDetailHeader {
     display: flex;
     align-items: center;
     gap: 2rem;
@@ -32,7 +31,7 @@
     margin-bottom: 2rem;
 }
 
-.provider-detail-logo {
+.providerDetailLogo {
     width: 120px;
     height: 120px;
     flex-shrink: 0;
@@ -41,13 +40,13 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
-.provider-detail-logo img {
+.providerDetailLogo img {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-.provider-detail-placeholder {
+.providerDetailPlaceholder {
     width: 100%;
     height: 100%;
     display: flex;
@@ -59,30 +58,50 @@
     font-weight: 700;
 }
 
-.provider-detail-info {
+.providerDetailInfo {
     flex: 1;
 }
 
-.provider-detail-info h1 {
+.providerDetailInfo h1 {
     font-size: 2rem;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
 }
 
-.provider-detail-description {
+.providerDetailDescription {
     color: var(--text-secondary);
     line-height: 1.6;
     margin: 0.5rem 0;
 }
 
-.provider-detail-rating {
+.providerDetailRating {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin: 1rem 0;
 }
 
-.provider-website {
+.ratingStars {
+    display: flex;
+    gap: 0.125rem;
+}
+
+.star {
+    color: #e4e4e4;
+    font-size: 1rem;
+}
+
+.star.filled {
+    color: #fbbf24;
+}
+
+.ratingValue {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.providerWebsite {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -92,18 +111,18 @@
     transition: var(--transition-fast);
 }
 
-.provider-website:hover {
+.providerWebsite:hover {
     text-decoration: underline;
 }
 
-.provider-tabs {
+.providerTabs {
     display: flex;
     gap: 0.5rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
 }
 
-.tab-button {
+.tabButton {
     padding: 0.75rem 1.5rem;
     background: none;
     border: none;
@@ -115,16 +134,16 @@
     transition: var(--transition-fast);
 }
 
-.tab-button:hover {
+.tabButton:hover {
     color: var(--primary-color);
     background: rgba(99, 102, 241, 0.05);
 }
 
-.tab-button.active {
+.tabButton.active {
     color: var(--primary-color);
 }
 
-.tab-button.active::after {
+.tabButton.active::after {
     content: '';
     position: absolute;
     bottom: -1px;
@@ -134,19 +153,19 @@
     background: var(--primary-color);
 }
 
-.provider-tariffs h2 {
+.providerTariffs h2 {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
 }
 
-.tariffs-grid {
+.tariffsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-.no-tariffs {
+.noTariffs {
     text-align: center;
     padding: 3rem;
     color: var(--text-secondary);
@@ -156,23 +175,50 @@
     border-radius: 1rem;
 }
 
-.provider-detail-loading,
-.provider-detail-error {
+.providerDetailLoading,
+.providerDetailError {
     text-align: center;
     padding: 3rem;
 }
 
+.loadingSpinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 @media (max-width: 768px) {
-    .provider-detail-header {
+    .providerDetailHeader {
         flex-direction: column;
         text-align: center;
     }
 
-    .provider-detail-info h1 {
+    .providerDetailInfo h1 {
         font-size: 1.5rem;
     }
 
-    .tariffs-grid {
+    .tariffsGrid {
         grid-template-columns: 1fr;
     }
 }

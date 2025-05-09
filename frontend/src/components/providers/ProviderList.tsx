@@ -1,15 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useProviders } from '../../hooks';
-import './ProviderList.css';
+import {Link} from 'react-router-dom';
+import {useProviders} from '../../hooks';
+import styles from './ProviderList.module.css';
 
 const ProviderList: React.FC = () => {
-    const { providers, loading, error, fetchProviders } = useProviders();
+    const {providers, loading, error, fetchProviders} = useProviders();
 
     if (loading) {
         return (
-            <div className="provider-loading">
-                <div className="loading-spinner"></div>
+            <div className={styles.providerLoading}>
+                <div className={styles.loadingSpinner}></div>
                 Загрузка провайдеров...
             </div>
         );
@@ -17,7 +17,7 @@ const ProviderList: React.FC = () => {
 
     if (error) {
         return (
-            <div className="provider-error">
+            <div className={styles.providerError}>
                 <p>{error}</p>
                 <button onClick={fetchProviders} className="btn btn-primary">
                     Повторить попытку
@@ -27,48 +27,49 @@ const ProviderList: React.FC = () => {
     }
 
     return (
-        <div className="provider-list-container">
-            <div className="provider-header">
+        <div className={styles.providerListContainer}>
+            <div className={styles.providerHeader}>
                 <h2>Интернет-провайдеры</h2>
                 <p>Выберите провайдера для просмотра тарифов и отзывов</p>
             </div>
 
-            <div className="providers-grid">
+            <div className={styles.providersGrid}>
                 {providers.map((provider) => (
-                    <Link to={`/providers/${provider.id}`} key={provider.id} className="provider-card">
-                        <div className="provider-logo">
+                    <Link to={`/providers/${provider.id}`} key={provider.id} className={styles.providerCard}>
+                        <div className={styles.providerLogo}>
                             {provider.logo_url ? (
-                                <img src={provider.logo_url} alt={provider.name} />
+                                <img src={provider.logo_url} alt={provider.name}/>
                             ) : (
-                                <div className="provider-placeholder">
+                                <div className={styles.providerPlaceholder}>
                                     {provider.name.charAt(0)}
                                 </div>
                             )}
                         </div>
-                        <div className="provider-info">
+                        <div className={styles.providerInfo}>
                             <h3>{provider.name}</h3>
                             {provider.description && (
-                                <p className="provider-description">{provider.description}</p>
+                                <p className={styles.providerDescription}>{provider.description}</p>
                             )}
                             {provider.rating !== null && (
-                                <div className="provider-rating">
-                                    <div className="rating-stars">
+                                <div className={styles.providerRating}>
+                                    <div className={styles.ratingStars}>
                                         {[...Array(5)].map((_, index) => (
                                             <span
                                                 key={index}
-                                                className={`star ${index < Math.round(provider.rating!) ? 'filled' : ''}`}
+                                                className={`${styles.star} ${index < Math.round(provider.rating!) ? styles.filled : ''}`}
                                             >
                                                 ★
                                             </span>
                                         ))}
                                     </div>
-                                    <span className="rating-value">{provider.rating.toFixed(1)}</span>
+                                    <span className={styles.ratingValue}>{provider.rating.toFixed(1)}</span>
                                 </div>
                             )}
                         </div>
-                        <div className="provider-arrow">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M9 18l6-6-6-6" />
+                        <div className={styles.providerArrow}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2">
+                                <path d="M9 18l6-6-6-6"/>
                             </svg>
                         </div>
                     </Link>
@@ -76,7 +77,7 @@ const ProviderList: React.FC = () => {
             </div>
 
             {providers.length === 0 && (
-                <div className="no-providers">
+                <div className={styles.noProviders}>
                     <p>Провайдеры не найдены</p>
                 </div>
             )}

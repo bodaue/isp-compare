@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import './Home.css';
+import styles from './Home.module.css';
 
 interface HomeProps {
     isLoggedIn: boolean;
@@ -8,17 +8,16 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
     return (
-        <div className="home-page">
-            {}
-            <section className="hero-section">
-                <div className="hero-content">
-                    <h1 className="hero-title">
-                        Найдите идеального <span className="gradient-text">интернет-провайдера</span>
+        <div className={styles.homePage}>
+            <section className={styles.heroSection}>
+                <div className={styles.heroContent}>
+                    <h1 className={styles.heroTitle}>
+                        Найдите идеального <span className={styles.gradientText}>интернет-провайдера</span>
                     </h1>
-                    <p className="hero-subtitle">
+                    <p className={styles.heroSubtitle}>
                         Сравните тарифы, скорость и качество услуг интернет-провайдеров в Волгограде
                     </p>
-                    <div className="hero-buttons">
+                    <div className={styles.heroButtons}>
                         <Link to="/providers" className="btn btn-primary">
                             Начать поиск
                         </Link>
@@ -27,21 +26,20 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                         </Link>
                     </div>
                 </div>
-                <div className="hero-image">
-                    <div className="hero-illustration">
-                        <div className="floating-element element-1"></div>
-                        <div className="floating-element element-2"></div>
-                        <div className="floating-element element-3"></div>
+                <div className={styles.heroImage}>
+                    <div className={styles.heroIllustration}>
+                        <div className={`${styles.floatingElement} ${styles.element1}`}></div>
+                        <div className={`${styles.floatingElement} ${styles.element2}`}></div>
+                        <div className={`${styles.floatingElement} ${styles.element3}`}></div>
                     </div>
                 </div>
             </section>
 
-            {}
-            <section className="features-section">
-                <h2 className="section-title">Почему выбирают нас</h2>
-                <div className="features-grid">
-                    <div className="feature-card">
-                        <div className="feature-icon">
+            <section className={styles.featuresSection}>
+                <h2 className={styles.sectionTitle}>Почему выбирают нас</h2>
+                <div className={styles.featuresGrid}>
+                    <div className={styles.featureCard}>
+                        <div className={styles.featureIcon}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M20 6L9 17l-5-5"></path>
@@ -50,8 +48,8 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                         <h3>Актуальные данные</h3>
                         <p>Постоянно обновляемая информация о тарифах и услугах провайдеров</p>
                     </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">
+                    <div className={styles.featureCard}>
+                        <div className={styles.featureIcon}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
@@ -60,8 +58,8 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                         <h3>Быстрое сравнение</h3>
                         <p>Сравнивайте до 5 тарифов одновременно по ключевым параметрам</p>
                     </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">
+                    <div className={styles.featureCard}>
+                        <div className={styles.featureIcon}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path
@@ -71,8 +69,8 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                         <h3>Отзывы пользователей</h3>
                         <p>Реальные отзывы от пользователей услуг различных провайдеров</p>
                     </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">
+                    <div className={styles.featureCard}>
+                        <div className={styles.featureIcon}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -86,10 +84,9 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                 </div>
             </section>
 
-            {}
             {!isLoggedIn && (
-                <section className="cta-section">
-                    <div className="cta-content">
+                <section className={styles.ctaSection}>
+                    <div className={styles.ctaContent}>
                         <h2>Готовы найти лучший интернет?</h2>
                         <p>Присоединяйтесь к тысячам пользователей, которые уже нашли идеального провайдера</p>
                         <Link to="/register" className="btn btn-primary">

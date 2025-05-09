@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
-import './Auth.css';
-import {useForm} from '../../hooks';
+import styles from './Auth.module.css';
+import {useForm} from '@/hooks';
 import {useAuth} from '../../contexts/AuthContext';
 
 const Register: React.FC = () => {
@@ -83,14 +83,14 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
+        <div className={styles.authContainer}>
+            <div className={styles.authCard}>
                 <h2>Регистрация</h2>
 
-                {errors.form && <div className="error-message">{errors.form}</div>}
+                {errors.form && <div className={styles.errorMessage}>{errors.form}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="fullname">Полное имя</label>
                         <input
                             type="text"
@@ -104,7 +104,7 @@ const Register: React.FC = () => {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="username">Имя пользователя</label>
                         <input
                             type="text"
@@ -120,7 +120,7 @@ const Register: React.FC = () => {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="email">Email</label>
                         <input
                             type="email"
@@ -135,7 +135,7 @@ const Register: React.FC = () => {
                         />
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="password">Пароль</label>
                         <input
                             type="password"
@@ -150,11 +150,11 @@ const Register: React.FC = () => {
                             autoComplete="new-password"
                         />
                         {values.password && (
-                            <div className={`password-strength ${passwordStrength}`}></div>
+                            <div className={`${styles.passwordStrength} ${styles[passwordStrength]}`}></div>
                         )}
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                         <label htmlFor="confirmPassword">Подтвердите пароль</label>
                         <input
                             type="password"
@@ -169,10 +169,10 @@ const Register: React.FC = () => {
                         />
                     </div>
 
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                    <button type="submit" className={styles.btnPrimary} disabled={loading}>
                         {loading ? (
                             <>
-                                <span className="loading-spinner"></span>
+                                <span className={styles.loadingSpinner}></span>
                                 Регистрация...
                             </>
                         ) : (
@@ -181,7 +181,7 @@ const Register: React.FC = () => {
                     </button>
                 </form>
 
-                <div className="auth-footer">
+                <div className={styles.authFooter}>
                     <p>Уже есть аккаунт? <Link to="/login">Войдите</Link></p>
                 </div>
             </div>

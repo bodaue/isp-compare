@@ -1,16 +1,15 @@
-/* frontend/src/components/tariffs/TariffList.css */
-.tariff-list-container {
+.tariffListContainer {
     max-width: 1200px;
     margin: 0 auto;
     animation: fadeIn 0.5s ease;
 }
 
-.tariff-header {
+.tariffHeader {
     text-align: center;
     margin-bottom: 2rem;
 }
 
-.tariff-header h2 {
+.tariffHeader h2 {
     font-size: 2.5rem;
     font-weight: 700;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -19,19 +18,19 @@
     background-clip: text;
 }
 
-.tariff-header p {
+.tariffHeader p {
     color: var(--text-secondary);
     font-size: 1.125rem;
     margin-top: 0.5rem;
 }
 
-.tariff-controls {
+.tariffControls {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 1.5rem;
 }
 
-.filter-toggle {
+.filterToggle {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -47,13 +46,13 @@
     transition: var(--transition-normal);
 }
 
-.filter-toggle:hover {
+.filterToggle:hover {
     background: rgba(255, 255, 255, 0.9);
     border-color: var(--primary-color);
     transform: translateY(-1px);
 }
 
-.filter-panel {
+.filterPanel {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     border: var(--glass-border);
@@ -66,47 +65,47 @@
     align-items: start;
 }
 
-.filter-group {
+.filterGroup {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-.filter-group label {
+.filterGroup label {
     font-weight: 500;
     color: var(--text-primary);
     font-size: 0.875rem;
     margin-bottom: 0.25rem;
 }
 
-.filter-range {
+.filterRange {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.filter-range input {
+.filterRange input {
     flex: 1;
     padding: 0.5rem 0.75rem;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
     font-size: 0.875rem;
     background: rgba(255, 255, 255, 0.9);
-    min-width: 0; /* Важно для правильной работы flex */
+    min-width: 0;
 }
 
-.filter-range input:focus {
+.filterRange input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 
-.filter-range span {
+.filterRange span {
     flex-shrink: 0;
     color: var(--text-secondary);
 }
 
-.filter-group select {
+.filterGroup select {
     padding: 0.5rem 0.75rem;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
@@ -115,19 +114,19 @@
     cursor: pointer;
 }
 
-.filter-group select:focus {
+.filterGroup select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 
-.filter-checkboxes {
+.filterCheckboxes {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.filter-checkboxes label {
+.filterCheckboxes label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -136,13 +135,13 @@
     color: var(--text-primary);
 }
 
-.filter-checkboxes input[type="checkbox"] {
+.filterCheckboxes input[type="checkbox"] {
     cursor: pointer;
     width: 16px;
     height: 16px;
 }
 
-.filter-actions {
+.filterActions {
     grid-column: 1 / -1;
     display: flex;
     gap: 1rem;
@@ -150,7 +149,7 @@
     justify-content: flex-start;
 }
 
-.filter-actions .btn {
+.btn {
     padding: 0.625rem 1.5rem;
     border-radius: 0.5rem;
     font-weight: 500;
@@ -160,33 +159,33 @@
     border: none;
 }
 
-.filter-actions .btn-primary {
+.btnPrimary {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white;
 }
 
-.filter-actions .btn-primary:hover {
+.btnPrimary:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.filter-actions .btn-secondary {
+.btnSecondary {
     background: transparent;
     color: var(--text-secondary);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.filter-actions .btn-secondary:hover {
+.btnSecondary:hover {
     background: rgba(0, 0, 0, 0.05);
 }
 
-.tariffs-grid {
+.tariffsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
-.no-tariffs {
+.noTariffs {
     text-align: center;
     padding: 3rem;
     color: var(--text-secondary);
@@ -196,13 +195,13 @@
     border-radius: 1rem;
 }
 
-.tariff-loading,
-.tariff-error {
+.tariffLoading,
+.tariffError {
     text-align: center;
     padding: 3rem;
 }
 
-.loading-spinner {
+.loadingSpinner {
     width: 36px;
     height: 36px;
     border: 3px solid rgba(0, 0, 0, 0.1);
@@ -230,43 +229,43 @@
 }
 
 @media (max-width: 768px) {
-    .tariff-header h2 {
+    .tariffHeader h2 {
         font-size: 2rem;
     }
 
-    .filter-panel {
+    .filterPanel {
         grid-template-columns: 1fr;
     }
 
-    .tariffs-grid {
+    .tariffsGrid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
 
-    .filter-actions {
+    .filterActions {
         flex-direction: column;
     }
 
-    .filter-actions .btn {
+    .filterActions .btn {
         width: 100%;
     }
 
-    .filter-range {
+    .filterRange {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .filter-range span {
+    .filterRange span {
         text-align: center;
     }
 }
 
 @media (max-width: 480px) {
-    .filter-panel {
+    .filterPanel {
         padding: 1rem;
     }
 
-    .filter-group {
+    .filterGroup {
         gap: 0.5rem;
     }
 }
