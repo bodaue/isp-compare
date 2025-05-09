@@ -23,11 +23,11 @@ class AppException(HTTPException):
 
 class AdminAccessDeniedException(AppException):
     status_code = status.HTTP_403_FORBIDDEN
-    detail = "У вас нет прав администратора для выполнения этого действия"
+    detail = "У вас нет прав администратора для выполнения этого действия."
 
 
 class InvalidCredentialsException(AppException):
-    detail = "Неверное имя пользователя или пароль"
+    detail = "Неверное имя пользователя или пароль."
     status_code = status.HTTP_401_UNAUTHORIZED
 
     def __init__(
@@ -48,82 +48,79 @@ class InvalidCredentialsException(AppException):
 
         detail = self.detail
         if is_last_attempt:
-            detail = (
-                f"{self.detail}\nСлишком много попыток входа."
-                f" Пожалуйста, попробуйте позже."
-            )
+            detail = f"{self.detail}\nСлишком много попыток входа."
 
         super().__init__(status_code=self.status_code, detail=detail, headers=headers)
 
 
 class TokenExpiredException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Срок действия токена истек"
+    detail = "Срок действия токена истек."
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class TokenRevokedException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Токен был отозван"
+    detail = "Токен был отозван."
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class InvalidTokenException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Не удалось проверить учетные данные"
+    detail = "Не удалось проверить учетные данные."
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class TokenSubjectMissingException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Недействительный токен: отсутствует идентификатор"
+    detail = "Недействительный токен: отсутствует идентификатор."
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class RefreshTokenMissingException(AppException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    detail = "Отсутствует токен обновления"
+    detail = "Отсутствует токен обновления."
     headers = {"WWW-Authenticate": "Bearer"}
 
 
 class UserNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Пользователь не найден"
+    detail = "Пользователь не найден."
 
 
 class UsernameAlreadyExistsException(AppException):
     status_code = status.HTTP_409_CONFLICT
-    detail = "Пользователь с таким именем уже зарегистрирован"
+    detail = "Пользователь с таким именем уже зарегистрирован."
 
 
 class EmailAlreadyExistsException(AppException):
     status_code = status.HTTP_409_CONFLICT
-    detail = "Пользователь с таким email уже зарегистрирован"
+    detail = "Пользователь с таким email уже зарегистрирован."
 
 
 class IncorrectPasswordException(AppException):
     status_code = status.HTTP_400_BAD_REQUEST
-    detail = "Текущий пароль неверный"
+    detail = "Текущий пароль неверный."
 
 
 class ProviderNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Провайдер не найден"
+    detail = "Провайдер не найден."
 
 
 class TariffNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Тариф не найден"
+    detail = "Тариф не найден."
 
 
 class ReviewNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "Отзыв не найден"
+    detail = "Отзыв не найден."
 
 
 class SearchHistoryNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
-    detail = "История поиска не найдена"
+    detail = "История поиска не найдена."
 
 
 class RateLimitExceededException(AppException):
@@ -132,7 +129,7 @@ class RateLimitExceededException(AppException):
 
 
 class LoginRateLimitExceededException(RateLimitExceededException):
-    detail = "Слишком много попыток входа. Пожалуйста, попробуйте позже."
+    detail = "Слишком много попыток входа."
 
     def __init__(self, retry_after: int = 300) -> None:  # 5 минут по умолчанию
         headers = {
