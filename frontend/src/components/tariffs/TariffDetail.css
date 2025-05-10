@@ -1,3 +1,4 @@
+/* frontend/src/components/tariffs/TariffDetail.css */
 .tariff-detail-container {
     max-width: 1000px;
     margin: 0 auto;
@@ -276,6 +277,47 @@
     margin: 0;
     color: var(--primary-color);
     font-size: 0.875rem;
+}
+
+/* Стили для кнопки копирования */
+.btn.btn-success-subtle {
+    color: var(--success-color);
+    border-color: var(--success-color);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.btn.btn-success-subtle:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+/* Анимация для плавного перехода */
+.btn.btn-secondary {
+    transition: all 0.2s ease;
+}
+
+/* Иконки в кнопках */
+.btn svg {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+/* Анимация галочки при появлении */
+.btn-success-subtle svg {
+    animation: checkmarkScale 0.3s ease;
+}
+
+@keyframes checkmarkScale {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @keyframes spin {
