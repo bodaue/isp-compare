@@ -24,11 +24,11 @@ class ReviewRepository:
             review = await self._session.scalar(stmt)
 
             if review:
-                await self._session.refresh(review, ["user", "provider"])
+                await self._session.refresh(review, ["user"])
             return review
         stmt = (
             select(Review)
-            .options(joinedload(Review.user), joinedload(Review.provider))
+            .options(joinedload(Review.user))
             .where(Review.id == review_id)
         )
         return await self._session.scalar(stmt)
@@ -46,7 +46,7 @@ class ReviewRepository:
     ) -> list[Review]:
         stmt = (
             select(Review)
-            .options(joinedload(Review.user), joinedload(Review.provider))
+            .options(joinedload(Review.user))
             .where(Review.provider_id == provider_id)
             .order_by(Review.created_at.desc())
             .limit(limit)

@@ -26,21 +26,11 @@ class ReviewUserInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ReviewProviderInfo(BaseModel):
-    id: UUID
-    name: str
-    logo_url: str | None = None
-    rating: float | None = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
 class ReviewResponse(ReviewBase):
     id: UUID
     created_at: datetime
     updated_at: datetime
 
     user: ReviewUserInfo | None = None
-    provider: ReviewProviderInfo | None = None
 
     model_config = ConfigDict(from_attributes=True)

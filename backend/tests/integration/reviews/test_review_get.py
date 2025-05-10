@@ -17,7 +17,6 @@ async def test_get_review_success(client: AsyncClient, review: Review) -> None:
     assert "created_at" in data
     assert "updated_at" in data
     assert "user" in data
-    assert "provider" in data
 
 
 async def test_get_review_not_found(client: AsyncClient) -> None:

@@ -34,10 +34,7 @@ async def test_get_provider_reviews_with_limit(
     data = check_response(response, 200)
 
     assert isinstance(data, list)
-    assert len(data) <= limit
-
-    for review in data:
-        assert review["provider"]["id"] == str(provider.id)
+    assert len(data) == limit
 
 
 async def test_get_provider_reviews_with_offset(

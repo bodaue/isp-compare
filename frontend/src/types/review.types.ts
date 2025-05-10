@@ -4,13 +4,6 @@ export interface ReviewUser {
     fullname: string;
 }
 
-export interface ReviewProvider {
-    id: string;
-    name: string;
-    logo_url: string | null;
-    rating: number | null;
-}
-
 export interface Review {
     id: string;
     rating: number;
@@ -18,7 +11,6 @@ export interface Review {
     created_at: string;
     updated_at: string;
     user: ReviewUser | null;
-    provider: ReviewProvider | null;
 }
 
 export interface ReviewCreate {
