@@ -1,3 +1,4 @@
+// frontend/src/components/layout/Header/Header.tsx
 import React, {useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import './Header.css';
@@ -54,7 +55,6 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
 
                 <nav className={`nav-menu ${isMenuOpen ? 'open' : ''}`}>
                     <ul>
-
                         <li>
                             <Link to="/providers" className={location.pathname === '/providers' ? 'active' : ''}
                                   onClick={closeMenu}>
@@ -73,24 +73,12 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                                   onClick={closeMenu}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                      strokeWidth="2">
-                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                                     <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                                     <line x1="12" y1="22.08" x2="12" y2="12"></line>
                                 </svg>
                                 <span>Тарифы</span>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/comparison" className={location.pathname === '/comparison' ? 'active' : ''}
-                                  onClick={closeMenu}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                     strokeWidth="2">
-                                    <path d="M3 3v18h18"></path>
-                                    <path d="M9.5 17V9"></path>
-                                    <path d="M13 17V5"></path>
-                                    <path d="M17 17V11"></path>
-                                </svg>
-                                <span>Сравнение</span>
                             </Link>
                         </li>
                         {isLoggedIn ? (

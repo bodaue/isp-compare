@@ -1,3 +1,4 @@
+// frontend/src/components/tariffs/TariffList.tsx
 import React, {useState} from 'react';
 import {useProviders, useTariffs} from '../../hooks';
 import {TariffSearchParams} from '../../types/provider.types';
@@ -14,6 +15,10 @@ const TariffList: React.FC = () => {
     const [filters, setFilters] = useState<TariffSearchParams>({});
     const [showFilters, setShowFilters] = useState(false);
     const [loadingHistory, setLoadingHistory] = useState(false);
+
+    // Новые состояния для режима сравнения
+    const [compareMode, setCompareMode] = useState(false);
+    const [selectedTariffs, setSelectedTariffs] = useState<string[]>([]);
 
     const handleFilterChange = (name: keyof TariffSearchParams, value: any) => {
         setFilters(prev => ({
@@ -49,6 +54,31 @@ const TariffList: React.FC = () => {
         }
     };
 
+    // Новые функции для управления выбором тарифов
+    const toggleCompareMode = () => {
+        if (compareMode) {
+            setSelectedTariffs([]);
+        }
+        setCompareMode(!compareMode);
+    };
+
+    const handleTariffSelect = (tariffId: string) => {
+        setSelectedTariffs(prev => {
+            if (prev.includes(tariffId)) {
+                return prev.filter(id => id !== tariffId);
+            }
+            if (prev.length < 5) {
+                return [...prev, tariffId];
+            }
+            return prev;
+        });
+    };
+
+    const startComparison = () => {
+        console.log('Начинаем сравнение тарифов:', selectedTariffs);
+        // TODO: Перенаправить на страницу сравнения
+    };
+
     if (loading) {
         return (
             <div className="tariff-loading">
@@ -78,6 +108,18 @@ const TariffList: React.FC = () => {
 
             <div className="tariff-controls">
                 <button
+                    className={`compare-toggle ${compareMode ? 'active' : ''}`}
+                    onClick={toggleCompareMode}
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 3v18h18"></path>
+                        <path d="M9.5 17V9"></path>
+                        <path d="M13 17V5"></path>
+                        <path d="M17 17V11"></path>
+                    </svg>
+                    {compareMode ? 'Отменить сравнение' : 'Сравнить тарифы'}
+                </button>
+                <button
                     className="filter-toggle"
                     onClick={() => setShowFilters(!showFilters)}
                 >
@@ -87,6 +129,25 @@ const TariffList: React.FC = () => {
                     Фильтры
                 </button>
             </div>
+
+            {compareMode && (
+                <div className="compare-panel">
+                    <div className="compare-info">
+                        <span>Выбрано {selectedTariffs.length} из 5 тарифов</span>
+                        {selectedTariffs.length >= 2 && selectedTariffs.length <= 5 && (
+                            <button
+                                className="btn btn-primary btn-sm"
+                                onClick={startComparison}
+                            >
+                                Сравнить выбранные ({selectedTariffs.length})
+                            </button>
+                        )}
+                    </div>
+                    {selectedTariffs.length < 2 && (
+                        <p className="compare-hint">Выберите минимум 2 тарифа для сравнения</p>
+                    )}
+                </div>
+            )}
 
             {showFilters && (
                 <div className="filter-panel">
@@ -170,9 +231,11 @@ const TariffList: React.FC = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                             stroke="currentColor" strokeWidth="2">
                                             <path d="M1 4v6h6M23 20v-6h-6"/>
-                                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                                            <path
+                                                d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
                                         </svg>
                                         <span>Восстановить фильтры</span>
                                     </>
@@ -190,6 +253,9 @@ const TariffList: React.FC = () => {
                         tariff={tariff}
                         provider={getProviderById(tariff.provider_id)}
                         showProvider={true}
+                        selectable={compareMode}
+                        selected={selectedTariffs.includes(tariff.id)}
+                        onSelect={() => handleTariffSelect(tariff.id)}
                     />
                 ))}
             </div>

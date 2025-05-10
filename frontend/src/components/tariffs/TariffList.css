@@ -1,3 +1,4 @@
+/* frontend/src/components/tariffs/TariffList.css */
 .tariff-list-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -27,7 +28,42 @@
 .tariff-controls {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1.5rem;
+}
+
+.compare-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.compare-toggle:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.compare-toggle.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.compare-toggle.active:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
 }
 
 .filter-toggle {
@@ -50,6 +86,43 @@
     background: rgba(255, 255, 255, 0.9);
     border-color: var(--primary-color);
     transform: translateY(-1px);
+}
+
+.compare-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.compare-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.compare-info span {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.btn.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compare-hint {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0.5rem 0 0 0;
 }
 
 .filter-panel {
@@ -91,7 +164,7 @@
     border-radius: 0.5rem;
     font-size: 0.875rem;
     background: rgba(255, 255, 255, 0.9);
-    min-width: 0; /* Важно для правильной работы flex */
+    min-width: 0;
 }
 
 .filter-range input:focus {
@@ -147,7 +220,7 @@
     gap: 1rem;
     margin-top: 0.5rem;
     justify-content: flex-start;
-    align-items: center; /* Выравнивание по центру по вертикали */
+    align-items: center;
 }
 
 .filter-actions .btn {
@@ -194,8 +267,8 @@
 
 .btn-restore svg {
     transition: transform 0.3s ease;
-    flex-shrink: 0; /* Предотвращает сжатие иконки */
-    margin-right: 0.25rem; /* Добавляем небольшой отступ справа */
+    flex-shrink: 0;
+    margin-right: 0.25rem;
 }
 
 .btn-restore:hover svg {
@@ -322,6 +395,27 @@
 
     .filter-range span {
         text-align: center;
+    }
+
+    .tariff-controls {
+        flex-direction: column;
+        gap: 1rem;
+        justify-content: flex-start;
+    }
+
+    .compare-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filter-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .compare-info {
+        flex-direction: column;
+        gap: 1rem;
     }
 }
 

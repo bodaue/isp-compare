@@ -1,3 +1,4 @@
+// frontend/src/components/tariffs/TariffCard.tsx
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {Provider, Tariff} from '../../types/provider.types';
@@ -7,11 +8,42 @@ interface TariffCardProps {
     tariff: Tariff;
     provider?: Provider;
     showProvider?: boolean;
+    selectable?: boolean;
+    selected?: boolean;
+    onSelect?: () => void;
 }
 
-const TariffCard: React.FC<TariffCardProps> = ({tariff, provider, showProvider = false}) => {
+const TariffCard: React.FC<TariffCardProps> = ({
+                                                   tariff,
+                                                   provider,
+                                                   showProvider = false,
+                                                   selectable = false,
+                                                   selected = false,
+                                                   onSelect
+                                               }) => {
+    const handleCardClick = () => {
+        if (selectable && onSelect) {
+            onSelect();
+        }
+    };
+
     return (
-        <div className="tariff-card">
+        <div
+            className={`tariff-card ${selectable ? 'selectable' : ''} ${selected ? 'selected' : ''}`}
+            onClick={handleCardClick}
+        >
+            {selectable && (
+                <div className="tariff-checkbox">
+                    <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={() => {
+                        }}
+                        readOnly
+                    />
+                </div>
+            )}
+
             {showProvider && provider && (
                 <div className="tariff-provider">
                     {provider.logo_url ? (
@@ -87,6 +119,12 @@ const TariffCard: React.FC<TariffCardProps> = ({tariff, provider, showProvider =
             <Link
                 to={`/tariffs/${tariff.id}`}
                 className="tariff-button"
+                onClick={(e) => {
+                    if (selectable) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }}
             >
                 Подробнее
             </Link>
