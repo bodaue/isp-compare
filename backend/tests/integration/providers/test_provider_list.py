@@ -1,7 +1,7 @@
 from httpx import AsyncClient
-from tests.utils import check_response
 
 from isp_compare.models.provider import Provider
+from tests.utils import check_response
 
 
 async def test_list_providers_success(
@@ -20,11 +20,11 @@ async def test_list_providers_with_limit(
     client: AsyncClient, providers: list[Provider]
 ) -> None:
     limit = 2
-    response = await client.get(f"/providers?limit={limit}")
+    response = await client.get("/providers", params={"limit": limit})
     data = check_response(response, 200)
 
     assert isinstance(data, list)
-    assert len(data) <= limit
+    assert len(data) == limit
 
 
 async def test_list_providers_with_offset(
@@ -34,13 +34,10 @@ async def test_list_providers_with_offset(
     all_providers = response_all.json()
 
     offset = 2
-    response_offset = await client.get(f"/providers?offset={offset}")
+    response_offset = await client.get("/providers", params={"offset": offset})
     offset_providers = check_response(response_offset, 200)
 
-    if len(all_providers) > offset:
-        assert len(offset_providers) == len(all_providers) - offset
-        for i in range(len(offset_providers)):
-            assert offset_providers[i]["id"] == all_providers[i + offset]["id"]
+    assert len(offset_providers) == len(all_providers) - offset
 
 
 async def test_list_providers_with_limit_and_offset(
@@ -48,7 +45,7 @@ async def test_list_providers_with_limit_and_offset(
 ) -> None:
     limit = 2
     offset = 1
-    response = await client.get(f"/providers?limit={limit}&offset={offset}")
+    response = await client.get("/providers", params={"limit": limit, "offset": offset})
     data = check_response(response, 200)
 
     assert isinstance(data, list)
@@ -94,7 +91,7 @@ async def test_list_providers_with_large_limit(
     client: AsyncClient, providers: list[Provider]
 ) -> None:
     limit = 1000
-    response = await client.get(f"/providers?limit={limit}")
+    response = await client.get("/providers", params={"limit": limit})
     data = check_response(response, 200)
 
     assert isinstance(data, list)
@@ -104,6 +101,17 @@ async def test_list_providers_with_large_limit(
         assert str(provider.id) in provider_ids
 
 
+async def test_list_providers_with_large_offset(
+    client: AsyncClient, providers: list[Provider]
+) -> None:
+    offset = 1000
+    response = await client.get("/providers", params={"offset": offset})
+    data = check_response(response, 200)
+
+    assert isinstance(data, list)
+    assert len(data) == 0
+
+
 async def test_list_providers_with_invalid_parameters(client: AsyncClient) -> None:
-    response = await client.get("/providers?limit=abc")
+    response = await client.get("/providers", params={"limit": "abc"})
     check_response(response, 422)

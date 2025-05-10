@@ -2,7 +2,6 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from isp_compare.models.provider import Provider
-from isp_compare.models.tariff import Tariff
 
 
 @pytest.fixture
@@ -16,7 +15,6 @@ async def provider(session: AsyncSession) -> Provider:
     )
     session.add(test_provider)
     await session.commit()
-
     return test_provider
 
 
@@ -32,37 +30,6 @@ async def providers(session: AsyncSession) -> list[Provider]:
         )
         for i in range(1, 6)
     ]
-
     session.add_all(test_providers)
     await session.commit()
     return test_providers
-
-
-@pytest.fixture
-async def inactive_provider(session: AsyncSession) -> Provider:
-    inactive_provider = Provider(
-        name="Inactive Provider",
-        description="A provider that should be filtered out in active-only queries",
-        website="https://inactiveprovider.com",
-        logo_url="https://inactiveprovider.com/logo.png",
-        rating=1.0,
-    )
-    session.add(inactive_provider)
-    await session.flush()
-
-    inactive_tariff = Tariff(
-        provider_id=inactive_provider.id,
-        name="Outdated Plan",
-        description="This plan is no longer available",
-        price=19.99,
-        speed=10,
-        has_tv=False,
-        has_phone=False,
-        is_active=False,
-    )
-    session.add(inactive_tariff)
-
-    await session.commit()
-    await session.refresh(inactive_provider)
-
-    return inactive_provider
