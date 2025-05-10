@@ -79,43 +79,12 @@ async def test_get_by_id_not_found(provider_repository: ProviderRepository) -> N
 async def test_get_all(
     provider_repository: ProviderRepository, test_providers: list[Provider]
 ) -> None:
-    limit = 10
-    offset = 0
-    result = await provider_repository.get_all(limit, offset)
+    result = await provider_repository.get_all()
 
     assert len(result) == len(test_providers)
 
     provider_ids = {p.id for p in result}
     for provider in test_providers:
-        assert provider.id in provider_ids
-
-
-async def test_get_all_with_limit(
-    provider_repository: ProviderRepository, test_providers: list[Provider]
-) -> None:
-    limit = 2
-    offset = 0
-    result = await provider_repository.get_all(limit, offset)
-
-    assert len(result) == limit
-
-    provider_ids = [p.id for p in result]
-    for provider in test_providers[:limit]:
-        assert provider.id in provider_ids
-
-
-async def test_get_all_with_offset(
-    provider_repository: ProviderRepository, test_providers: list[Provider]
-) -> None:
-    limit = 10
-    offset = 1
-    result = await provider_repository.get_all(limit, offset)
-
-    assert len(result) == len(test_providers) - offset
-
-    provider_ids = [p.id for p in result]
-    assert test_providers[0].id not in provider_ids
-    for provider in test_providers[offset:]:
         assert provider.id in provider_ids
 
 

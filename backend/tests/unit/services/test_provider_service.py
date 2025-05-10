@@ -80,14 +80,12 @@ async def test_get_all_providers(
     provider_repository_mock: AsyncMock,
     mock_provider: Provider,
 ) -> None:
-    limit = 10
-    offset = 0
     providers = [mock_provider, mock_provider, mock_provider]
     provider_repository_mock.get_all.return_value = providers
 
-    result = await provider_service.get_all_providers(limit, offset)
+    result = await provider_service.get_all_providers()
 
-    provider_repository_mock.get_all.assert_called_once_with(limit, offset)
+    provider_repository_mock.get_all.assert_called_once()
     assert len(result) == len(providers)
     for provider_response in result:
         assert isinstance(provider_response, ProviderResponse)

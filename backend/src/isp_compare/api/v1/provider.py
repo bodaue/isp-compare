@@ -16,10 +16,8 @@ router = APIRouter(prefix="/providers", tags=["Providers"])
 @inject
 async def get_all_providers(
     service: FromDishka[ProviderService],
-    limit: int = 100,
-    offset: int = 0,
 ) -> list[ProviderResponse]:
-    return await service.get_all_providers(limit, offset)
+    return await service.get_all_providers()
 
 
 @router.get("/{provider_id}")

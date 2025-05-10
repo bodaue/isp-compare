@@ -20,8 +20,8 @@ class ProviderRepository:
             stmt = stmt.with_for_update()
         return await self._session.scalar(stmt)
 
-    async def get_all(self, limit: int, offset: int) -> list[Provider]:
-        stmt = select(Provider).limit(limit).offset(offset)
+    async def get_all(self) -> list[Provider]:
+        stmt = select(Provider)
         result = await self._session.execute(stmt)
         return list(result.scalars())
 

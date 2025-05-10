@@ -22,7 +22,7 @@ class ProviderService:
         return ProviderResponse.model_validate(provider)
 
     async def get_all_providers(
-        self, limit: int, offset: int
+        self,
     ) -> list[ProviderResponse]:
-        providers = await self._provider_repository.get_all(limit, offset)
+        providers = await self._provider_repository.get_all()
         return [ProviderResponse.model_validate(provider) for provider in providers]

@@ -1,11 +1,9 @@
 import api from './api';
-import { Provider } from '../types/provider.types';
+import {Provider} from '../types/provider.types';
 
 export const providerService = {
-    async getAllProviders(limit: number = 100, offset: number = 0): Promise<Provider[]> {
-        const response = await api.get<Provider[]>('/providers', {
-            params: { limit, offset }
-        });
+    async getAllProviders(): Promise<Provider[]> {
+        const response = await api.get<Provider[]>('/providers');
         return response.data;
     },
 
