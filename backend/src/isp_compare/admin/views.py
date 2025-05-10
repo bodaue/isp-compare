@@ -12,18 +12,21 @@ class ProviderAdmin(ModelView, model=Provider):
         Provider.name,
         Provider.rating,
         Provider.website,
+        Provider.phone,
         Provider.created_at,
     ]
-    column_searchable_list = [Provider.name]
-    column_sortable_list = [Provider.name, Provider.rating, Provider.created_at]
-    column_default_sort = ("created_at", True)
 
     form_columns = [
         Provider.name,
         Provider.description,
         Provider.website,
         Provider.logo_url,
+        Provider.phone,
     ]
+
+    column_searchable_list = [Provider.name]
+    column_sortable_list = [Provider.name, Provider.rating, Provider.created_at]
+    column_default_sort = ("created_at", True)
 
     name = "Provider"
     name_plural = "Providers"
@@ -35,6 +38,7 @@ class TariffAdmin(ModelView, model=Tariff):
         Tariff.id,
         Tariff.name,
         Tariff.provider,
+        Tariff.url,
         Tariff.price,
         Tariff.promo_price,
         Tariff.promo_period,
@@ -50,8 +54,8 @@ class TariffAdmin(ModelView, model=Tariff):
         Tariff.name,
         Tariff.description,
         Tariff.price,
-        Tariff.promo_price,  # добавить
-        Tariff.promo_period,  # добавить
+        Tariff.promo_price,
+        Tariff.promo_period,
         Tariff.speed,
         Tariff.has_tv,
         Tariff.has_phone,

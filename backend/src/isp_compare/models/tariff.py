@@ -33,3 +33,4 @@ class Tariff(IdMixin, TimestampMixin, Base):
     promo_period: Mapped[int | None]  # Срок акции в месяцах
 
     is_active: Mapped[bool] = mapped_column(default=True)
+    url: Mapped[str | None]

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, String, Text
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from isp_compare.models.base import Base, IdMixin, TimestampMixin
@@ -15,9 +15,10 @@ class Provider(IdMixin, TimestampMixin, Base):
 
     name: Mapped[str] = mapped_column(String(255))
     description: Mapped[str | None] = mapped_column(Text)
-    website: Mapped[str | None] = mapped_column(String(255))
-    logo_url: Mapped[str | None] = mapped_column(String(512))
-    rating: Mapped[float | None] = mapped_column(Float)
+    website: Mapped[str]
+    phone: Mapped[str]
+    logo_url: Mapped[str | None]
+    rating: Mapped[float | None]
 
     tariffs: Mapped[list["Tariff"]] = relationship(
         back_populates="provider", cascade="all, delete-orphan"

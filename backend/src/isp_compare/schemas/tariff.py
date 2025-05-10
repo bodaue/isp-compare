@@ -15,6 +15,7 @@ class TariffBase(BaseModel):
     promo_price: Decimal | None = Field(None, ge=0, decimal_places=2)
     promo_period: int | None = Field(None, ge=0)
     is_active: bool = True
+    url: str | None = Field(None, max_length=512)  # НОВОЕ ПОЛЕ
 
 
 class TariffCreate(TariffBase):

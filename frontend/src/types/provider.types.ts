@@ -2,9 +2,10 @@ export interface Provider {
     id: string;
     name: string;
     description: string | null;
-    website: string | null;
+    website: string
     logo_url: string | null;
     rating: number | null;
+    phone: string;
 }
 
 export interface Tariff {
@@ -20,6 +21,7 @@ export interface Tariff {
     promo_price: number | null;
     promo_period: number | null;
     is_active: boolean;
+    url: string | null;
 }
 
 export interface TariffSearchParams {
