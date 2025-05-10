@@ -40,6 +40,7 @@ export const useUser = () => {
 
     return {
         userData,
+        setUserData,
         loading,
         error,
         fetchUserData,

@@ -1,29 +1,35 @@
-import React from 'react';
-import {useForm, useUser} from '../../hooks';
+import React, {useState} from 'react';
+import {userService} from '../../services/userService';
+import {UserProfile} from '../../types/api.types';
 
 interface EditProfileProps {
-    userData: {
-        fullname: string;
-        username: string;
-    };
-    onUpdate: () => void;
+    userData: UserProfile;
+    onUpdate: (updatedProfile: UserProfile) => void;
 }
 
 const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
-    const {updateProfile} = useUser();
-    const {
-        values,
-        errors,
-        loading,
-        handleChange,
-        setErrors,
-        setLoading
-    } = useForm({
+    const [values, setValues] = useState({
         fullname: userData.fullname,
         username: userData.username
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState('');
 
-    const [success, setSuccess] = React.useState('');
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
+        setValues(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        // Очищаем ошибку при изменении поля
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,9 +38,13 @@ const EditProfile: React.FC<EditProfileProps> = ({userData, onUpdate}) => {
         setSuccess('');
 
         try {
-            await updateProfile(values);
+            const updatedProfile = await userService.updateProfile(values);
             setSuccess('Профиль успешно обновлен');
-            onUpdate();
+
+            // Обновляем данные в родительском компоненте после задержки
+            setTimeout(() => {
+                onUpdate(updatedProfile);
+            }, 1500);
         } catch (err: any) {
             setErrors({form: err.response?.data?.detail || 'Ошибка при обновлении профиля'});
         } finally {

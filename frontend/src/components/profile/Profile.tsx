@@ -7,10 +7,11 @@ import PageHeader from '../common/PageHeader';
 import './Profile.css';
 import {useUser} from '../../hooks';
 import {useAuth} from '../../contexts/AuthContext';
+import {UserProfile} from '../../types/api.types';
 
 const Profile: React.FC = () => {
     const [activeTab, setActiveTab] = useState('info');
-    const {userData, loading, error, fetchUserData} = useUser();
+    const {userData, setUserData, loading, error, fetchUserData} = useUser();
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate();
 
@@ -19,6 +20,10 @@ const Profile: React.FC = () => {
             navigate('/login');
         }
     }, [isLoggedIn, navigate]);
+
+    const handleProfileUpdate = (updatedProfile: UserProfile) => {
+        setUserData(updatedProfile);
+    };
 
     if (loading) {
         return (
@@ -86,7 +91,7 @@ const Profile: React.FC = () => {
                     <ProfileInfo userData={userData}/>
                 )}
                 {activeTab === 'edit' && (
-                    <EditProfile userData={userData} onUpdate={fetchUserData}/>
+                    <EditProfile userData={userData} onUpdate={handleProfileUpdate}/>
                 )}
                 {activeTab === 'password' && (
                     <ChangePassword/>
