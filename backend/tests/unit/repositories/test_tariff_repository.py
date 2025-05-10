@@ -75,21 +75,8 @@ async def test_tariffs(
             is_active=True,
         )
         tariffs.append(tariff)
-        session.add(tariff)
 
-    inactive_tariff = Tariff(
-        provider_id=test_provider.id,
-        name=f"{faker.word()} Inactive Tariff",
-        description=faker.paragraph(),
-        price=faker.pyfloat(min_value=10, max_value=100, right_digits=2),
-        speed=faker.pyint(min_value=50, max_value=1000),
-        has_tv=False,
-        has_phone=False,
-        is_active=False,
-    )
-    tariffs.append(inactive_tariff)
-    session.add(inactive_tariff)
-
+    session.add_all(tariffs)
     await session.commit()
     return tariffs
 
@@ -321,16 +308,21 @@ async def test_search_price_range(
         offset=0,
     )
 
+    def get_effective_price(t: Tariff) -> float:
+        return float(t.promo_price) if t.promo_price is not None else float(t.price)
+
     active_tariffs_in_range = [
         t
         for t in test_tariffs
-        if t.is_active and min_price <= float(t.price) <= max_price
+        if t.is_active and min_price <= get_effective_price(t) <= max_price
     ]
 
     assert len(result) == len(active_tariffs_in_range)
+
     for tariff in result:
-        assert float(tariff.price) >= min_price
-        assert float(tariff.price) <= max_price
+        effective_price = get_effective_price(tariff)
+        assert effective_price >= min_price
+        assert effective_price <= max_price
         assert tariff.is_active is True
 
 

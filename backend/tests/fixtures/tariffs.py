@@ -44,6 +44,14 @@ async def tariffs(session: AsyncSession, provider: Provider) -> list[Tariff]:
         for i in range(1, 6)
     ]
 
+    session.add_all(test_tariffs)
+    await session.commit()
+
+    return test_tariffs
+
+
+@pytest.fixture
+async def inactive_tariff(session: AsyncSession, provider: Provider) -> Tariff:
     inactive_tariff = Tariff(
         provider_id=provider.id,
         name="Inactive Tariff",
@@ -54,9 +62,6 @@ async def tariffs(session: AsyncSession, provider: Provider) -> list[Tariff]:
         has_phone=False,
         is_active=False,
     )
-    test_tariffs.append(inactive_tariff)
-
-    session.add_all(test_tariffs)
+    session.add(inactive_tariff)
     await session.commit()
-
-    return test_tariffs
+    return inactive_tariff

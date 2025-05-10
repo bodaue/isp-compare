@@ -31,6 +31,19 @@ async def test_search_tariffs_success(
         assert tariff_data["is_active"] is True
 
 
+async def test_search_tariffs_by_promo_price(
+    auth_client: AsyncClient, tariff: Tariff
+) -> None:
+    search_params = {"min_price": 19, "max_price": 20}
+
+    response = await auth_client.get("/tariffs/search", params=search_params)
+    data = check_response(response, 200)
+
+    assert isinstance(data, list)
+    assert len(data) == 1
+    assert data[0]["id"] == str(tariff.id)
+
+
 async def test_search_tariffs_unauthorized(client: AsyncClient) -> None:
     search_params = {"min_price": 20, "max_price": 40}
 
@@ -83,19 +96,18 @@ async def test_search_tariffs_limit_offset(
             assert data[i]["id"] == all_data[i + search_params["offset"]]["id"]
 
 
-async def test_search_tariffs_inactive_excluded(
-    auth_client: AsyncClient, tariffs: list[Tariff]
+async def test_search_tariffs_only_active(
+    auth_client: AsyncClient,
+    tariffs: list[Tariff],
+    inactive_tariff: Tariff,
 ) -> None:
     search_params = {"min_speed": 1}
 
     response = await auth_client.get("/tariffs/search", params=search_params)
     data = check_response(response, 200)
 
-    inactive_tariff_ids = [str(t.id) for t in tariffs if not t.is_active]
     response_tariff_ids = [t["id"] for t in data]
-
-    for inactive_id in inactive_tariff_ids:
-        assert inactive_id not in response_tariff_ids
+    assert str(inactive_tariff.id) not in response_tariff_ids
 
 
 async def test_search_tariffs_invalid_params(auth_client: AsyncClient) -> None:

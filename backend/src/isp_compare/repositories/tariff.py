@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import case, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from isp_compare.models.tariff import Tariff
@@ -23,7 +23,9 @@ class TariffRepository:
         return await self._session.scalar(stmt)
 
     async def get_all(self, limit: int, offset: int) -> list[Tariff]:
-        stmt = select(Tariff).limit(limit).offset(offset)
+        stmt = (
+            select(Tariff).where(Tariff.is_active.is_(True)).limit(limit).offset(offset)
+        )
         result = await self._session.execute(stmt)
         return list(result.scalars())
 
@@ -32,7 +34,10 @@ class TariffRepository:
     ) -> list[Tariff]:
         stmt = (
             select(Tariff)
-            .where(Tariff.provider_id == provider_id)
+            .where(
+                Tariff.provider_id == provider_id,
+                Tariff.is_active.is_(True),
+            )
             .limit(limit)
             .offset(offset)
         )
@@ -59,10 +64,14 @@ class TariffRepository:
     ) -> list[Tariff]:
         query = select(Tariff)
 
+        effective_price = case(
+            (Tariff.promo_price.isnot(None), Tariff.promo_price), else_=Tariff.price
+        )
+
         if min_price is not None:
-            query = query.where(Tariff.price >= min_price)
+            query = query.where(effective_price >= min_price)
         if max_price is not None:
-            query = query.where(Tariff.price <= max_price)
+            query = query.where(effective_price <= max_price)
         if min_speed is not None:
             query = query.where(Tariff.speed >= min_speed)
         if max_speed is not None:

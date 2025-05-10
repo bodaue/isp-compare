@@ -5,7 +5,7 @@ from httpx import Response
 
 def check_response(
     response: Response, expected_status: int = 200, expected_detail: str | None = None
-) -> dict[str, Any] | None:
+) -> dict[str, Any] | list[dict[str, Any]] | None:
     status = response.status_code
 
     assert status == expected_status, (
