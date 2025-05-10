@@ -22,6 +22,22 @@
     font-size: 0.875rem;
 }
 
+/* Компактные кнопки */
+.btn-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    width: auto;
+    max-width: max-content;
+}
+
+/* Иконки в кнопках */
+.btn-compact svg {
+    flex-shrink: 0;
+}
+
 .reviews-grid {
     display: flex;
     flex-direction: column;
@@ -54,6 +70,11 @@
     font-size: 1rem;
 }
 
+.no-reviews .btn {
+    margin-top: 1rem;
+    display: inline-block;
+}
+
 .load-more {
     text-align: center;
     margin-top: 2rem;
@@ -65,14 +86,20 @@
     }
 }
 
+/* Адаптивность */
 @media (max-width: 768px) {
     .review-list-header {
-        flex-direction: column;
+        flex-direction: row;
         gap: 1rem;
-        align-items: flex-start;
+        align-items: center;
     }
 
     .review-list-header .btn {
-        width: 100%;
+        width: auto;
+    }
+
+    .no-reviews .btn {
+        width: auto;
+        margin: 1rem auto 0;
     }
 }
