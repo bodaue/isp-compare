@@ -2,6 +2,7 @@ import uuid
 from unittest.mock import AsyncMock
 
 import pytest
+from faker import Faker
 
 from isp_compare.core.exceptions import (
     ProviderNotFoundException,
@@ -29,12 +30,13 @@ def provider_service(
 
 
 @pytest.fixture
-def mock_provider() -> Provider:
+def mock_provider(faker: Faker) -> Provider:
     return Provider(
         id=uuid.uuid4(),
         name="Test Provider",
         description="Test Description",
         website="https://example.com",
+        phone=faker.phone_number(),
         logo_url="https://example.com/logo.png",
         rating=4.5,
     )

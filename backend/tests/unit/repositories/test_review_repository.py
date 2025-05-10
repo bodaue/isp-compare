@@ -22,6 +22,7 @@ async def test_provider(session: AsyncSession, faker: Faker) -> Provider:
         name=faker.company(),
         description=faker.paragraph(),
         website=faker.url(),
+        phone=faker.phone_number(),
         logo_url=faker.image_url(),
         rating=faker.pyfloat(min_value=1, max_value=5, right_digits=1),
     )
