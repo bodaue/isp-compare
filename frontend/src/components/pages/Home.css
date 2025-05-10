@@ -216,6 +216,7 @@
 
 .cta-content .btn:hover {
     background: rgba(255, 255, 255, 0.9);
+    color: var(--primary-color);
 }
 
 
