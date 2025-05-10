@@ -44,6 +44,18 @@ class TariffRepository:
         result = await self._session.execute(stmt)
         return list(result.scalars())
 
+    async def get_multiple_by_ids(self, tariff_ids: list[UUID]) -> dict[UUID, Tariff]:
+        if not tariff_ids:
+            return {}
+
+        stmt = select(Tariff).where(
+            Tariff.id.in_(tariff_ids), Tariff.is_active.is_(True)
+        )
+        result = await self._session.execute(stmt)
+        tariffs = result.scalars().all()
+
+        return {tariff.id: tariff for tariff in tariffs}
+
     async def update(self, tariff_id: UUID, update_data: dict[str, Any]) -> None:
         stmt = update(Tariff).where(Tariff.id == tariff_id).values(**update_data)
         await self._session.execute(stmt)

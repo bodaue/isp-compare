@@ -8,6 +8,7 @@ from isp_compare.services.rate_limiter import RateLimiter
 from isp_compare.services.review import ReviewService
 from isp_compare.services.search_history import SearchHistoryService
 from isp_compare.services.tariff import TariffService
+from isp_compare.services.tariff_comparison import TariffComparisonService
 from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.token_service import TokenService
 from isp_compare.services.user import UserService
@@ -26,6 +27,7 @@ class ServiceProvider(Provider):
 
     provider_service = provide(ProviderService)
     tariff_service = provide(TariffService)
+    tariff_comparison_service = provide(TariffComparisonService)
     review_service = provide(ReviewService)
     search_history_service = provide(SearchHistoryService)
 

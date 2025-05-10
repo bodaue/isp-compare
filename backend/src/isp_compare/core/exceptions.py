@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from uuid import UUID
 
 from fastapi import HTTPException
 from starlette import status
@@ -111,6 +112,14 @@ class ProviderNotFoundException(AppException):
 class TariffNotFoundException(AppException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Тариф не найден."
+
+
+class TariffNotFoundByIdException(AppException):
+    status_code = status.HTTP_404_NOT_FOUND
+
+    def __init__(self, tariff_id: UUID) -> None:
+        detail = f"Тариф с ID {tariff_id} не найден"
+        super().__init__(detail=detail)
 
 
 class ReviewNotFoundException(AppException):

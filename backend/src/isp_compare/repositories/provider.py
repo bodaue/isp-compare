@@ -42,6 +42,18 @@ class ProviderRepository:
 
         return providers_with_counts
 
+    async def get_multiple_by_ids(
+        self, provider_ids: list[UUID]
+    ) -> dict[UUID, Provider]:
+        if not provider_ids:
+            return {}
+
+        stmt = select(Provider).where(Provider.id.in_(provider_ids))
+        result = await self._session.execute(stmt)
+        providers = result.scalars().all()
+
+        return {provider.id: provider for provider in providers}
+
     async def update(self, provider_id: UUID, update_data: dict[str, Any]) -> None:
         stmt = update(Provider).where(Provider.id == provider_id).values(**update_data)
         await self._session.execute(stmt)

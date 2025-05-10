@@ -10,7 +10,9 @@ from isp_compare.schemas.tariff import (
     TariffResponse,
     TariffSearchParams,
 )
+from isp_compare.schemas.tariff_comparison import ComparisonRequest, ComparisonResult
 from isp_compare.services.tariff import TariffService
+from isp_compare.services.tariff_comparison import TariffComparisonService
 
 router = APIRouter(tags=["Tariffs"])
 
@@ -52,3 +54,12 @@ async def get_tariff(
     service: FromDishka[TariffService],
 ) -> TariffResponse:
     return await service.get_tariff(tariff_id)
+
+
+@router.post("/tariffs/comparison")
+@inject
+async def compare_tariffs(
+    request: ComparisonRequest,
+    service: FromDishka[TariffComparisonService],
+) -> ComparisonResult:
+    return await service.compare_tariffs(request)
