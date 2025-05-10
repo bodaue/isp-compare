@@ -11,13 +11,8 @@ class ProviderRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def get_by_id(
-        self, provider_id: UUID, for_update: bool = False
-    ) -> Provider | None:
+    async def get_by_id(self, provider_id: UUID) -> Provider | None:
         stmt = select(Provider).where(Provider.id == provider_id)
-
-        if for_update:
-            stmt = stmt.with_for_update()
         return await self._session.scalar(stmt)
 
     async def get_all(self) -> list[Provider]:

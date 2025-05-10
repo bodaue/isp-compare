@@ -59,16 +59,6 @@ async def test_get_by_id(
     assert result.description == test_provider.description
 
 
-async def test_get_by_id_for_update(
-    provider_repository: ProviderRepository, test_provider: Provider
-) -> None:
-    result = await provider_repository.get_by_id(test_provider.id, for_update=True)
-
-    assert result is not None
-    assert result.id == test_provider.id
-    assert result.name == test_provider.name
-
-
 async def test_get_by_id_not_found(provider_repository: ProviderRepository) -> None:
     non_existent_id = uuid.uuid4()
     result = await provider_repository.get_by_id(non_existent_id)
