@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useProviders } from '../../hooks';
+import PageHeader from '../common/PageHeader';
 import './ProviderList.css';
 
 const ProviderList: React.FC = () => {
@@ -28,10 +29,10 @@ const ProviderList: React.FC = () => {
 
     return (
         <div className="provider-list-container">
-            <div className="provider-header">
-                <h2>Интернет-провайдеры</h2>
-                <p>Выберите провайдера для просмотра тарифов и отзывов</p>
-            </div>
+            <PageHeader
+                title="Интернет-провайдеры"
+                subtitle="Выберите провайдера для просмотра тарифов и отзывов"
+            />
 
             <div className="providers-grid">
                 {providers.map((provider) => (

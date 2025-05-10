@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import ProfileInfo from './ProfileInfo';
 import EditProfile from './EditProfile';
 import ChangePassword from './ChangePassword';
+import PageHeader from '../common/PageHeader';
 import './Profile.css';
 import {useUser} from '../../hooks';
 import {useAuth} from '../../contexts/AuthContext';
@@ -45,9 +46,7 @@ const Profile: React.FC = () => {
 
     return (
         <div className="profile-container">
-            <div className="profile-header">
-                <h2>Личный кабинет</h2>
-            </div>
+            <PageHeader title="Личный кабинет" />
 
             <div className="profile-nav">
                 <button

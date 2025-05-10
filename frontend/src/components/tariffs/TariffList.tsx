@@ -4,6 +4,7 @@ import {TariffSearchParams} from '../../types/provider.types';
 import {searchHistoryService} from '../../services/searchHistoryService';
 import {useAuth} from '../../contexts/AuthContext';
 import TariffCard from './TariffCard';
+import PageHeader from '../common/PageHeader';
 import './TariffList.css';
 
 const TariffList: React.FC = () => {
@@ -70,10 +71,10 @@ const TariffList: React.FC = () => {
 
     return (
         <div className="tariff-list-container">
-            <div className="tariff-header">
-                <h2>Тарифные планы</h2>
-                <p>Найдите подходящий тариф среди всех провайдеров</p>
-            </div>
+            <PageHeader
+                title="Тарифные планы"
+                subtitle="Найдите подходящий тариф среди всех провайдеров"
+            />
 
             <div className="tariff-controls">
                 <button

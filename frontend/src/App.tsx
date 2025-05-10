@@ -8,16 +8,10 @@ import Profile from './components/profile/Profile';
 import ProviderList from './components/providers/ProviderList';
 import ProviderDetail from './components/providers/ProviderDetail';
 import TariffList from './components/tariffs/TariffList';
-import TariffDetail from './components/tariffs/TariffDetail';  // Добавить импорт
+import TariffDetail from './components/tariffs/TariffDetail';
+import TariffComparison from './components/pages/Comparison';
 import {useAuth} from './contexts/AuthContext';
 import './App.css';
-
-const TariffComparison = () => (
-    <div className="page animate-fade-in">
-        <h2>Сравнение тарифов</h2>
-        <p>Сравните тарифы разных провайдеров</p>
-    </div>
-);
 
 const App: React.FC = () => {
     const {isLoggedIn, logout} = useAuth();
@@ -46,7 +40,7 @@ const App: React.FC = () => {
                     <Route path="/providers" element={<ProviderList/>}/>
                     <Route path="/providers/:id" element={<ProviderDetail/>}/>
                     <Route path="/tariffs" element={<TariffList/>}/>
-                    <Route path="/tariffs/:id" element={<TariffDetail/>}/>  {/* Добавить новый маршрут */}
+                    <Route path="/tariffs/:id" element={<TariffDetail/>}/>
                     <Route path="/comparison" element={<TariffComparison/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/register" element={<Register/>}/>
