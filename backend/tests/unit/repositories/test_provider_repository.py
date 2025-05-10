@@ -46,32 +46,6 @@ async def test_providers(session: AsyncSession, faker: Faker) -> list[Provider]:
     return providers
 
 
-async def test_create_provider(
-    session: AsyncSession, provider_repository: ProviderRepository, faker: Faker
-) -> None:
-    provider = Provider(
-        name=faker.company(),
-        description=faker.paragraph(),
-        website=faker.url(),
-        logo_url=faker.image_url(),
-        rating=faker.pyfloat(min_value=1, max_value=5, right_digits=1),
-    )
-
-    await provider_repository.create(provider)
-    await session.flush()
-
-    stmt = select(Provider).where(Provider.id == provider.id)
-    result = await session.execute(stmt)
-    saved_provider = result.scalar_one()
-
-    assert saved_provider.id == provider.id
-    assert saved_provider.name == provider.name
-    assert saved_provider.description == provider.description
-    assert saved_provider.website == provider.website
-    assert saved_provider.logo_url == provider.logo_url
-    assert saved_provider.rating == provider.rating
-
-
 async def test_get_by_id(
     provider_repository: ProviderRepository, test_provider: Provider
 ) -> None:
@@ -199,18 +173,3 @@ async def test_update_nonexistent(
     update_data = {"name": faker.company()}
 
     await provider_repository.update(non_existent_id, update_data)
-
-
-async def test_delete(
-    session: AsyncSession,
-    provider_repository: ProviderRepository,
-    test_provider: Provider,
-) -> None:
-    await provider_repository.delete(test_provider)
-    await session.commit()
-
-    stmt = select(Provider).where(Provider.id == test_provider.id)
-    result = await session.execute(stmt)
-    deleted_provider = result.scalar_one_or_none()
-
-    assert deleted_provider is None

@@ -11,9 +11,6 @@ class ProviderRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def create(self, provider: Provider) -> None:
-        self._session.add(provider)
-
     async def get_by_id(
         self, provider_id: UUID, for_update: bool = False
     ) -> Provider | None:
@@ -31,6 +28,3 @@ class ProviderRepository:
     async def update(self, provider_id: UUID, update_data: dict[str, Any]) -> None:
         stmt = update(Provider).where(Provider.id == provider_id).values(**update_data)
         await self._session.execute(stmt)
-
-    async def delete(self, provider: Provider) -> None:
-        await self._session.delete(provider)
