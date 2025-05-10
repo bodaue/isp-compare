@@ -25,6 +25,14 @@ async def get_search_history(
     return await service.get_user_search_history(limit, offset)
 
 
+@router.get("/latest")
+@inject
+async def get_latest_search_history(
+    service: FromDishka[SearchHistoryService],
+) -> SearchHistoryResponse | None:
+    return await service.get_latest_search()
+
+
 @router.delete("/{search_history_id}", status_code=status.HTTP_204_NO_CONTENT)
 @inject
 async def delete_search_history(

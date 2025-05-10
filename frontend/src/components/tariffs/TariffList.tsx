@@ -1,14 +1,18 @@
 import React, {useState} from 'react';
 import {useProviders, useTariffs} from '../../hooks';
 import {TariffSearchParams} from '../../types/provider.types';
+import {searchHistoryService} from '../../services/searchHistoryService';
+import {useAuth} from '../../contexts/AuthContext';
 import TariffCard from './TariffCard';
 import './TariffList.css';
 
 const TariffList: React.FC = () => {
     const {tariffs, loading, error, searchTariffs, fetchTariffs} = useTariffs();
     const {getProviderById} = useProviders();
+    const {isLoggedIn} = useAuth();
     const [filters, setFilters] = useState<TariffSearchParams>({});
     const [showFilters, setShowFilters] = useState(false);
+    const [loadingHistory, setLoadingHistory] = useState(false);
 
     const handleFilterChange = (name: keyof TariffSearchParams, value: any) => {
         setFilters(prev => ({
@@ -24,6 +28,24 @@ const TariffList: React.FC = () => {
     const resetFilters = () => {
         setFilters({});
         fetchTariffs();
+    };
+
+    const restoreLastSearch = async () => {
+        if (!isLoggedIn) return;
+
+        try {
+            setLoadingHistory(true);
+            const lastSearch = await searchHistoryService.getLatestSearch();
+
+            if (lastSearch?.search_params) {
+                setFilters(lastSearch.search_params);
+                await searchTariffs(lastSearch.search_params);
+            }
+        } catch (error) {
+            console.error('Error restoring last search:', error);
+        } finally {
+            setLoadingHistory(false);
+        }
     };
 
     if (loading) {
@@ -134,6 +156,28 @@ const TariffList: React.FC = () => {
                         <button onClick={resetFilters} className="btn btn-secondary">
                             Сбросить
                         </button>
+                        {isLoggedIn && (
+                            <button
+                                onClick={restoreLastSearch}
+                                className="btn btn-secondary btn-restore"
+                                disabled={loadingHistory}
+                            >
+                                {loadingHistory ? (
+                                    <>
+                                        <span className="loading-spinner-small"></span>
+                                        <span>Загрузка...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M1 4v6h6M23 20v-6h-6"/>
+                                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                                        </svg>
+                                        <span>Последний поиск</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
                     </div>
                 </div>
             )}

@@ -148,6 +148,7 @@
     gap: 1rem;
     margin-top: 0.5rem;
     justify-content: flex-start;
+    align-items: center; /* Выравнивание по центру по вертикали */
 }
 
 .filter-actions .btn {
@@ -158,6 +159,10 @@
     cursor: pointer;
     transition: var(--transition-normal);
     border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .filter-actions .btn-primary {
@@ -178,6 +183,35 @@
 
 .filter-actions .btn-secondary:hover {
     background: rgba(0, 0, 0, 0.05);
+}
+
+.btn-restore {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: fit-content;
+}
+
+.btn-restore svg {
+    transition: transform 0.3s ease;
+    flex-shrink: 0; /* Предотвращает сжатие иконки */
+    margin-right: 0.25rem; /* Добавляем небольшой отступ справа */
+}
+
+.btn-restore:hover svg {
+    transform: rotate(-360deg);
+}
+
+.loading-spinner-small {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
 }
 
 .tariffs-grid {
@@ -245,10 +279,17 @@
 
     .filter-actions {
         flex-direction: column;
+        align-items: stretch;
     }
 
     .filter-actions .btn {
         width: 100%;
+        justify-content: center;
+    }
+
+    .btn-restore {
+        width: 100%;
+        justify-content: center;
     }
 
     .filter-range {

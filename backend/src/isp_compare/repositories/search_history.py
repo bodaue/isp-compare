@@ -35,6 +35,15 @@ class SearchHistoryRepository:
         result = await self._session.execute(stmt)
         return list(result.scalars())
 
+    async def get_latest_by_user(self, user_id: UUID) -> SearchHistory | None:
+        stmt = (
+            select(SearchHistory)
+            .where(SearchHistory.user_id == user_id)
+            .order_by(SearchHistory.created_at.desc())
+            .limit(1)
+        )
+        return await self._session.scalar(stmt)
+
     async def delete(self, search_history: SearchHistory) -> None:
         await self._session.delete(search_history)
 
