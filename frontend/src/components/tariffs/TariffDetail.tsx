@@ -1,3 +1,5 @@
+// frontend/src/components/tariffs/TariffDetail.tsx
+
 import React, {useEffect, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {tariffService} from '../../services/tariffService';
@@ -13,6 +15,7 @@ const TariffDetail: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showConnectModal, setShowConnectModal] = useState(false);
+    const [copiedPhone, setCopiedPhone] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -43,7 +46,12 @@ const TariffDetail: React.FC = () => {
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
-        // Можно добавить уведомление об успешном копировании
+        setCopiedPhone(true);
+
+        // Сбрасываем состояние через 2 секунды
+        setTimeout(() => {
+            setCopiedPhone(false);
+        }, 2000);
     };
 
     if (loading) {
@@ -222,11 +230,30 @@ const TariffDetail: React.FC = () => {
                             <div className="contact-info">
                                 <h4>Позвоните по телефону</h4>
                                 <p>{provider.phone}</p>
+
                                 <button
-                                    className="btn btn-secondary"
+                                    className={`btn btn-secondary ${copiedPhone ? 'btn-success-subtle' : ''}`}
                                     onClick={() => copyToClipboard(provider.phone)}
                                 >
-                                    Скопировать номер
+                                    {copiedPhone ? (
+                                        <>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" strokeWidth="2">
+                                                <path d="M20 6L9 17l-5-5"></path>
+                                            </svg>
+                                            Скопировано
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" strokeWidth="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path
+                                                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                            Скопировать номер
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -247,11 +274,11 @@ const TariffDetail: React.FC = () => {
                                     <>
                                         <h4>Перейдите на страницу тарифа</h4>
                                         <p>{new URL(tariff.url).hostname}</p>
-                                        <a
-                                            href={tariff.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="btn btn-primary">
+
+                                        <a href={tariff.url}
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           className="btn btn-primary">
                                             Открыть страницу тарифа
                                         </a>
                                     </>
