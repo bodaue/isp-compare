@@ -48,7 +48,7 @@ async def test_get_provider_success(
     mock_provider: Provider,
 ) -> None:
     provider_id = uuid.uuid4()
-    provider_repository_mock.get_by_id.return_value = mock_provider
+    provider_repository_mock.get_by_id.return_value = mock_provider, 0
 
     result = await provider_service.get_provider(provider_id)
 
@@ -80,7 +80,7 @@ async def test_get_all_providers(
     provider_repository_mock: AsyncMock,
     mock_provider: Provider,
 ) -> None:
-    providers = [mock_provider, mock_provider, mock_provider]
+    providers = [(mock_provider, 0), (mock_provider, 0), (mock_provider, 0)]
     provider_repository_mock.get_all.return_value = providers
 
     result = await provider_service.get_all_providers()

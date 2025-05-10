@@ -6,6 +6,7 @@ export interface Provider {
     logo_url: string | null;
     rating: number | null;
     phone: string;
+    reviews_count: number;
 }
 
 export interface Tariff {

@@ -14,5 +14,6 @@ class ProviderBase(BaseModel):
 class ProviderResponse(ProviderBase):
     id: UUID
     rating: float | None = None
+    reviews_count: int = 0
 
     model_config = ConfigDict(from_attributes=True)

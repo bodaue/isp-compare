@@ -126,7 +126,7 @@ const ProviderDetail: React.FC = () => {
                     className={`tab-button ${activeTab === 'reviews' ? 'active' : ''}`}
                     onClick={() => setActiveTab('reviews')}
                 >
-                    Отзывы
+                    Отзывы ({provider.reviews_count})
                 </button>
             </div>
 

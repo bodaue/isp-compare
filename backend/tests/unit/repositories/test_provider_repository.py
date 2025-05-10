@@ -51,12 +51,13 @@ async def test_providers(session: AsyncSession, faker: Faker) -> list[Provider]:
 async def test_get_by_id(
     provider_repository: ProviderRepository, test_provider: Provider
 ) -> None:
-    result = await provider_repository.get_by_id(test_provider.id)
+    result, reviews_count = await provider_repository.get_by_id(test_provider.id)
 
     assert result is not None
     assert result.id == test_provider.id
     assert result.name == test_provider.name
     assert result.description == test_provider.description
+    assert reviews_count == 0
 
 
 async def test_get_by_id_not_found(provider_repository: ProviderRepository) -> None:
@@ -73,7 +74,7 @@ async def test_get_all(
 
     assert len(result) == len(test_providers)
 
-    provider_ids = {p.id for p in result}
+    provider_ids = {p[0].id for p in result}
     for provider in test_providers:
         assert provider.id in provider_ids
 
