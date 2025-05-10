@@ -15,7 +15,7 @@ class ReviewCreate(ReviewBase):
 
 class ReviewUpdate(BaseModel):
     rating: int | None = Field(None, ge=1, le=5)
-    comment: str | None = Field(None, min_length=10, max_length=1000)
+    comment: str | None = Field(None, min_length=3, max_length=1000)
 
 
 class ReviewUserInfo(BaseModel):

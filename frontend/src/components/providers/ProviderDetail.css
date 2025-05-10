@@ -113,6 +113,7 @@
     cursor: pointer;
     position: relative;
     transition: var(--transition-fast);
+    border-radius: 0.5rem 0.5rem 0 0;
 }
 
 .tab-button:hover {
@@ -120,8 +121,10 @@
     background: rgba(99, 102, 241, 0.05);
 }
 
+
 .tab-button.active {
     color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.1);
 }
 
 .tab-button.active::after {

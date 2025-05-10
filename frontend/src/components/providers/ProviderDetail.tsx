@@ -1,9 +1,11 @@
+// frontend/src/components/providers/ProviderDetail.tsx
 import React, {useEffect, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {providerService} from '../../services/providerService';
 import {tariffService} from '../../services/tariffService';
 import {Provider, Tariff} from '../../types/provider.types';
 import TariffCard from '../tariffs/TariffCard';
+import ReviewList from '../reviews/ReviewList';
 import './ProviderDetail.css';
 
 const ProviderDetail: React.FC = () => {
@@ -12,6 +14,7 @@ const ProviderDetail: React.FC = () => {
     const [tariffs, setTariffs] = useState<Tariff[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [activeTab, setActiveTab] = useState('tariffs');
 
     useEffect(() => {
         if (id) {
@@ -94,11 +97,11 @@ const ProviderDetail: React.FC = () => {
                         </div>
                     )}
                     {provider.website && (
-                        <a
-                            href={provider.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="provider-website"
+
+                        <a href={provider.website}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="provider-website"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2">
@@ -113,28 +116,40 @@ const ProviderDetail: React.FC = () => {
             </div>
 
             <div className="provider-tabs">
-                <button className="tab-button active">
+                <button
+                    className={`tab-button ${activeTab === 'tariffs' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('tariffs')}
+                >
                     Тарифы ({tariffs.length})
                 </button>
-                <button className="tab-button">
+                <button
+                    className={`tab-button ${activeTab === 'reviews' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('reviews')}
+                >
                     Отзывы
                 </button>
             </div>
 
-            <div className="provider-tariffs">
-                <h2>Тарифные планы</h2>
-                {tariffs.length > 0 ? (
-                    <div className="tariffs-grid">
-                        {tariffs.map((tariff) => (
-                            <TariffCard key={tariff.id} tariff={tariff} provider={provider}/>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="no-tariffs">
-                        <p>Тарифы не найдены</p>
-                    </div>
-                )}
-            </div>
+            {activeTab === 'tariffs' && (
+                <div className="provider-tariffs">
+                    <h2>Тарифные планы</h2>
+                    {tariffs.length > 0 ? (
+                        <div className="tariffs-grid">
+                            {tariffs.map((tariff) => (
+                                <TariffCard key={tariff.id} tariff={tariff} provider={provider}/>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="no-tariffs">
+                            <p>Тарифы не найдены</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {activeTab === 'reviews' && (
+                <ReviewList providerId={provider.id}/>
+            )}
         </div>
     );
 };
