@@ -122,33 +122,21 @@ const TariffComparison: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {/* Основные характеристики */}
+                        {/* Цена */}
                         <tr>
                             <td className="fixed-column">Цена</td>
                             {comparison.items.map(item => (
                                 <td key={item.id}>
                                     <div className="price-cell">
-                                        <div className="price-main">
-                                            <span className={`current-price ${item.is_promo ? 'promo' : ''}`}>
-                                                {formatPrice(item.current_price)} ₽
-                                            </span>
-                                        </div>
-                                        <div className="price-details">
-                                            {item.is_promo && (
-                                                <>
-                                                    <span className="original-price">
-                                                        {formatPrice(item.original_price)} ₽
-                                                    </span>
-                                                    <span className="promo-period">
-                                                        Акция {item.promo_period} мес.
-                                                    </span>
-                                                </>
-                                            )}
-                                        </div>
+                                        <span className="current-price">
+                                            {formatPrice(item.current_price)} ₽
+                                        </span>
                                     </div>
                                 </td>
                             ))}
                         </tr>
+
+                        {/* Скорость */}
                         <tr>
                             <td className="fixed-column">Скорость</td>
                             {comparison.items.map(item => (
@@ -161,44 +149,8 @@ const TariffComparison: React.FC = () => {
                                 </td>
                             ))}
                         </tr>
-                        <tr>
-                            <td className="fixed-column">Дополнительные услуги</td>
-                            {comparison.items.map(item => (
-                                <td key={item.id}>
-                                    <div className="features-cell">
-                                        {item.features.length > 0 ? (
-                                            <ul className="features-list">
-                                                {item.features.map((feature, index) => (
-                                                    <li key={index}>{feature}</li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <span className="no-features">Нет</span>
-                                        )}
-                                    </div>
-                                </td>
-                            ))}
-                        </tr>
-                        <tr>
-                            <td className="fixed-column">Стоимость подключения</td>
-                            {comparison.items.map(item => (
-                                <td key={item.id}>
-                                    <div className="connection-cell">
-                                        {item.connection_cost !== null ? (
-                                            parseNumber(item.connection_cost) === 0 ? (
-                                                <span className="free-connection">Бесплатно</span>
-                                            ) : (
-                                                <span>{formatPrice(item.connection_cost)} ₽</span>
-                                            )
-                                        ) : (
-                                            <span className="no-data">—</span>
-                                        )}
-                                    </div>
-                                </td>
-                            ))}
-                        </tr>
 
-                        {/* Расчетные показатели */}
+                        {/* Цена за Мбит/с */}
                         <tr className="metrics-section">
                             <td className="fixed-column">Цена за Мбит/с</td>
                             {comparison.items.map(item => (
@@ -211,6 +163,8 @@ const TariffComparison: React.FC = () => {
                                 </td>
                             ))}
                         </tr>
+
+                        {/* Годовая стоимость */}
                         <tr className="metrics-section">
                             <td className="fixed-column">Годовая стоимость</td>
                             {comparison.items.map(item => (
@@ -223,6 +177,30 @@ const TariffComparison: React.FC = () => {
                                 </td>
                             ))}
                         </tr>
+
+                        {/* Дополнительные услуги */}
+                        <tr>
+                            <td className="fixed-column">Дополнительные услуги</td>
+                            {comparison.items.map(item => (
+                                <td key={item.id}>
+                                    <div className="features-cell">
+                                        {item.features.length > 0 ? (
+                                            <ul className="features-list">
+                                                {item.features
+                                                    .filter(feature => feature !== "Бесплатное подключение")
+                                                    .map((feature, index) => (
+                                                        <li key={index}>{feature}</li>
+                                                    ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="no-features">Нет</span>
+                                        )}
+                                    </div>
+                                </td>
+                            ))}
+                        </tr>
+
+                        {/* Оценка ценности */}
                         <tr className="metrics-section">
                             <td className="fixed-column">Оценка ценности</td>
                             {comparison.items.map(item => (
@@ -241,7 +219,7 @@ const TariffComparison: React.FC = () => {
                             ))}
                         </tr>
 
-                        {/* Лучшие предложения */}
+                        {/* Преимущества */}
                         <tr className="awards-section">
                             <td className="fixed-column">Преимущества</td>
                             {comparison.items.map(item => (

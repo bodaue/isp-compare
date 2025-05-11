@@ -106,23 +106,9 @@
 
 /* Ячейка с ценой */
 .price-cell {
-    min-height: 80px;
+    min-height: 60px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.price-main {
-    display: flex;
-    align-items: baseline;
-}
-
-.price-details {
-    min-height: 2rem; /* Фиксированная высота для блока деталей */
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    align-items: center;
 }
 
 .current-price {
@@ -132,27 +118,9 @@
     white-space: nowrap;
 }
 
-.current-price.promo {
-    color: var(--error-color);
-}
-
-.original-price {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    text-decoration: line-through;
-    opacity: 0.7;
-}
-
-.promo-period {
-    font-size: 0.75rem;
-    color: var(--error-color);
-    font-weight: 500;
-}
-
 /* Другие ячейки */
 .speed-cell,
 .features-cell,
-.connection-cell,
 .metric-cell {
     min-height: 60px;
     display: flex;
@@ -196,11 +164,6 @@
 .no-data {
     color: var(--text-secondary);
     font-size: 0.875rem;
-}
-
-.free-connection {
-    color: var(--success-color);
-    font-weight: 500;
 }
 
 /* Секция метрик */
@@ -418,7 +381,7 @@
     }
 
     .price-cell {
-        min-height: 70px;
+        min-height: 60px;
     }
 
     .badge {
