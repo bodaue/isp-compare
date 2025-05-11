@@ -52,8 +52,7 @@ class TariffComparisonService:
                 features.append("ТВ")
             if tariff.has_phone:
                 features.append("Телефон")
-            if tariff.connection_cost is not None and tariff.connection_cost == 0:
-                features.append("Бесплатное подключение")
+            # Убрали добавление "Бесплатное подключение" в features
 
             # Рассчитываем метрики
             price_per_mbps = Decimal(str(current_price / tariff.speed))
@@ -87,13 +86,13 @@ class TariffComparisonService:
                 )
             )
 
-        # Определяем лучшие тарифы
+        # Сортируем по value_score (меньше значение = лучше)
+        comparison_items.sort(key=lambda x: x.value_score)
+
         self._mark_best_tariffs(comparison_items)
 
-        # Генерируем рекомендации
         recommendations = self._generate_recommendations(comparison_items)
 
-        # Создаем краткое резюме
         summary = self._generate_summary(comparison_items)
 
         return ComparisonResult(
@@ -168,11 +167,9 @@ class TariffComparisonService:
         )
 
         if fastest != cheapest:
-            price_diff = fastest.current_price - cheapest.current_price
-            speed_diff = fastest.speed - cheapest.speed
             recommendations.append(
                 f"Самый быстрый: {fastest.name} ({fastest.provider_name}) - "
-                f"{fastest.speed} Мбит/с (+{speed_diff} Мбит/с, +{price_diff} ₽/мес)"
+                f"{fastest.speed} Мбит/с"
             )
 
         if best_value not in (cheapest, fastest):
@@ -189,9 +186,7 @@ class TariffComparisonService:
             )
             discount = best_promo.original_price - best_promo.current_price
             recommendations.append(
-                f"Лучшая акция: {best_promo.name} - скидка {discount} ₽/мес "
-                f"(цена {best_promo.current_price} ₽ вместо "
-                f"{best_promo.original_price} ₽)"
+                f"Лучшая акция: {best_promo.name} - скидка {discount} ₽/мес"
             )
 
         # Дополнительные услуги
@@ -200,17 +195,7 @@ class TariffComparisonService:
             cheapest_with_tv = min(with_tv, key=lambda x: x.current_price)
             recommendations.append(
                 f"С телевидением: {cheapest_with_tv.name} - "
-                f"самый доступный с ТВ ({cheapest_with_tv.current_price} ₽/мес)"
-            )
-
-        # Бесплатное подключение
-        free_connection = [
-            item for item in items if "Бесплатное подключение" in item.features
-        ]
-        if free_connection and len(free_connection) < len(items):
-            recommendations.append(
-                f"Без затрат на подключение: "
-                f"{', '.join(item.name for item in free_connection)}"
+                f"{cheapest_with_tv.current_price} ₽/мес"
             )
 
         return recommendations
