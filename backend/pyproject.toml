@@ -62,7 +62,6 @@ asyncio_default_fixture_loop_scope = "session"
 [tool.coverage.run]
 source = ["isp_compare"]
 omit = [
-    "src/isp_compare/admin/auth.py",
     "src/isp_compare/main.py",
     "src/isp_compare/core/config.py",
     "src/isp_compare/core/di/main.py",
