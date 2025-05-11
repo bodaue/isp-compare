@@ -106,7 +106,6 @@ const TariffComparison: React.FC = () => {
                                 <div className="tariff-header-cell">
                                     <div className="provider-info">
                                         <div className="provider-name">{item.provider_name}</div>
-
                                         <a href={`/tariffs/${item.id}`}
                                            target="_blank"
                                            rel="noopener noreferrer"
@@ -137,10 +136,17 @@ const TariffComparison: React.FC = () => {
                         <td className="fixed-column">Цена</td>
                         {comparison.items.map(item => (
                             <td key={item.id}>
-                                <div className="price-cell">
-                                        <span className="current-price">
-                                            {formatPrice(item.current_price)} ₽
+                                <div className={`price-cell ${item.is_cheapest ? 'best-value' : ''}`}>
+                                    <span className="current-price">
+                                        {formatPrice(item.current_price)} ₽
+                                    </span>
+                                    {item.is_cheapest && (
+                                        <span className="best-indicator" title="Самый дешевый">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M20 6L9 17l-5-5"/>
+                                            </svg>
                                         </span>
+                                    )}
                                 </div>
                             </td>
                         ))}
@@ -151,10 +157,17 @@ const TariffComparison: React.FC = () => {
                         <td className="fixed-column">Скорость</td>
                         {comparison.items.map(item => (
                             <td key={item.id}>
-                                <div className="speed-cell">
-                                        <span className="speed-value">
-                                            {item.speed} Мбит/с
+                                <div className={`speed-cell ${item.is_fastest ? 'best-value' : ''}`}>
+                                    <span className="speed-value">
+                                        {item.speed} Мбит/с
+                                    </span>
+                                    {item.is_fastest && (
+                                        <span className="best-indicator" title="Самый быстрый">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                            </svg>
                                         </span>
+                                    )}
                                 </div>
                             </td>
                         ))}
@@ -166,9 +179,9 @@ const TariffComparison: React.FC = () => {
                         {comparison.items.map(item => (
                             <td key={item.id}>
                                 <div className="metric-cell">
-                                        <span className="metric-value">
-                                            {parseNumber(item.price_per_mbps).toFixed(2)} ₽
-                                        </span>
+                                    <span className="metric-value">
+                                        {parseNumber(item.price_per_mbps).toFixed(2)} ₽
+                                    </span>
                                 </div>
                             </td>
                         ))}
@@ -180,9 +193,9 @@ const TariffComparison: React.FC = () => {
                         {comparison.items.map(item => (
                             <td key={item.id}>
                                 <div className="metric-cell">
-                                        <span className="metric-value">
-                                            {formatPrice(item.yearly_cost)} ₽
-                                        </span>
+                                    <span className="metric-value">
+                                        {formatPrice(item.yearly_cost)} ₽
+                                    </span>
                                 </div>
                             </td>
                         ))}
@@ -193,15 +206,24 @@ const TariffComparison: React.FC = () => {
                         <td className="fixed-column">Дополнительные услуги</td>
                         {comparison.items.map(item => (
                             <td key={item.id}>
-                                <div className="features-cell">
+                                <div className={`features-cell ${item.has_most_features ? 'best-value' : ''}`}>
                                     {item.features.length > 0 ? (
-                                        <ul className="features-list">
-                                            {item.features
-                                                .filter(feature => feature !== "Бесплатное подключение")
-                                                .map((feature, index) => (
-                                                    <li key={index}>{feature}</li>
-                                                ))}
-                                        </ul>
+                                        <>
+                                            <ul className="features-list">
+                                                {item.features
+                                                    .filter(feature => feature !== "Бесплатное подключение")
+                                                    .map((feature, index) => (
+                                                        <li key={index}>{feature}</li>
+                                                    ))}
+                                            </ul>
+                                            {item.has_most_features && (
+                                                <span className="best-indicator" title="Больше всего услуг">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                    </svg>
+                                                </span>
+                                            )}
+                                        </>
                                     ) : (
                                         <span className="no-features">—</span>
                                     )}
@@ -215,7 +237,7 @@ const TariffComparison: React.FC = () => {
                         <td className="fixed-column">Оценка ценности</td>
                         {comparison.items.map(item => (
                             <td key={item.id}>
-                                <div className="value-cell">
+                                <div className={`value-cell ${item.is_best_value ? 'best-value' : ''}`}>
                                     <div className="value-bar">
                                         <div
                                             className="value-fill"
@@ -224,58 +246,13 @@ const TariffComparison: React.FC = () => {
                                             }}
                                         ></div>
                                     </div>
-                                </div>
-                            </td>
-                        ))}
-                    </tr>
-
-                    {/* Преимущества */}
-                    <tr className="awards-section">
-                        <td className="fixed-column">Преимущества</td>
-                        {comparison.items.map(item => (
-                            <td key={item.id}>
-                                <div className="awards-cell">
-                                    {item.is_cheapest && (
-                                        <span className="badge badge-price">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                     stroke="currentColor" strokeWidth="2">
-                                                    <path
-                                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                                </svg>
-                                                Самый дешевый
-                                            </span>
-                                    )}
-                                    {item.is_fastest && (
-                                        <span className="badge badge-speed">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                     stroke="currentColor" strokeWidth="2">
-                                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                                                </svg>
-                                                Самый быстрый
-                                            </span>
-                                    )}
                                     {item.is_best_value && (
-                                        <span className="badge badge-value">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                     stroke="currentColor" strokeWidth="2">
-                                                    <path d="M9 11l3 3L22 4"/>
-                                                    <path
-                                                        d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                                                </svg>
-                                                Лучшее предложение
-                                            </span>
-                                    )}
-                                    {item.has_most_features && (
-                                        <span className="badge badge-features">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                     stroke="currentColor" strokeWidth="2">
-                                                    <path d="M12 2v20m-8-10h16m-4-4l8 8-8 8"/>
-                                                </svg>
-                                                Больше услуг
-                                            </span>
-                                    )}
-                                    {!item.is_cheapest && !item.is_fastest && !item.is_best_value && !item.has_most_features && (
-                                        <span className="no-awards">—</span>
+                                        <span className="best-indicator" title="Лучшее предложение">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M9 11l3 3L22 4"/>
+                                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                            </svg>
+                                        </span>
                                     )}
                                 </div>
                             </td>
