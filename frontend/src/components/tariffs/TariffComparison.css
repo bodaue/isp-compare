@@ -172,7 +172,8 @@
 }
 
 .no-features,
-.no-data {
+.no-data,
+.no-awards {
     color: var(--text-secondary);
     font-size: 0.875rem;
 }
@@ -262,11 +263,6 @@
     color: var(--accent-color);
 }
 
-.no-awards {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-}
-
 /* Секция рекомендаций */
 .recommendations-section {
     margin-bottom: 2rem;
@@ -319,11 +315,6 @@
     font-size: 0.875rem;
     line-height: 1.5;
     color: var(--text-primary);
-}
-
-.comparison-footer {
-    text-align: center;
-    margin-top: 2rem;
 }
 
 /* Состояния загрузки и ошибок */
