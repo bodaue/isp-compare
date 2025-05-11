@@ -9,6 +9,7 @@ import ProviderList from './components/providers/ProviderList';
 import ProviderDetail from './components/providers/ProviderDetail';
 import TariffList from './components/tariffs/TariffList';
 import TariffDetail from './components/tariffs/TariffDetail';
+import TariffComparison from './components/tariffs/TariffComparison';
 import {useAuth} from './contexts/AuthContext';
 import './App.css';
 
@@ -39,6 +40,7 @@ const App: React.FC = () => {
                     <Route path="/providers" element={<ProviderList/>}/>
                     <Route path="/providers/:id" element={<ProviderDetail/>}/>
                     <Route path="/tariffs" element={<TariffList/>}/>
+                    <Route path="/tariffs/compare" element={<TariffComparison/>}/>
                     <Route path="/tariffs/:id" element={<TariffDetail/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/register" element={<Register/>}/>

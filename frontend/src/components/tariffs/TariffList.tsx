@@ -1,5 +1,6 @@
 // frontend/src/components/tariffs/TariffList.tsx
 import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {useProviders, useTariffs} from '../../hooks';
 import {TariffSearchParams} from '../../types/provider.types';
 import {searchHistoryService} from '../../services/searchHistoryService';
@@ -9,6 +10,7 @@ import PageHeader from '../common/PageHeader';
 import './TariffList.css';
 
 const TariffList: React.FC = () => {
+    const navigate = useNavigate();
     const {tariffs, loading, error, searchTariffs, fetchTariffs} = useTariffs();
     const {getProviderById} = useProviders();
     const {isLoggedIn} = useAuth();
@@ -75,8 +77,9 @@ const TariffList: React.FC = () => {
     };
 
     const startComparison = () => {
-        console.log('Начинаем сравнение тарифов:', selectedTariffs);
-        // TODO: Перенаправить на страницу сравнения
+        if (selectedTariffs.length >= 2) {
+            navigate(`/tariffs/compare?ids=${selectedTariffs.join(',')}`);
+        }
     };
 
     if (loading) {
