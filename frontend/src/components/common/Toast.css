@@ -1,0 +1,110 @@
+/* frontend/src/components/common/Toast.css */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    max-width: 400px;
+    background: var(--toast-bg);
+    border: 1px solid var(--toast-border);
+    --toast-bg: #1f2937;
+    --toast-border: #374151;
+}
+
+.toast-info {
+    --toast-bg: #4f69af;
+    --toast-border: #6b7eb8;
+}
+
+.toast-success {
+    --toast-bg: #10b981;  /* Используем цвет из вашей цветовой схемы - var(--success-color) */
+    --toast-border: #34d399;
+    opacity: 0.95;  /* Делаем немного прозрачным для более мягкого вида */
+}
+
+.toast-warning {
+    --toast-bg: #f59e0b;
+    --toast-border: #fcd34d;
+}
+
+.toast-error {
+    --toast-bg: #ef4444;
+    --toast-border: #f87171;
+}
+
+.toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.toast-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 0.375rem;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: white;
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Exit animation */
+.toast-exit {
+    animation: slideOut 0.3s ease-out forwards;
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .toast {
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+}

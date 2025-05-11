@@ -1,12 +1,13 @@
-// frontend/src/components/tariffs/TariffList.tsx
+// frontend/src/components/tariffs/TariffList.tsx (обновленная версия)
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useProviders, useTariffs} from '../../hooks';
+import {useProviders, useTariffs, useToast} from '../../hooks';
 import {TariffSearchParams} from '../../types/provider.types';
 import {searchHistoryService} from '../../services/searchHistoryService';
 import {useAuth} from '../../contexts/AuthContext';
 import TariffCard from './TariffCard';
 import PageHeader from '../common/PageHeader';
+import Toast from '../common/Toast';
 import './TariffList.css';
 
 const TariffList: React.FC = () => {
@@ -14,11 +15,11 @@ const TariffList: React.FC = () => {
     const {tariffs, loading, error, searchTariffs, fetchTariffs} = useTariffs();
     const {getProviderById} = useProviders();
     const {isLoggedIn} = useAuth();
+    const {toasts, showToast, removeToast} = useToast();
     const [filters, setFilters] = useState<TariffSearchParams>({});
     const [showFilters, setShowFilters] = useState(false);
     const [loadingHistory, setLoadingHistory] = useState(false);
 
-    // Новые состояния для режима сравнения
     const [compareMode, setCompareMode] = useState(false);
     const [selectedTariffs, setSelectedTariffs] = useState<string[]>([]);
 
@@ -38,6 +39,7 @@ const TariffList: React.FC = () => {
         fetchTariffs();
     };
 
+// В TariffList.tsx:
     const restoreLastSearch = async () => {
         if (!isLoggedIn) return;
 
@@ -48,15 +50,17 @@ const TariffList: React.FC = () => {
             if (lastSearch?.search_params) {
                 setFilters(lastSearch.search_params);
                 await searchTariffs(lastSearch.search_params);
+            } else {
+                showToast('Нет сохраненных фильтров для восстановления', 'info', 2000);
             }
         } catch (error) {
             console.error('Error restoring last search:', error);
+            showToast('Ошибка при восстановлении фильтров', 'error', 2000);
         } finally {
             setLoadingHistory(false);
         }
     };
-
-    // Новые функции для управления выбором тарифов
+    // Остальные функции...
     const toggleCompareMode = () => {
         if (compareMode) {
             setSelectedTariffs([]);
@@ -109,6 +113,7 @@ const TariffList: React.FC = () => {
                 subtitle="Найдите подходящий тариф среди всех провайдеров"
             />
 
+            {/* Существующая разметка... */}
             <div className="tariff-controls">
                 <button
                     className={`compare-toggle ${compareMode ? 'active' : ''}`}
@@ -133,6 +138,7 @@ const TariffList: React.FC = () => {
                 </button>
             </div>
 
+            {/* Существующие секции... */}
             {compareMode && (
                 <div className="compare-panel">
                     <div className="compare-info">
@@ -154,6 +160,7 @@ const TariffList: React.FC = () => {
 
             {showFilters && (
                 <div className="filter-panel">
+                    {/* Существующие фильтры... */}
                     <div className="filter-group">
                         <label>Цена (₽/мес)</label>
                         <div className="filter-range">
@@ -268,6 +275,17 @@ const TariffList: React.FC = () => {
                     <p>Тарифы не найдены. Попробуйте изменить параметры поиска.</p>
                 </div>
             )}
+
+            {/* Рендерим toast уведомления */}
+            {toasts.map(toast => (
+                <Toast
+                    key={toast.id}
+                    message={toast.message}
+                    type={toast.type}
+                    duration={toast.duration}
+                    onClose={() => removeToast(toast.id)}
+                />
+            ))}
         </div>
     );
 };
