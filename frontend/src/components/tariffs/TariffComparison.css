@@ -28,6 +28,7 @@
     border-collapse: separate;
     border-spacing: 0;
     min-width: 800px;
+    table-layout: fixed; /* Добавлено для фиксированной ширины столбцов */
 }
 
 .comparison-table th,
@@ -36,6 +37,13 @@
     text-align: left;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     vertical-align: middle;
+}
+
+/* Фиксированная ширина для всех столбцов с тарифами */
+.comparison-table th:not(.fixed-column),
+.comparison-table td:not(.fixed-column) {
+    width: calc((100% - 240px) / var(--columns-count, 5));
+    min-width: 200px;
 }
 
 .comparison-table th {
@@ -54,7 +62,7 @@
     z-index: 5;
     font-weight: 500;
     color: var(--text-secondary);
-    min-width: 200px;
+    width: 240px; /* Фиксированная ширина для первого столбца */
     border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -73,12 +81,14 @@
 
 .provider-info {
     flex: 1;
+    min-width: 0; /* Позволяет тексту переноситься */
 }
 
 .provider-name {
     font-size: 0.875rem;
     color: var(--text-secondary);
     margin-bottom: 0.25rem;
+    word-break: break-word; /* Перенос длинных слов */
 }
 
 .tariff-name-link {
@@ -90,6 +100,7 @@
     transition: var(--transition-fast);
     display: inline-block;
     cursor: pointer;
+    word-break: break-word; /* Перенос длинных слов */
 }
 
 .tariff-name-link:hover {
@@ -210,12 +221,33 @@
 
 /* Оценка ценности */
 .value-cell {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+}
+
+.value-info {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
+    width: 100%;
+}
+
+.value-percentage {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.value-bar-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
 }
 
 .value-bar {
-    width: 100%;
-    max-width: 200px;
+    flex: 1;
     height: 8px;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
@@ -329,7 +361,7 @@
     }
 
     .fixed-column {
-        min-width: 140px;
+        width: 180px;
     }
 
     .current-price {
@@ -356,6 +388,10 @@
         min-height: 48px;
         padding: 0.5rem;
     }
+
+    .value-percentage {
+        font-size: 0.875rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -366,7 +402,7 @@
     }
 
     .fixed-column {
-        min-width: 120px;
+        width: 140px;
     }
 
     .tariff-header-cell {

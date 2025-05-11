@@ -57,6 +57,14 @@ const TariffComparison: React.FC = () => {
         return typeof value === 'string' ? parseFloat(value) : value;
     };
 
+    const calculateValuePercentage = (valueScore: number | string): number => {
+        const score = parseNumber(valueScore);
+        // Преобразуем значение value_score в проценты
+        // Чем меньше value_score, тем лучше (более высокий процент)
+        const percentage = Math.min(100, Math.max(0, (1 / score) * 100));
+        return Math.round(percentage);
+    };
+
     if (loading) {
         return (
             <div className="comparison-loading">
@@ -76,6 +84,11 @@ const TariffComparison: React.FC = () => {
             </div>
         );
     }
+
+    // Устанавливаем переменную CSS для количества столбцов
+    const tableStyle = {
+        '--columns-count': comparison.items.length
+    } as React.CSSProperties;
 
     return (
         <div className="comparison-container">
@@ -97,7 +110,7 @@ const TariffComparison: React.FC = () => {
             </div>
 
             <div className="comparison-table-wrapper">
-                <table className="comparison-table">
+                <table className="comparison-table" style={tableStyle}>
                     <thead>
                     <tr>
                         <th className="fixed-column">Характеристика</th>
@@ -235,28 +248,36 @@ const TariffComparison: React.FC = () => {
                     {/* Оценка ценности */}
                     <tr className="metrics-section">
                         <td className="fixed-column">Оценка ценности</td>
-                        {comparison.items.map(item => (
-                            <td key={item.id}>
-                                <div className={`value-cell ${item.is_best_value ? 'best-value' : ''}`}>
-                                    <div className="value-bar">
-                                        <div
-                                            className="value-fill"
-                                            style={{
-                                                width: `${Math.min(100, (1 / parseNumber(item.value_score)) * 100)}%`
-                                            }}
-                                        ></div>
+                        {comparison.items.map(item => {
+                            const percentage = calculateValuePercentage(item.value_score);
+                            return (
+                                <td key={item.id}>
+                                    <div className={`value-cell ${item.is_best_value ? 'best-value' : ''}`}>
+                                        <div className="value-info">
+                                            <span className="value-percentage">{percentage}%</span>
+                                            {item.is_best_value && (
+                                                <span className="best-indicator" title="Лучшее предложение">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M9 11l3 3L22 4"/>
+                                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                                    </svg>
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="value-bar-container">
+                                            <div className="value-bar">
+                                                <div
+                                                    className="value-fill"
+                                                    style={{
+                                                        width: `${percentage}%`
+                                                    }}
+                                                ></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    {item.is_best_value && (
-                                        <span className="best-indicator" title="Лучшее предложение">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M9 11l3 3L22 4"/>
-                                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                                            </svg>
-                                        </span>
-                                    )}
-                                </div>
-                            </td>
-                        ))}
+                                </td>
+                            );
+                        })}
                     </tr>
                     </tbody>
                 </table>
