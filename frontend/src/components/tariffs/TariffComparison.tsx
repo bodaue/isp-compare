@@ -103,8 +103,10 @@ const TariffComparison: React.FC = () => {
                             {comparison.items.map(item => (
                                 <th key={item.id}>
                                     <div className="tariff-header-cell">
-                                        <div className="provider-name">{item.provider_name}</div>
-                                        <div className="tariff-name">{item.name}</div>
+                                        <div className="provider-info">
+                                            <div className="provider-name">{item.provider_name}</div>
+                                            <div className="tariff-name">{item.name}</div>
+                                        </div>
                                         <button
                                             className="remove-btn"
                                             onClick={() => removeFromComparison(item.id)}
@@ -120,22 +122,29 @@ const TariffComparison: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
+                        {/* Основные характеристики */}
                         <tr>
                             <td className="fixed-column">Цена</td>
                             {comparison.items.map(item => (
                                 <td key={item.id}>
                                     <div className="price-cell">
-                                        <span className={`current-price ${item.is_promo ? 'promo' : ''}`}>
-                                            {formatPrice(item.current_price)} ₽
-                                        </span>
-                                        {item.is_promo && (
-                                            <span className="original-price">
-                                                {formatPrice(item.original_price)} ₽
+                                        <div className="price-main">
+                                            <span className={`current-price ${item.is_promo ? 'promo' : ''}`}>
+                                                {formatPrice(item.current_price)} ₽
                                             </span>
-                                        )}
-                                        {item.is_cheapest && (
-                                            <span className="badge badge-success">Самый дешевый</span>
-                                        )}
+                                        </div>
+                                        <div className="price-details">
+                                            {item.is_promo && (
+                                                <>
+                                                    <span className="original-price">
+                                                        {formatPrice(item.original_price)} ₽
+                                                    </span>
+                                                    <span className="promo-period">
+                                                        Акция {item.promo_period} мес.
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </td>
                             ))}
@@ -145,10 +154,9 @@ const TariffComparison: React.FC = () => {
                             {comparison.items.map(item => (
                                 <td key={item.id}>
                                     <div className="speed-cell">
-                                        <span>{item.speed} Мбит/с</span>
-                                        {item.is_fastest && (
-                                            <span className="badge badge-success">Самый быстрый</span>
-                                        )}
+                                        <span className="speed-value">
+                                            {item.speed} Мбит/с
+                                        </span>
                                     </div>
                                 </td>
                             ))}
@@ -165,10 +173,7 @@ const TariffComparison: React.FC = () => {
                                                 ))}
                                             </ul>
                                         ) : (
-                                            <span className="no-features">—</span>
-                                        )}
-                                        {item.has_most_features && (
-                                            <span className="badge badge-info">Больше всего услуг</span>
+                                            <span className="no-features">Нет</span>
                                         )}
                                     </div>
                                 </td>
@@ -178,35 +183,47 @@ const TariffComparison: React.FC = () => {
                             <td className="fixed-column">Стоимость подключения</td>
                             {comparison.items.map(item => (
                                 <td key={item.id}>
-                                    {item.connection_cost !== null ? (
-                                        parseNumber(item.connection_cost) === 0 ? (
-                                            <span className="free-connection">Бесплатно</span>
+                                    <div className="connection-cell">
+                                        {item.connection_cost !== null ? (
+                                            parseNumber(item.connection_cost) === 0 ? (
+                                                <span className="free-connection">Бесплатно</span>
+                                            ) : (
+                                                <span>{formatPrice(item.connection_cost)} ₽</span>
+                                            )
                                         ) : (
-                                            `${formatPrice(item.connection_cost)} ₽`
-                                        )
-                                    ) : (
-                                        '—'
-                                    )}
+                                            <span className="no-data">—</span>
+                                        )}
+                                    </div>
                                 </td>
                             ))}
                         </tr>
-                        <tr>
+
+                        {/* Расчетные показатели */}
+                        <tr className="metrics-section">
                             <td className="fixed-column">Цена за Мбит/с</td>
                             {comparison.items.map(item => (
                                 <td key={item.id}>
-                                    {parseNumber(item.price_per_mbps).toFixed(2)} ₽
+                                    <div className="metric-cell">
+                                        <span className="metric-value">
+                                            {parseNumber(item.price_per_mbps).toFixed(2)} ₽
+                                        </span>
+                                    </div>
                                 </td>
                             ))}
                         </tr>
-                        <tr>
+                        <tr className="metrics-section">
                             <td className="fixed-column">Годовая стоимость</td>
                             {comparison.items.map(item => (
                                 <td key={item.id}>
-                                    {formatPrice(item.yearly_cost)} ₽
+                                    <div className="metric-cell">
+                                        <span className="metric-value">
+                                            {formatPrice(item.yearly_cost)} ₽
+                                        </span>
+                                    </div>
                                 </td>
                             ))}
                         </tr>
-                        <tr>
+                        <tr className="metrics-section">
                             <td className="fixed-column">Оценка ценности</td>
                             {comparison.items.map(item => (
                                 <td key={item.id}>
@@ -219,8 +236,52 @@ const TariffComparison: React.FC = () => {
                                                 }}
                                             ></div>
                                         </div>
+                                    </div>
+                                </td>
+                            ))}
+                        </tr>
+
+                        {/* Лучшие предложения */}
+                        <tr className="awards-section">
+                            <td className="fixed-column">Преимущества</td>
+                            {comparison.items.map(item => (
+                                <td key={item.id}>
+                                    <div className="awards-cell">
+                                        {item.is_cheapest && (
+                                            <span className="badge badge-price">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                </svg>
+                                                Самый дешевый
+                                            </span>
+                                        )}
+                                        {item.is_fastest && (
+                                            <span className="badge badge-speed">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                                </svg>
+                                                Самый быстрый
+                                            </span>
+                                        )}
                                         {item.is_best_value && (
-                                            <span className="badge badge-success">Лучшее предложение</span>
+                                            <span className="badge badge-value">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M9 11l3 3L22 4"/>
+                                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                                </svg>
+                                                Лучшее предложение
+                                            </span>
+                                        )}
+                                        {item.has_most_features && (
+                                            <span className="badge badge-features">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M12 2v20m-8-10h16m-4-4l8 8-8 8"/>
+                                                </svg>
+                                                Больше услуг
+                                            </span>
+                                        )}
+                                        {!item.is_cheapest && !item.is_fastest && !item.is_best_value && !item.has_most_features && (
+                                            <span className="no-awards">—</span>
                                         )}
                                     </div>
                                 </td>
