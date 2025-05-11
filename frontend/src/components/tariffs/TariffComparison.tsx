@@ -1,3 +1,4 @@
+// frontend/src/components/tariffs/TariffComparison.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { tariffService } from '../../services/tariffService';
@@ -105,7 +106,15 @@ const TariffComparison: React.FC = () => {
                                     <div className="tariff-header-cell">
                                         <div className="provider-info">
                                             <div className="provider-name">{item.provider_name}</div>
-                                            <div className="tariff-name">{item.name}</div>
+                                            <a
+                                                href={`/tariffs/${item.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="tariff-name-link"
+                                                title="Открыть тариф в новой вкладке"
+                                            >
+                                                {item.name}
+                                            </a>
                                         </div>
                                         <button
                                             className="remove-btn"

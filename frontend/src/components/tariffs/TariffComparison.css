@@ -81,11 +81,22 @@
     margin-bottom: 0.25rem;
 }
 
-.tariff-name {
+/* Основные стили для ссылки-названия тарифа */
+.tariff-name-link {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--primary-color);
     line-height: 1.2;
+    text-decoration: none;
+    transition: var(--transition-fast);
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Подчеркивание при hover */
+.tariff-name-link:hover {
+    text-decoration: underline;
+    color: var(--primary-dark);
 }
 
 .remove-btn {
