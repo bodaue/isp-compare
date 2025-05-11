@@ -20,13 +20,11 @@ class TariffComparisonService:
         self._provider_repository = provider_repository
 
     async def compare_tariffs(self, request: ComparisonRequest) -> ComparisonResult:
-        # Получаем все тарифы одним запросом
-        tariff_map = await self._tariff_repository.get_multiple_by_ids(
-            request.tariff_ids
-        )
+        tariff_ids = list(set(request.tariff_ids))
+        tariff_map = await self._tariff_repository.get_multiple_by_ids(tariff_ids)
 
         # Проверяем, что все запрошенные тарифы найдены
-        for tariff_id in request.tariff_ids:
+        for tariff_id in tariff_ids:
             if tariff_id not in tariff_map:
                 raise TariffNotFoundByIdException(tariff_id)
 
@@ -36,7 +34,7 @@ class TariffComparisonService:
 
         # Преобразуем тарифы в элементы сравнения
         comparison_items = []
-        for tariff_id in request.tariff_ids:
+        for tariff_id in tariff_ids:
             tariff = tariff_map[tariff_id]
             provider_name = provider_map.get(tariff.provider_id).name
 
