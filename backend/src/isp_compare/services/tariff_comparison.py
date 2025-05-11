@@ -147,14 +147,13 @@ class TariffComparisonService:
             if item.value_score == min_value_score:
                 item.is_best_value = True
 
-        # Больше всего возможностей
         max_features = max(len(item.features) for item in items)
-        for item in items:
-            if len(item.features) == max_features:
-                item.has_most_features = True
+        if max_features > 0:
+            for item in items:
+                if len(item.features) == max_features:
+                    item.has_most_features = True
 
     def _generate_recommendations(self, items: list[TariffComparisonItem]) -> list[str]:
-        """Генерация персонализированных рекомендаций"""
         recommendations = []
 
         # Находим лучшие тарифы
