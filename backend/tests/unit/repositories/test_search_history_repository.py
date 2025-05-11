@@ -198,6 +198,34 @@ async def test_get_by_user_ordered_by_date(
         assert result[i - 1].created_at >= result[i].created_at
 
 
+async def test_get_latest_by_user_success(
+    search_history_repository: SearchHistoryRepository,
+    regular_user: User,
+    test_search_histories: list[SearchHistory],
+) -> None:
+    result = await search_history_repository.get_latest_by_user(regular_user.id)
+
+    assert result is not None
+    assert result.user_id == regular_user.id
+
+    all_user_histories = [
+        h for h in test_search_histories if h.user_id == regular_user.id
+    ]
+    latest_history = max(all_user_histories, key=lambda h: h.created_at)
+    assert result.id == latest_history.id
+    assert result.created_at == latest_history.created_at
+
+
+async def test_get_latest_by_user_not_found(
+    search_history_repository: SearchHistoryRepository,
+) -> None:
+    non_existent_user_id = uuid.uuid4()
+
+    result = await search_history_repository.get_latest_by_user(non_existent_user_id)
+
+    assert result is None
+
+
 async def test_delete(
     session: AsyncSession,
     search_history_repository: SearchHistoryRepository,

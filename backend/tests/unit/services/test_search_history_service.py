@@ -297,3 +297,48 @@ async def test_get_user_search_history_with_complex_params(
 
     assert len(result) == 1
     assert result[0].search_params == complex_search_history.search_params
+
+
+async def test_get_latest_search_success(
+    search_history_service: SearchHistoryService,
+    identity_provider_mock: AsyncMock,
+    search_history_repository_mock: AsyncMock,
+    mock_user: User,
+    mock_search_history: SearchHistory,
+) -> None:
+    """Тест успешного получения последней истории поиска"""
+    identity_provider_mock.get_current_user.return_value = mock_user
+    search_history_repository_mock.get_latest_by_user.return_value = mock_search_history
+
+    result = await search_history_service.get_latest_search()
+
+    identity_provider_mock.get_current_user.assert_called_once()
+    search_history_repository_mock.get_latest_by_user.assert_called_once_with(
+        mock_user.id
+    )
+
+    assert result is not None
+    assert isinstance(result, SearchHistoryResponse)
+    assert result.id == mock_search_history.id
+    assert result.user_id == mock_search_history.user_id
+    assert result.search_params == mock_search_history.search_params
+
+
+async def test_get_latest_search_not_found(
+    search_history_service: SearchHistoryService,
+    identity_provider_mock: AsyncMock,
+    search_history_repository_mock: AsyncMock,
+    mock_user: User,
+) -> None:
+    """Тест когда последняя история поиска не найдена"""
+    identity_provider_mock.get_current_user.return_value = mock_user
+    search_history_repository_mock.get_latest_by_user.return_value = None
+
+    result = await search_history_service.get_latest_search()
+
+    identity_provider_mock.get_current_user.assert_called_once()
+    search_history_repository_mock.get_latest_by_user.assert_called_once_with(
+        mock_user.id
+    )
+
+    assert result is None
