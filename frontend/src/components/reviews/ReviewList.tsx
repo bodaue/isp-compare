@@ -37,17 +37,17 @@ const ReviewList: React.FC<ReviewListProps> = ({providerId}) => {
     };
 
     useEffect(() => {
-        fetchReviews();
+        fetchReviews(0, true);
     }, [providerId]);
 
-    const fetchReviews = async (reset: boolean = true) => {
+    const fetchReviews = async (pageNum: number = 0, reset: boolean = true) => {
         try {
             setLoading(true);
-            const currentPage = reset ? 0 : page;
+            const offset = pageNum * limit;
             const data = await reviewService.getProviderReviews(
                 providerId,
                 limit,
-                currentPage * limit
+                offset
             );
 
             if (reset) {
@@ -57,13 +57,13 @@ const ReviewList: React.FC<ReviewListProps> = ({providerId}) => {
             }
 
             setHasMore(data.length === limit);
-            setPage(reset ? 0 : currentPage);
+            setPage(pageNum);
 
             // Найдем отзыв текущего пользователя
             const currentUserId = getCurrentUserId();
             if (currentUserId) {
                 const userReviewData = data.find(review => review.user?.id === currentUserId) ||
-                                        reviews.find(review => review.user?.id === currentUserId);
+                    reviews.find(review => review.user?.id === currentUserId);
                 setUserReview(userReviewData || null);
             }
         } catch (error) {
@@ -75,8 +75,7 @@ const ReviewList: React.FC<ReviewListProps> = ({providerId}) => {
 
     const loadMore = async () => {
         const nextPage = page + 1;
-        setPage(nextPage);
-        await fetchReviews(false);
+        await fetchReviews(nextPage, false);
     };
 
     const handleCreateReview = async (data: any) => {
@@ -111,7 +110,8 @@ const ReviewList: React.FC<ReviewListProps> = ({providerId}) => {
                         className="btn btn-primary btn-compact"
                         onClick={() => setShowForm(true)}
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             strokeWidth="2">
                             <path d="M12 5v14M5 12h14"/>
                         </svg>
                         Написать отзыв
@@ -139,7 +139,8 @@ const ReviewList: React.FC<ReviewListProps> = ({providerId}) => {
                             className="btn btn-primary btn-compact"
                             onClick={() => setShowForm(true)}
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 strokeWidth="2">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                             </svg>
