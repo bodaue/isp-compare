@@ -1,5 +1,3 @@
-// frontend/src/components/tariffs/TariffDetail.tsx
-
 import React, {useEffect, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {tariffService} from '../../services/tariffService';
@@ -278,7 +276,8 @@ const TariffDetail: React.FC = () => {
                                         <a href={tariff.url}
                                            target="_blank"
                                            rel="noopener noreferrer"
-                                           className="btn btn-primary">
+                                           className="btn btn-primary"
+                                           style={{width: 'auto', display: 'inline-block'}}>
                                             Открыть страницу тарифа
                                         </a>
                                     </>
@@ -289,7 +288,8 @@ const TariffDetail: React.FC = () => {
                                         <a href={provider.website}
                                            target="_blank"
                                            rel="noopener noreferrer"
-                                           className="btn btn-primary">
+                                           className="btn btn-primary"
+                                           style={{width: 'auto', display: 'inline-block'}}>
                                             Открыть сайт
                                         </a>
                                     </>

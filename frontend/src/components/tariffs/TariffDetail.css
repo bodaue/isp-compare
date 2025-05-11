@@ -261,9 +261,12 @@
     color: var(--text-secondary);
 }
 
-.contact-info .btn {
+.contact-info a.btn {
     padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    font-size: 0.845rem;
+    width: auto;
+    display: inline-block;
+    box-sizing: border-box;
 }
 
 .connect-note {
