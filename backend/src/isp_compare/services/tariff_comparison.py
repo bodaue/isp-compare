@@ -1,5 +1,3 @@
-# backend/src/isp_compare/services/tariff_comparison.py
-
 from decimal import Decimal
 
 from isp_compare.core.exceptions import TariffNotFoundByIdException
@@ -8,9 +6,6 @@ from isp_compare.repositories.tariff import TariffRepository
 from isp_compare.schemas.tariff_comparison import (
     ComparisonRequest,
     ComparisonResult,
-    FeatureComparison,
-    PriceComparison,
-    SpeedComparison,
     TariffComparisonItem,
 )
 
@@ -35,6 +30,7 @@ class TariffComparisonService:
             if tariff_id not in tariff_map:
                 raise TariffNotFoundByIdException(tariff_id)
 
+        # Получаем провайдеров
         provider_ids = [tariff.provider_id for tariff in tariff_map.values()]
         provider_map = await self._provider_repository.get_multiple_by_ids(provider_ids)
 
@@ -42,58 +38,51 @@ class TariffComparisonService:
         comparison_items = []
         for tariff_id in request.tariff_ids:
             tariff = tariff_map[tariff_id]
+            provider_name = provider_map.get(tariff.provider_id).name
 
-            provider_name = (
-                provider_map.get(tariff.provider_id).name
-                if tariff.provider_id in provider_map
-                else None
-            )
-
-            # Получаем актуальную цену
+            # Определяем актуальную и оригинальную цену
             current_price = (
                 float(tariff.promo_price)
                 if tariff.promo_price is not None
                 else float(tariff.price)
             )
+            original_price = float(tariff.price)
+
+            # Формируем список особенностей
+            features = []
+            if tariff.has_tv:
+                features.append("ТВ")
+            if tariff.has_phone:
+                features.append("Телефон")
+            if tariff.connection_cost is not None and tariff.connection_cost == 0:
+                features.append("Бесплатное подключение")
 
             # Рассчитываем метрики
             price_per_mbps = Decimal(str(current_price / tariff.speed))
             yearly_cost = Decimal(str(current_price * 12))
-
-            # Обрабатываем connection_cost
-            connection_cost = (
-                Decimal(str(tariff.connection_cost))
-                if tariff.connection_cost is not None
-                else None
-            )
-
-            # Рассчитываем очки ценности
             value_score = self._calculate_value_score(
                 Decimal(str(current_price)),
                 tariff.speed,
-                tariff.has_tv,
-                tariff.has_phone,
-                connection_cost,
+                len(features),
+                tariff.connection_cost,
             )
 
             comparison_items.append(
                 TariffComparisonItem(
                     id=tariff.id,
                     name=tariff.name,
-                    provider_id=tariff.provider_id,
                     provider_name=provider_name,
-                    price=Decimal(str(current_price)),
-                    speed=tariff.speed,
-                    has_tv=tariff.has_tv,
-                    has_phone=tariff.has_phone,
-                    connection_cost=connection_cost,
+                    current_price=Decimal(str(current_price)),
+                    original_price=Decimal(str(original_price)),
                     is_promo=tariff.promo_price is not None,
-                    promo_price=(
-                        Decimal(str(tariff.promo_price))
-                        if tariff.promo_price is not None
+                    promo_period=tariff.promo_period,
+                    speed=tariff.speed,
+                    features=features,
+                    connection_cost=(
+                        Decimal(str(tariff.connection_cost))
+                        if tariff.connection_cost is not None
                         else None
                     ),
-                    promo_period=tariff.promo_period,
                     price_per_mbps=price_per_mbps,
                     yearly_cost=yearly_cost,
                     value_score=value_score,
@@ -103,64 +92,34 @@ class TariffComparisonService:
         # Определяем лучшие тарифы
         self._mark_best_tariffs(comparison_items)
 
-        # Создаем детальные сравнения
-        price_comparison = self._create_price_comparison(comparison_items, tariff_map)
-        speed_comparison = self._create_speed_comparison(comparison_items)
-        feature_comparison = self._create_feature_comparison(comparison_items)
-
-        # Вычисляем только необходимую статистику
-        prices = [item.price for item in comparison_items]
-        speeds = [item.speed for item in comparison_items]
-
-        price_range = (min(prices), max(prices))
-        speed_range = (min(speeds), max(speeds))
-
-        # Определяем лучшие тарифы
-        best_for_price = min(comparison_items, key=lambda x: x.price).id
-        best_for_speed = max(comparison_items, key=lambda x: x.speed).id
-        best_for_value = min(comparison_items, key=lambda x: x.value_score).id
-        best_for_features = max(
-            comparison_items,
-            key=lambda x: (x.has_tv + x.has_phone) * 10
-            - (float(x.connection_cost) if x.connection_cost is not None else 0),
-        ).id
-
-        # Генерация практичных рекомендаций
+        # Генерируем рекомендации
         recommendations = self._generate_recommendations(comparison_items)
 
+        # Создаем краткое резюме
+        summary = self._generate_summary(comparison_items)
+
         return ComparisonResult(
-            tariffs=comparison_items,
-            price_range=price_range,
-            speed_range=speed_range,
-            best_for_price=best_for_price,
-            best_for_speed=best_for_speed,
-            best_for_value=best_for_value,
-            best_for_features=best_for_features,
-            price_comparison=price_comparison,
-            speed_comparison=speed_comparison,
-            feature_comparison=feature_comparison,
+            items=comparison_items,
             recommendations=recommendations,
+            summary=summary,
         )
 
     def _calculate_value_score(
         self,
         price: Decimal,
         speed: int,
-        has_tv: bool,
-        has_phone: bool,
+        features_count: int,
         connection_cost: Decimal | None,
     ) -> Decimal:
         """Расчет комплексной оценки ценности тарифа"""
         # Базовый score = цена за Мбит/с
         score = price / speed
 
-        # Бонус за дополнительные услуги
-        if has_tv:
-            score *= Decimal("0.9")  # 10% бонус
-        if has_phone:
-            score *= Decimal("0.95")  # 5% бонус
+        # Бонус за дополнительные услуги (5% за каждую)
+        if features_count > 0:
+            score *= Decimal(str(1 - 0.05 * features_count))
 
-        # Штраф за высокую стоимость подключения (только если известна)
+        # Штраф за высокую стоимость подключения
         if connection_cost is not None and connection_cost > 0:
             score *= 1 + connection_cost / 10000
 
@@ -172,9 +131,9 @@ class TariffComparisonService:
             return
 
         # Самый дешевый
-        min_price = min(item.price for item in items)
+        min_price = min(item.current_price for item in items)
         for item in items:
-            if item.price == min_price:
+            if item.current_price == min_price:
                 item.is_cheapest = True
 
         # Самый быстрый
@@ -189,153 +148,90 @@ class TariffComparisonService:
             if item.value_score == min_value_score:
                 item.is_best_value = True
 
-        # Лучшие возможности
-        max_features_score = max(
-            (item.has_tv + item.has_phone) * 10
-            - (float(item.connection_cost) if item.connection_cost is not None else 0)
-            for item in items
-        )
+        # Больше всего возможностей
+        max_features = max(len(item.features) for item in items)
         for item in items:
-            feature_score = (item.has_tv + item.has_phone) * 10 - (
-                float(item.connection_cost) if item.connection_cost is not None else 0
-            )
-            if feature_score == max_features_score:
-                item.has_best_features = True
-
-    def _create_price_comparison(
-        self, items: list[TariffComparisonItem], tariff_map: dict
-    ) -> list[PriceComparison]:
-        """Создание детального сравнения по цене"""
-        comparisons = []
-        for item in items:
-            # Расчет скидки, если есть акция
-            promo_discount = None
-            if item.is_promo and item.promo_price is not None:
-                # Получаем оригинальную цену из тарифа
-                original_tariff = tariff_map[item.id]
-                original_price = Decimal(str(original_tariff.price))
-                promo_discount = original_price - item.price
-
-            comparisons.append(
-                PriceComparison(
-                    tariff_id=item.id,
-                    price=item.price,
-                    is_promo=item.is_promo,
-                    promo_discount=promo_discount,
-                    promo_period=item.promo_period,
-                    yearly_cost=item.yearly_cost,
-                )
-            )
-
-        return comparisons
-
-    def _create_speed_comparison(
-        self, items: list[TariffComparisonItem]
-    ) -> list[SpeedComparison]:
-        """Создание детального сравнения по скорости"""
-        average_speed = sum(item.speed for item in items) // len(items)
-        max_speed = max(item.speed for item in items)
-
-        return [
-            SpeedComparison(
-                tariff_id=item.id,
-                speed=item.speed,
-                price_per_mbps=item.price_per_mbps,
-                is_fastest=item.speed == max_speed,
-                speed_difference=item.speed - average_speed,
-            )
-            for item in items
-        ]
-
-    def _create_feature_comparison(
-        self, items: list[TariffComparisonItem]
-    ) -> list[FeatureComparison]:
-        """Создание детального сравнения по возможностям"""
-        comparisons = []
-
-        # Определяем уникальные особенности
-        all_have_tv = all(item.has_tv for item in items)
-        all_have_phone = all(item.has_phone for item in items)
-
-        for item in items:
-            unique_features = []
-            if item.has_tv and not all_have_tv:
-                unique_features.append("Телевидение")
-            if item.has_phone and not all_have_phone:
-                unique_features.append("Телефония")
-            # Проверяем именно на 0, а не на None
-            if item.connection_cost is not None and item.connection_cost == 0:
-                unique_features.append("Бесплатное подключение")
-
-            features_count = sum([item.has_tv, item.has_phone])
-
-            comparisons.append(
-                FeatureComparison(
-                    tariff_id=item.id,
-                    has_tv=item.has_tv,
-                    has_phone=item.has_phone,
-                    connection_cost=item.connection_cost,
-                    features_count=features_count,
-                    unique_features=unique_features,
-                )
-            )
-
-        return comparisons
+            if len(item.features) == max_features:
+                item.has_most_features = True
 
     def _generate_recommendations(self, items: list[TariffComparisonItem]) -> list[str]:
         """Генерация персонализированных рекомендаций"""
         recommendations = []
 
         # Находим лучшие тарифы
-        cheapest = min(items, key=lambda x: x.price)
-        fastest = max(items, key=lambda x: x.speed)
-        best_value = min(items, key=lambda x: x.value_score)
+        cheapest = next(item for item in items if item.is_cheapest)
+        fastest = next(item for item in items if item.is_fastest)
+        best_value = next(item for item in items if item.is_best_value)
 
-        # Практичные рекомендации для выбора
-        if cheapest.is_promo:
-            recommendations.append(
-                f"Тариф '{cheapest.name}' самый выгодный - {cheapest.price} ₽/мес"
-            )
-        else:
-            recommendations.append(
-                f"Тариф '{cheapest.name}' самый выгодный - {cheapest.price} ₽/мес"
-            )
+        # Основные рекомендации
+        recommendations.append(
+            f"Самый доступный: {cheapest.name} ({cheapest.provider_name}) - "
+            f"{cheapest.current_price} ₽/мес"
+        )
 
-        # Сравнение скорости и цены
         if fastest != cheapest:
-            price_diff = fastest.price - cheapest.price
+            price_diff = fastest.current_price - cheapest.current_price
             speed_diff = fastest.speed - cheapest.speed
             recommendations.append(
-                f"Тариф '{fastest.name}' дороже на {price_diff} ₽, "
-                f"но быстрее на {speed_diff} Мбит/с"
+                f"Самый быстрый: {fastest.name} ({fastest.provider_name}) - "
+                f"{fastest.speed} Мбит/с (+{speed_diff} Мбит/с, +{price_diff} ₽/мес)"
             )
 
-        # Оптимальный выбор
         if best_value not in (cheapest, fastest):
             recommendations.append(
-                f"Тариф '{best_value.name}' - оптимальное соотношение цены и скорости"
+                f"Оптимальный выбор: {best_value.name} ({best_value.provider_name}) - "
+                f"лучшее соотношение цены и качества"
+            )
+
+        # Акционные предложения
+        promo_items = [item for item in items if item.is_promo]
+        if promo_items:
+            best_promo = max(
+                promo_items, key=lambda x: x.original_price - x.current_price
+            )
+            discount = best_promo.original_price - best_promo.current_price
+            recommendations.append(
+                f"Лучшая акция: {best_promo.name} - скидка {discount} ₽/мес "
+                f"(цена {best_promo.current_price} ₽ вместо "
+                f"{best_promo.original_price} ₽)"
             )
 
         # Дополнительные услуги
-        with_tv = [item for item in items if item.has_tv]
-        if with_tv:
-            cheapest_with_tv = min(with_tv, key=lambda x: x.price)
+        with_tv = [item for item in items if "ТВ" in item.features]
+        if with_tv and len(with_tv) < len(items):
+            cheapest_with_tv = min(with_tv, key=lambda x: x.current_price)
             recommendations.append(
-                f"Если нужно ТВ, выберите '{cheapest_with_tv.name}' - "
-                f"самый доступный с телевидением"
+                f"С телевидением: {cheapest_with_tv.name} - "
+                f"самый доступный с ТВ ({cheapest_with_tv.current_price} ₽/мес)"
             )
 
-        # Бесплатное подключение (только если есть такие тарифы)
+        # Бесплатное подключение
         free_connection = [
-            item
-            for item in items
-            if item.connection_cost is not None and item.connection_cost == 0
+            item for item in items if "Бесплатное подключение" in item.features
         ]
-
         if free_connection and len(free_connection) < len(items):
             recommendations.append(
-                f"Тарифы {', '.join(f'«{item.name}»' for item in free_connection)} "
-                f"с бесплатным подключением"
+                f"Без затрат на подключение: "
+                f"{', '.join(item.name for item in free_connection)}"
             )
 
         return recommendations
+
+    def _generate_summary(self, items: list[TariffComparisonItem]) -> str:
+        """Генерация краткого резюме сравнения"""
+        cheapest = next(item for item in items if item.is_cheapest)
+        fastest = next(item for item in items if item.is_fastest)
+
+        price_diff = max(item.current_price for item in items) - min(
+            item.current_price for item in items
+        )
+        speed_diff = max(item.speed for item in items) - min(
+            item.speed for item in items
+        )
+
+        return (
+            f"Сравнение {len(items)} тарифов: "
+            f"разница в цене {price_diff} ₽, в скорости {speed_diff} Мбит/с. "
+            f"Самый доступный - {cheapest.name} ({cheapest.current_price} ₽), "
+            f"самый быстрый - {fastest.name} ({fastest.speed} Мбит/с)."
+        )

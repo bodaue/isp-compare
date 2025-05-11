@@ -1,5 +1,3 @@
-# backend/src/isp_compare/schemas/tariff_comparison.py
-
 from decimal import Decimal
 from uuid import UUID
 
@@ -10,55 +8,23 @@ class ComparisonRequest(BaseModel):
     tariff_ids: list[UUID] = Field(..., min_length=2, max_length=5)
 
 
-class PriceComparison(BaseModel):
-    tariff_id: UUID
-    price: Decimal
-    is_promo: bool
-    promo_discount: Decimal | None = None
-    promo_period: int | None = None
-    yearly_cost: Decimal
-
-
-class SpeedComparison(BaseModel):
-    tariff_id: UUID
-    speed: int
-    price_per_mbps: Decimal
-    is_fastest: bool
-    speed_difference: int  # Разница со средней скоростью
-
-
-class FeatureComparison(BaseModel):
-    tariff_id: UUID
-    has_tv: bool
-    has_phone: bool
-    connection_cost: Decimal | None
-    features_count: int
-    unique_features: list[str] = []
-
-
-class ValueMetrics(BaseModel):
-    price_per_mbps: Decimal
-    features_per_price: Decimal
-    overall_score: Decimal  # Комплексная оценка
-
-
 class TariffComparisonItem(BaseModel):
+    """Элемент сравнения тарифа с минимально необходимой информацией"""
+
     id: UUID
     name: str
-    provider_id: UUID
-    provider_name: str | None = None
+    provider_name: str
 
-    # Основные параметры
-    price: Decimal
-    speed: int
-    has_tv: bool
-    has_phone: bool
-    connection_cost: Decimal | None
-
-    # Акции
+    # Цены
+    current_price: Decimal  # Актуальная цена (с учетом акции)
+    original_price: Decimal  # Оригинальная цена
     is_promo: bool
-    promo_price: Decimal | None = None
     promo_period: int | None = None
+
+    # Характеристики
+    speed: int
+    features: list[str]  # ["ТВ", "Телефон", "Бесплатное подключение"]
+    connection_cost: Decimal | None
 
     # Расчетные метрики
     price_per_mbps: Decimal
@@ -69,31 +35,14 @@ class TariffComparisonItem(BaseModel):
     is_cheapest: bool = False
     is_fastest: bool = False
     is_best_value: bool = False
-    has_best_features: bool = False
+    has_most_features: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class ComparisonResult(BaseModel):
-    tariffs: list[TariffComparisonItem]
+    """Результат сравнения тарифов"""
 
-    price_range: tuple[Decimal, Decimal]
-    speed_range: tuple[int, int]
-
-    best_for_price: UUID
-    best_for_speed: UUID
-    best_for_value: UUID
-    best_for_features: UUID
-
-    price_comparison: list[PriceComparison]
-    speed_comparison: list[SpeedComparison]
-    feature_comparison: list[FeatureComparison]
-
+    items: list[TariffComparisonItem]
     recommendations: list[str]
-
-
-class ComparisonSummary(BaseModel):
-    total_comparisons: int
-    tariffs_compared: list[UUID]
-    comparison_date: str
-    most_popular_choice: UUID | None = None
+    summary: str  # Краткое резюме сравнения
