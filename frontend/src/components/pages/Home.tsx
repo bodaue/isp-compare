@@ -22,7 +22,7 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                         <Link to="/providers" className="btn btn-primary">
                             Начать поиск
                         </Link>
-                        <Link to="/comparison" className="btn btn-secondary">
+                        <Link to="/tariffs" className="btn btn-secondary">
                             Сравнить тарифы
                         </Link>
                     </div>
