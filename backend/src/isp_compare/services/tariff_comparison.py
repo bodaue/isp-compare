@@ -110,7 +110,7 @@ class TariffComparisonService:
     ) -> Decimal:
         """Расчет комплексной оценки ценности тарифа"""
         # Базовый score = цена за Мбит/с
-        score = price / speed
+        score = price / Decimal(speed)
 
         # Бонус за дополнительные услуги (5% за каждую)
         if features_count > 0:
@@ -118,7 +118,9 @@ class TariffComparisonService:
 
         # Штраф за высокую стоимость подключения
         if connection_cost is not None and connection_cost > 0:
-            score *= 1 + connection_cost / 10000
+            # Преобразуем connection_cost в Decimal, если он float
+            connection_cost_decimal = Decimal(str(connection_cost))
+            score = score * (Decimal(1) + connection_cost_decimal / Decimal(10000))
 
         return score
 
