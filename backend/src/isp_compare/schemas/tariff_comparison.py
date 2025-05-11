@@ -6,7 +6,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class ComparisonRequest(BaseModel):
     tariff_ids: list[UUID] = Field(..., min_length=2, max_length=5)
-    include_provider_info: bool = True
 
 
 class PriceComparison(BaseModel):
@@ -79,26 +78,18 @@ class TariffComparisonItem(BaseModel):
 class ComparisonResult(BaseModel):
     tariffs: list[TariffComparisonItem]
 
-    # Статистика по сравнению
     price_range: tuple[Decimal, Decimal]
     speed_range: tuple[int, int]
-    average_price: Decimal
-    average_speed: int
 
-    # Рекомендации
     best_for_price: UUID
     best_for_speed: UUID
     best_for_value: UUID
     best_for_features: UUID
 
-    # Детальное сравнение
     price_comparison: list[PriceComparison]
     speed_comparison: list[SpeedComparison]
     feature_comparison: list[FeatureComparison]
 
-    # Аналитика
-    total_savings_with_promo: Decimal
-    average_price_per_mbps: Decimal
     recommendations: list[str]
 
 

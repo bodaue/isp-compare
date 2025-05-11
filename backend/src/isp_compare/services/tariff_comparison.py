@@ -1,3 +1,5 @@
+# backend/src/isp_compare/services/tariff_comparison.py
+
 from decimal import Decimal
 
 from isp_compare.core.exceptions import TariffNotFoundByIdException
@@ -33,22 +35,19 @@ class TariffComparisonService:
             if tariff_id not in tariff_map:
                 raise TariffNotFoundByIdException(tariff_id)
 
-        # Получаем информацию о провайдерах одним запросом
-        provider_map = {}
-        if request.include_provider_info:
-            provider_ids = [tariff.provider_id for tariff in tariff_map.values()]
-            provider_map = await self._provider_repository.get_multiple_by_ids(
-                provider_ids
-            )
+        provider_ids = [tariff.provider_id for tariff in tariff_map.values()]
+        provider_map = await self._provider_repository.get_multiple_by_ids(provider_ids)
 
         # Преобразуем тарифы в элементы сравнения
         comparison_items = []
         for tariff_id in request.tariff_ids:
             tariff = tariff_map[tariff_id]
-            provider_name = None
 
-            if request.include_provider_info and tariff.provider_id in provider_map:
-                provider_name = provider_map[tariff.provider_id].name
+            provider_name = (
+                provider_map.get(tariff.provider_id).name
+                if tariff.provider_id in provider_map
+                else None
+            )
 
             effective_price = (
                 float(tariff.promo_price)
@@ -102,16 +101,14 @@ class TariffComparisonService:
         speed_comparison = self._create_speed_comparison(comparison_items)
         feature_comparison = self._create_feature_comparison(comparison_items)
 
-        # Вычисляем статистику
+        # Вычисляем только необходимую статистику
         prices = [item.effective_price for item in comparison_items]
         speeds = [item.speed for item in comparison_items]
 
         price_range = (min(prices), max(prices))
         speed_range = (min(speeds), max(speeds))
-        average_price = sum(prices) / len(prices)
-        average_speed = sum(speeds) // len(speeds)
 
-        # Рекомендации
+        # Определяем лучшие тарифы
         best_for_price = min(comparison_items, key=lambda x: x.effective_price).id
         best_for_speed = max(comparison_items, key=lambda x: x.speed).id
         best_for_value = min(comparison_items, key=lambda x: x.value_score).id
@@ -120,27 +117,13 @@ class TariffComparisonService:
             key=lambda x: (x.has_tv + x.has_phone) * 10 - float(x.connection_cost),
         ).id
 
-        # Расчет общей экономии
-        total_savings = sum(
-            (item.base_price - item.effective_price) * (item.promo_period or 1)
-            for item in comparison_items
-            if item.is_promo
-        )
-
-        # Средняя цена за Мбит/с
-        average_price_per_mbps = sum(
-            item.price_per_mbps for item in comparison_items
-        ) / len(comparison_items)
-
-        # Генерация рекомендаций
+        # Генерация практичных рекомендаций
         recommendations = self._generate_recommendations(comparison_items)
 
         return ComparisonResult(
             tariffs=comparison_items,
             price_range=price_range,
             speed_range=speed_range,
-            average_price=average_price,
-            average_speed=average_speed,
             best_for_price=best_for_price,
             best_for_speed=best_for_speed,
             best_for_value=best_for_value,
@@ -148,8 +131,6 @@ class TariffComparisonService:
             price_comparison=price_comparison,
             speed_comparison=speed_comparison,
             feature_comparison=feature_comparison,
-            total_savings_with_promo=total_savings,
-            average_price_per_mbps=average_price_per_mbps,
             recommendations=recommendations,
         )
 
@@ -306,48 +287,52 @@ class TariffComparisonService:
         fastest = max(items, key=lambda x: x.speed)
         best_value = min(items, key=lambda x: x.value_score)
 
-        # Рекомендация по цене
+        # Практичные рекомендации для выбора
         if cheapest.is_promo:
             recommendations.append(
-                f"Тариф '{cheapest.name}' сейчас самый выгодный благодаря акции "
-                f"({cheapest.promo_price} ₽/мес вместо {cheapest.base_price} ₽/мес)"
+                f"Тариф '{cheapest.name}' сейчас самый выгодный благодаря акции. "
+                f"Экономия составит "
+                f"{cheapest.base_price - cheapest.effective_price} ₽/мес "
+                f"в течение {cheapest.promo_period} месяцев"
             )
         else:
             recommendations.append(
-                f"Тариф '{cheapest.name}' предлагает самую низкую цену "
-                f"({cheapest.effective_price} ₽/мес)"
+                f"Тариф '{cheapest.name}' предлагает самую низкую цену - "
+                f"{cheapest.effective_price} ₽/мес"
             )
 
-        # Рекомендация по скорости
+        # Сравнение скорости и цены
         if fastest != cheapest:
             price_diff = fastest.effective_price - cheapest.effective_price
             speed_diff = fastest.speed - cheapest.speed
             recommendations.append(
-                f"За дополнительные {price_diff} ₽/мес тариф '{fastest.name}' "
-                f"предоставит на {speed_diff} Мбит/с больше скорости"
+                f"Тариф '{fastest.name}' стоит на {price_diff} ₽/мес дороже, "
+                f"но предоставляет на {speed_diff} Мбит/с больше скорости"
             )
 
-        # Рекомендация по соотношению цена/качество
+        # Оптимальный выбор
         if best_value not in (cheapest, fastest):
             recommendations.append(
-                f"Тариф '{best_value.name}' предлагает оптимальное соотношение "
-                f"цены и скорости ({best_value.price_per_mbps:.2f} ₽ за Мбит/с)"
+                f"Тариф '{best_value.name}' предлагает оптимальное соотношение цены "
+                f"и скорости"
             )
 
-        # Рекомендация по дополнительным услугам
+        # Дополнительные услуги
         with_tv = [item for item in items if item.has_tv]
         if with_tv:
             cheapest_with_tv = min(with_tv, key=lambda x: x.effective_price)
             recommendations.append(
                 f"Если нужно ТВ, выберите '{cheapest_with_tv.name}' - "
-                f"самый доступный тариф с телевидением"
+                f"самый доступный тариф с телевидением "
+                f"({cheapest_with_tv.effective_price} ₽/мес)"
             )
 
-        # Рекомендация по подключению
+        # Бесплатное подключение
         free_connection = [item for item in items if item.connection_cost == 0]
         if free_connection and len(free_connection) < len(items):
             recommendations.append(
-                f"Тарифы {', '.join(f'«{item.name}»' for item in free_connection)} "
+                f"Обратите внимание: "
+                f"тарифы {', '.join(f'«{item.name}»' for item in free_connection)} "
                 f"предлагают бесплатное подключение"
             )
 
