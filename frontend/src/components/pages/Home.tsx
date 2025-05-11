@@ -91,7 +91,7 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                 <section className="cta-section">
                     <div className="cta-content">
                         <h2>Готовы найти лучший интернет?</h2>
-                        <p>Присоединяйтесь к тысячам пользователей, которые уже нашли идеального провайдера</p>
+                        <p>Присоединяйтесь к пользователям, которые уже нашли идеального провайдера</p>
                         <Link to="/register" className="btn btn-primary">
                             Создать аккаунт
                         </Link>
