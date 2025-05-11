@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import Home from './components/pages/Home';
+import {Home, NotFound} from './components/pages';
 import {Login, Register} from './components/auth';
 import Profile from './components/profile/Profile';
 import ProviderList from './components/providers/ProviderList';
@@ -45,6 +45,7 @@ const App: React.FC = () => {
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/profile" element={<Profile/>}/>
+                    <Route path="*" element={<NotFound/>}/>
                 </Routes>
             </main>
 

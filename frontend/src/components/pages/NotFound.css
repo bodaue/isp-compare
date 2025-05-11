@@ -1,0 +1,207 @@
+.not-found-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease;
+}
+
+.not-found-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.not-found-illustration {
+    position: relative;
+    margin-bottom: 2rem;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    z-index: 2;
+    animation: slideUp 0.6s ease;
+}
+
+.floating-element {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+    animation: float 6s ease-in-out infinite;
+}
+
+.element-1 {
+    width: 150px;
+    height: 150px;
+    background: var(--primary-light);
+    top: 20%;
+    left: 10%;
+}
+
+.element-2 {
+    width: 100px;
+    height: 100px;
+    background: var(--secondary-light);
+    bottom: 20%;
+    right: 10%;
+    animation-delay: 2s;
+}
+
+.element-3 {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-color);
+    top: 60%;
+    left: 50%;
+    animation-delay: 4s;
+    opacity: 0.1;
+}
+
+.not-found-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    animation: slideUp 0.6s ease 0.1s both;
+}
+
+.not-found-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    animation: slideUp 0.6s ease 0.2s both;
+}
+
+.not-found-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: slideUp 0.6s ease 0.3s both;
+}
+
+.not-found-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.not-found-actions .btn svg {
+    transition: transform 0.2s ease;
+}
+
+.not-found-actions .btn:hover svg {
+    transform: translateX(-2px);
+}
+
+/* Анимации */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+        transform: translate(-20px, -20px) rotate(1deg);
+    }
+    66% {
+        transform: translate(20px, -20px) rotate(-1deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .not-found-illustration {
+        height: 250px;
+    }
+
+    .error-code {
+        font-size: 6rem;
+    }
+
+    .not-found-title {
+        font-size: 2rem;
+    }
+
+    .not-found-description {
+        font-size: 1rem;
+    }
+
+    .floating-element {
+        filter: blur(40px);
+    }
+
+    .element-1 {
+        width: 120px;
+        height: 120px;
+    }
+
+    .element-2 {
+        width: 80px;
+        height: 80px;
+    }
+
+    .element-3 {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .not-found-container {
+        padding: 1rem;
+    }
+
+    .not-found-illustration {
+        height: 200px;
+    }
+
+    .error-code {
+        font-size: 5rem;
+    }
+
+    .not-found-title {
+        font-size: 1.75rem;
+    }
+
+    .not-found-actions {
+        flex-direction: column;
+    }
+
+    .not-found-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
