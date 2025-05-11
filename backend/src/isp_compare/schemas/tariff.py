@@ -11,7 +11,7 @@ class TariffBase(BaseModel):
     speed: int = Field(..., gt=0)
     has_tv: bool = False
     has_phone: bool = False
-    connection_cost: Decimal = Field(Decimal("0"), ge=0, decimal_places=2)
+    connection_cost: Decimal | None = Field(None, ge=0, decimal_places=2)
     promo_price: Decimal | None = Field(None, ge=0, decimal_places=2)
     promo_period: int | None = Field(None, ge=0)
     is_active: bool = True

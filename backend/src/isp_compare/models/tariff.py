@@ -27,7 +27,7 @@ class Tariff(IdMixin, TimestampMixin, Base):
     has_tv: Mapped[bool] = mapped_column(default=False)
     has_phone: Mapped[bool] = mapped_column(default=False)
 
-    connection_cost: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+    connection_cost: Mapped[float | None] = mapped_column(Numeric(10, 2))
 
     promo_price: Mapped[float | None] = mapped_column(Numeric(10, 2))  # Цена по акции
     promo_period: Mapped[int | None]  # Срок акции в месяцах

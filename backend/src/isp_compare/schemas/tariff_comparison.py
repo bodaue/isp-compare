@@ -1,3 +1,5 @@
+# backend/src/isp_compare/schemas/tariff_comparison.py
+
 from decimal import Decimal
 from uuid import UUID
 
@@ -10,13 +12,11 @@ class ComparisonRequest(BaseModel):
 
 class PriceComparison(BaseModel):
     tariff_id: UUID
-    base_price: Decimal
-    effective_price: Decimal
+    price: Decimal
     is_promo: bool
     promo_discount: Decimal | None = None
     promo_period: int | None = None
     yearly_cost: Decimal
-    monthly_savings: Decimal | None = None  # Экономия относительно самого дорогого
 
 
 class SpeedComparison(BaseModel):
@@ -31,7 +31,7 @@ class FeatureComparison(BaseModel):
     tariff_id: UUID
     has_tv: bool
     has_phone: bool
-    connection_cost: Decimal
+    connection_cost: Decimal | None
     features_count: int
     unique_features: list[str] = []
 
@@ -49,12 +49,11 @@ class TariffComparisonItem(BaseModel):
     provider_name: str | None = None
 
     # Основные параметры
-    base_price: Decimal
-    effective_price: Decimal
+    price: Decimal
     speed: int
     has_tv: bool
     has_phone: bool
-    connection_cost: Decimal
+    connection_cost: Decimal | None
 
     # Акции
     is_promo: bool
