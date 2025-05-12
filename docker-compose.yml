@@ -12,7 +12,26 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - backend
 
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - './nginx/conf.d:/etc/nginx/conf.d'
+      - '/etc/letsencrypt:/etc/letsencrypt'
+    depends_on:
+      - backend
+      - frontend
+    restart: always
 
   postgres:
     image: postgres:17-alpine

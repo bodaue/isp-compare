@@ -25,10 +25,14 @@ def setup_middlewares(app: FastAPI, config: Config) -> None:
         SessionMiddleware,
         secret_key=config.jwt.secret_key.get_secret_value(),
     )
-    # Setup CORS
+    origins = [
+        "https://ispcompare.ru",
+        "https://www.ispcompare.ru",
+        "http://localhost:5173",
+    ]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # For production, specify the exact origins
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
