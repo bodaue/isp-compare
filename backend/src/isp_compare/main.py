@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from isp_compare.admin import setup_admin
@@ -21,6 +22,7 @@ def setup_routers(app: FastAPI) -> None:
 
 
 def setup_middlewares(app: FastAPI, config: Config) -> None:
+    app.add_middleware(HTTPSRedirectMiddleware)
     app.add_middleware(
         SessionMiddleware,
         secret_key=config.jwt.secret_key.get_secret_value(),
