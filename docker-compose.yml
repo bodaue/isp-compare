@@ -12,9 +12,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - admin_static:/app/static/admin  # Монтируем volume для статических файлов
-
   frontend:
     build:
       context: ./frontend
@@ -31,7 +28,6 @@ services:
     volumes:
       - './nginx/conf.d:/etc/nginx/conf.d'
       - '/etc/letsencrypt:/etc/letsencrypt'
-      - admin_static:/var/www/admin/static  # Монтируем тот же volume
     depends_on:
       - backend
       - frontend
@@ -82,4 +78,3 @@ services:
 volumes:
   postgres_data:
   redis_data:
-  admin_static:  # Новый том для статических файлов админки
