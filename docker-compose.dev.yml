@@ -2,9 +2,10 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file: .env
-    restart: always
+    volumes:
+      - ./backend:/app
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:
@@ -12,30 +13,28 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      postgres_test:
+        condition: service_healthy
+    networks:
+      - app_network
+
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    restart: always
-    depends_on:
-      - backend
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
+      dockerfile: Dockerfile.dev
     volumes:
-      - './nginx/conf.d:/etc/nginx/conf.d'
-      - '/etc/letsencrypt:/etc/letsencrypt'
+      - ./frontend:/app
+      # Исключаем node_modules из монтирования
+      - /app/node_modules
+    ports:
+      - "5173:5173"
     depends_on:
       - backend
-      - frontend
-    restart: always
+    networks:
+      - app_network
 
   postgres:
     image: postgres:17-alpine
-    restart: always
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     environment:
@@ -49,6 +48,9 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - app_network
+
   postgres_test:
     image: postgres:17-alpine
     environment:
@@ -62,9 +64,11 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - app_network
+
   redis:
     image: redis:7-alpine
-    restart: always
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
     command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}" ]
@@ -75,6 +79,13 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
 volumes:
   postgres_data:
   redis_data:
