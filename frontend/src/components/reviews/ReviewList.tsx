@@ -10,9 +10,10 @@ import './ReviewList.css';
 
 interface ReviewListProps {
     providerId: string;
+    onReviewChange?: () => void; // Новый пропс для обновления информации о провайдере
 }
 
-const ReviewList: React.FC<ReviewListProps> = ({providerId}) => {
+const ReviewList: React.FC<ReviewListProps> = ({providerId, onReviewChange}) => {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
@@ -79,22 +80,37 @@ const ReviewList: React.FC<ReviewListProps> = ({providerId}) => {
     };
 
     const handleCreateReview = async (data: any) => {
-        await reviewService.createReview(providerId, data);
-        await fetchReviews();
-        setShowForm(false);
+        try {
+            await reviewService.createReview(providerId, data);
+            await fetchReviews();
+            if (onReviewChange) onReviewChange(); // Обновляем данные провайдера
+            setShowForm(false);
+        } catch (err: any) {
+            console.error('Error creating review:', err);
+        }
     };
 
     const handleUpdateReview = async (data: any) => {
         if (!editingReview) return;
-        await reviewService.updateReview(editingReview.id, data);
-        await fetchReviews();
-        setEditingReview(null);
+        try {
+            await reviewService.updateReview(editingReview.id, data);
+            await fetchReviews();
+            if (onReviewChange) onReviewChange(); // Обновляем данные провайдера
+            setEditingReview(null);
+        } catch (err: any) {
+            console.error('Error updating review:', err);
+        }
     };
 
     const handleDeleteReview = async (reviewId: string) => {
         if (window.confirm('Вы уверены, что хотите удалить отзыв?')) {
-            await reviewService.deleteReview(reviewId);
-            await fetchReviews();
+            try {
+                await reviewService.deleteReview(reviewId);
+                await fetchReviews();
+                if (onReviewChange) onReviewChange(); // Обновляем данные провайдера
+            } catch (err: any) {
+                console.error('Error deleting review:', err);
+            }
         }
     };
 

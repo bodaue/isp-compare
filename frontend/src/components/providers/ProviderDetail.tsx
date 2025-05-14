@@ -1,4 +1,3 @@
-// frontend/src/components/providers/ProviderDetail.tsx
 import React, {useEffect, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {providerService} from '../../services/providerService';
@@ -24,6 +23,7 @@ const ProviderDetail: React.FC = () => {
 
     const fetchProviderData = async () => {
         try {
+            setLoading(true);
             const [providerData, tariffsData] = await Promise.all([
                 providerService.getProviderById(id!),
                 tariffService.getProviderTariffs(id!)
@@ -35,6 +35,18 @@ const ProviderDetail: React.FC = () => {
             setError('Ошибка при загрузке данных провайдера');
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Новая функция для обновления данных провайдера
+    const refreshProviderData = async () => {
+        try {
+            if (id) {
+                const providerData = await providerService.getProviderById(id);
+                setProvider(providerData);
+            }
+        } catch (err) {
+            console.error("Error refreshing provider data:", err);
         }
     };
 
@@ -148,7 +160,10 @@ const ProviderDetail: React.FC = () => {
             )}
 
             {activeTab === 'reviews' && (
-                <ReviewList providerId={provider.id}/>
+                <ReviewList
+                    providerId={provider.id}
+                    onReviewChange={refreshProviderData}
+                />
             )}
         </div>
     );
