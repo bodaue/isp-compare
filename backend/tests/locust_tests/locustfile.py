@@ -5,18 +5,20 @@ from locust import HttpUser, TaskSet, between, task
 
 
 class UserBehavior(TaskSet):
-    """Моделирует поведение типичного пользователя сервиса"""
-
-    # Хранение данных между запросами
     access_token: str | None = None
     provider_ids: list[str] = []
     tariff_ids: list[str] = []
 
+    is_authenticated: bool = False
+
     def on_start(self) -> None:
         self.get_providers()
-        self.authenticate()
 
-    def authenticate(self) -> None:
+    @task(1)
+    def try_authenticate(self) -> None:
+        if self.is_authenticated:
+            return
+
         unique_id = secrets.token_hex(6)
         username = f"locust_user_{unique_id}"
         password = "Password123!"
@@ -32,12 +34,12 @@ class UserBehavior(TaskSet):
             "/api/auth/register", json=register_data, catch_response=True
         ) as response:
             if response.status_code == 201:
-                # Регистрация успешна
                 response_data = response.json()
                 self.access_token = response_data.get("access_token")
+                self.is_authenticated = True
                 response.success()
             elif response.status_code == 429:
-                response.success()  # Не считаем за ошибку в тесте
+                response.success()
             else:
                 login_data = {"username": username, "password": password}
 
@@ -49,6 +51,7 @@ class UserBehavior(TaskSet):
                     if login_response.status_code == 200:
                         response_data = login_response.json()
                         self.access_token = response_data.get("access_token")
+                        self.is_authenticated = True
                         login_response.success()
                     elif login_response.status_code == 429:
                         login_response.success()
@@ -60,7 +63,7 @@ class UserBehavior(TaskSet):
                     if hasattr(login_response, "close"):
                         login_response.close()
 
-    @task(3)
+    @task(20)
     def get_providers(self) -> None:
         with self.client.get("/api/providers", catch_response=True) as response:
             if response.status_code == 200:
@@ -73,7 +76,7 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при получении провайдеров: {response.text}")
 
-    @task(2)
+    @task(20)
     def get_provider_tariffs(self) -> None:
         if not self.provider_ids:
             return
@@ -95,13 +98,13 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при получении тарифов: {response.text}")
 
-    @task(1)
+    @task(15)
     def search_tariffs(self) -> None:
-        headers: dict[str, str] = {}
-        if self.access_token:
-            headers["Authorization"] = f"Bearer {self.access_token}"
+        if not self.is_authenticated:
+            return
 
-        # Генерируем параметры поиска
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+
         price_options = [None, 20, 30, 40]
         max_price_options = [None, 50, 80, 100]
         speed_options = [None, 50, 100, 200]
@@ -133,11 +136,11 @@ class UserBehavior(TaskSet):
                             self.tariff_ids.append(tariff["id"])
                 response.success()
             elif response.status_code in [401, 429]:
-                response.success()  # Не считаем за ошибку в тесте
+                response.success()
             else:
                 response.failure(f"Ошибка при поиске тарифов: {response.text}")
 
-    @task(1)
+    @task(15)
     def compare_tariffs(self) -> None:
         if len(self.tariff_ids) < 2:
             return
@@ -163,9 +166,9 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при сравнении тарифов: {response.text}")
 
-    @task(1)
+    @task(10)
     def get_search_history(self) -> None:
-        if not self.access_token:
+        if not self.is_authenticated:
             return
 
         headers = {"Authorization": f"Bearer {self.access_token}"}
@@ -180,19 +183,18 @@ class UserBehavior(TaskSet):
                     f"Ошибка при получении истории поиска: {response.text}"
                 )
 
-    @task(1)
+    @task(8)
     def add_or_update_review(self) -> None:
-        if not self.access_token or not self.provider_ids:
+        if not self.is_authenticated or not self.provider_ids:
             return
 
         provider_id = self.provider_ids[secrets.randbelow(len(self.provider_ids))]
 
-        # Генерация данных для отзыва
-        quality_rating = secrets.randbelow(10) + 1  # 1-10
-        support_time = secrets.randbelow(30) + 1  # 1-30
+        quality_rating = secrets.randbelow(10) + 1
+        support_time = secrets.randbelow(30) + 1
 
         review_data = {
-            "rating": secrets.randbelow(5) + 1,  # 1-5
+            "rating": secrets.randbelow(5) + 1,
             "comment": f"Автотест: Отзыв о провайдере. "
             f"Качество связи {quality_rating}/10. "
             f"Скорость стабильная, техподдержка отвечает за {support_time} минут.",
@@ -211,7 +213,7 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при добавлении отзыва: {response.text}")
 
-    @task(2)
+    @task(20)
     def get_provider_reviews(self) -> None:
         if not self.provider_ids:
             return
@@ -226,9 +228,9 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при получении отзывов: {response.text}")
 
-    @task(1)
+    @task(2)
     def refresh_token(self) -> None:
-        if not self.access_token:
+        if not self.is_authenticated:
             return
 
         with self.client.post("/api/auth/refresh", catch_response=True) as response:
@@ -239,6 +241,7 @@ class UserBehavior(TaskSet):
                 response.success()
             else:
                 self.access_token = None
+                self.is_authenticated = False
                 response.success()
 
 
