@@ -1,4 +1,8 @@
+from typing import cast
+
+from asyncpg import UniqueViolationError
 from fastapi import Request, Response
+from sqlalchemy.exc import IntegrityError
 
 from isp_compare.core.config import CookieConfig, JWTConfig
 from isp_compare.core.exceptions import (
@@ -54,14 +58,6 @@ class AuthService:
         self._rate_limiter = rate_limiter
 
     async def register(self, data: UserCreate, response: Response) -> TokenResponse:
-        existing_username = await self._user_repository.get_by_username(data.username)
-        if existing_username:
-            raise UsernameAlreadyExistsException
-
-        existing_email = await self._user_repository.get_by_email(data.email)
-        if existing_email:
-            raise EmailAlreadyExistsException
-
         hashed_password = self._password_hasher.hash(data.password)
 
         user = User(
@@ -70,8 +66,18 @@ class AuthService:
             hashed_password=hashed_password,
             email=data.email,
         )
-        await self._user_repository.create(user)
-        await self._transaction_manager.commit()
+        try:
+            await self._user_repository.create(user)
+            await self._transaction_manager.commit()
+        except IntegrityError as e:
+            orig = cast("BaseException", e.orig)
+            if isinstance(orig.__cause__, UniqueViolationError):
+                error_detail = str(e).lower()
+                if "uq_users_username" in error_detail:
+                    raise UsernameAlreadyExistsException from e
+                if "uq_users_email" in error_detail:
+                    raise EmailAlreadyExistsException from e
+            raise e from e
 
         (
             access_token,
