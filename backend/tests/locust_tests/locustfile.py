@@ -98,7 +98,7 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при получении тарифов: {response.text}")
 
-    @task(15)
+    @task(8)
     def search_tariffs(self) -> None:
         if not self.is_authenticated:
             return
@@ -140,7 +140,7 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при поиске тарифов: {response.text}")
 
-    @task(15)
+    @task(8)
     def compare_tariffs(self) -> None:
         if len(self.tariff_ids) < 2:
             return
@@ -183,7 +183,7 @@ class UserBehavior(TaskSet):
                     f"Ошибка при получении истории поиска: {response.text}"
                 )
 
-    @task(8)
+    @task(4)
     def add_or_update_review(self) -> None:
         if not self.is_authenticated or not self.provider_ids:
             return
@@ -228,7 +228,7 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при получении отзывов: {response.text}")
 
-    @task(2)
+    @task(1)
     def refresh_token(self) -> None:
         if not self.is_authenticated:
             return
