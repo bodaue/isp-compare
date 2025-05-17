@@ -198,7 +198,7 @@ class UserBehavior(TaskSet):
                     f"Ошибка при получении истории поиска: {response.text}"
                 )
 
-    @task(4)
+    @task(3)
     def add_or_update_review(self) -> None:
         if not self.is_authenticated or not self.provider_ids:
             return
@@ -228,7 +228,7 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при добавлении отзыва: {response.text}")
 
-    @task(20)
+    @task(15)
     def get_provider_reviews(self) -> None:
         if not self.provider_ids:
             return
