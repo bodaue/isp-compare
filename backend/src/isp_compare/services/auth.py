@@ -83,7 +83,7 @@ class AuthService:
             access_token,
             refresh_token,
             refresh_expires,
-        ) = await self._token_service.create_tokens(user)
+        ) = await self._token_service.create_tokens(user, skip_revocation=True)
 
         response.set_cookie(
             key=self._cookie_config.refresh_token_key,

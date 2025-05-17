@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, Index, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from isp_compare.models.base import Base, IdMixin, TimestampMixin
@@ -28,4 +28,5 @@ class Review(IdMixin, TimestampMixin, Base):
     __table_args__ = (
         CheckConstraint("rating >= 1 AND rating <= 5", name="check_rating_range"),
         UniqueConstraint("user_id", "provider_id"),
+        Index("ix_reviews_provider_id", "provider_id"),
     )

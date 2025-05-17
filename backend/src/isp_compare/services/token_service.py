@@ -1,18 +1,18 @@
 from datetime import UTC, datetime
 
+from jose import JWTError
+from redis.asyncio import Redis
+
 from isp_compare.core.exceptions import (
     InvalidTokenException,
     TokenExpiredException,
     TokenRevokedException,
     UserNotFoundException,
 )
-from jose import JWTError
 from isp_compare.models.token import RefreshToken
 from isp_compare.models.user import User
-from redis.asyncio import Redis
 from isp_compare.repositories.token import RefreshTokenRepository
 from isp_compare.repositories.user import UserRepository
-
 from isp_compare.services.token_processor import TokenProcessor
 from isp_compare.services.transaction_manager import TransactionManager
 
@@ -32,8 +32,11 @@ class TokenService:
         self._transaction_manager = transaction_manager
         self._redis_client = redis_client
 
-    async def create_tokens(self, user: User) -> tuple[str, str, datetime]:
-        await self._refresh_token_repository.revoke_all_for_user(user.id)
+    async def create_tokens(
+        self, user: User, skip_revocation: bool = False
+    ) -> tuple[str, str, datetime]:
+        if not skip_revocation:
+            await self._refresh_token_repository.revoke_all_for_user(user.id)
 
         access_token = self._token_processor.create_access_token(user_id=user.id)
 

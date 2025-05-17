@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, Numeric, String, Text
+from sqlalchemy import ForeignKey, Index, Numeric, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from isp_compare.models.base import Base, IdMixin, TimestampMixin
@@ -12,7 +12,23 @@ if TYPE_CHECKING:
 
 class Tariff(IdMixin, TimestampMixin, Base):
     __tablename__ = "tariffs"
-
+    __table_args__ = (
+        Index(
+            "ix_tariffs_provider_id",
+            "provider_id",
+            postgresql_where=text("is_active = true"),
+        ),
+        Index("ix_tariffs_price", "price", postgresql_where=text("is_active = true")),
+        Index("ix_tariffs_speed", "speed", postgresql_where=text("is_active = true")),
+        Index(
+            "ix_tariffs_combined_search",
+            "speed",
+            "price",
+            "has_tv",
+            "has_phone",
+            postgresql_where=text("is_active = true"),
+        ),
+    )
     provider_id: Mapped[UUID] = mapped_column(
         ForeignKey("providers.id", ondelete="CASCADE")
     )
