@@ -98,6 +98,21 @@ class UserBehavior(TaskSet):
             else:
                 response.failure(f"Ошибка при получении тарифов: {response.text}")
 
+    @task(20)
+    def get_all_tariffs(self) -> None:
+        with self.client.get("/api/tariffs", catch_response=True) as response:
+            if response.status_code == 200:
+                tariffs = response.json()
+                if tariffs:
+                    for tariff in tariffs:
+                        if tariff["id"] not in self.tariff_ids:
+                            self.tariff_ids.append(tariff["id"])
+                response.success()
+            elif response.status_code == 429:
+                response.success()
+            else:
+                response.failure(f"Ошибка при получении всех тарифов: {response.text}")
+
     @task(8)
     def search_tariffs(self) -> None:
         if not self.is_authenticated:
