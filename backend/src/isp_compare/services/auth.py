@@ -68,6 +68,13 @@ class AuthService:
         )
         try:
             await self._user_repository.create(user)
+            (
+                access_token,
+                refresh_token,
+                refresh_expires,
+            ) = await self._token_service.create_tokens(
+                user, skip_revocation=True, skip_commit=True
+            )
             await self._transaction_manager.commit()
         except IntegrityError as e:
             orig = cast("BaseException", e.orig)
@@ -78,12 +85,6 @@ class AuthService:
                 if "uq_users_email" in error_detail:
                     raise EmailAlreadyExistsException from e
             raise e from e
-
-        (
-            access_token,
-            refresh_token,
-            refresh_expires,
-        ) = await self._token_service.create_tokens(user, skip_revocation=True)
 
         response.set_cookie(
             key=self._cookie_config.refresh_token_key,

@@ -36,7 +36,6 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./frontend:/app
-      # Исключаем node_modules из монтирования
       - /app/node_modules
     ports:
       - "5173:5173"

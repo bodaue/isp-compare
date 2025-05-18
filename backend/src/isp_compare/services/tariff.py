@@ -1,3 +1,4 @@
+import asyncio
 import json
 from uuid import UUID
 
@@ -8,7 +9,7 @@ from isp_compare.core.exceptions import (
     ProviderNotFoundException,
     TariffNotFoundException,
 )
-from isp_compare.models import SearchHistory
+from isp_compare.models import SearchHistory, User
 from isp_compare.models.tariff import Tariff
 from isp_compare.repositories.provider import ProviderRepository
 from isp_compare.repositories.search_history import SearchHistoryRepository
@@ -91,13 +92,16 @@ class TariffService:
     async def get_provider_tariffs(
         self, provider_id: UUID, limit: int, offset: int
     ) -> list[TariffResponse]:
-        provider = await self._provider_repository.get_by_id(provider_id)
+        tasks = [
+            self._provider_repository.get_by_id(provider_id),
+            self._tariff_repository.get_by_provider(provider_id, limit, offset),
+        ]
+
+        provider, tariffs = await asyncio.gather(*tasks)
+
         if not provider:
             raise ProviderNotFoundException
 
-        tariffs = await self._tariff_repository.get_by_provider(
-            provider_id, limit, offset
-        )
         return [TariffResponse.model_validate(tariff) for tariff in tariffs]
 
     async def update_tariff(
@@ -128,7 +132,7 @@ class TariffService:
     async def search_tariffs(
         self, search_params: TariffSearchParams
     ) -> list[TariffResponse]:
-        tariffs = await self._tariff_repository.search(
+        search_task = self._tariff_repository.search(
             min_price=search_params.min_price,
             max_price=search_params.max_price,
             min_speed=search_params.min_speed,
@@ -138,15 +142,25 @@ class TariffService:
             limit=search_params.limit,
             offset=search_params.offset,
         )
-        try:
-            user = await self._identity_provider.get_current_user()
-        except AppException:
-            pass
-        else:
+
+        user_task = self._get_user_safe()
+
+        tariffs, user = await asyncio.gather(search_task, user_task)
+
+        tariff_responses = [TariffResponse.model_validate(tariff) for tariff in tariffs]
+
+        if user:
             search_history = SearchHistory(
                 user_id=user.id,
                 search_params=search_params.model_dump(exclude_none=True, mode="json"),
             )
             await self._search_history_repository.create(search_history)
             await self._transaction_manager.commit()
-        return [TariffResponse.model_validate(tariff) for tariff in tariffs]
+
+        return tariff_responses
+
+    async def _get_user_safe(self) -> User | None:
+        try:
+            return await self._identity_provider.get_current_user()
+        except AppException:
+            return None
