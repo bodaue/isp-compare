@@ -24,13 +24,13 @@
     font-size: 1.125rem;
     margin-top: 0.5rem;
 }
-
 .tariff-controls {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .compare-toggle {
@@ -87,7 +87,6 @@
     border-color: var(--primary-color);
     transform: translateY(-1px);
 }
-
 .compare-panel {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);

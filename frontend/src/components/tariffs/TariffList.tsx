@@ -1,4 +1,3 @@
-// frontend/src/components/tariffs/TariffList.tsx (обновленная версия)
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useProviders, useTariffs, useToast} from '../../hooks';
@@ -6,6 +5,7 @@ import {TariffSearchParams} from '../../types/provider.types';
 import {searchHistoryService} from '../../services/searchHistoryService';
 import {useAuth} from '../../contexts/AuthContext';
 import TariffCard from './TariffCard';
+import TariffSort, {SortConfig} from './TariffSort';
 import PageHeader from '../common/PageHeader';
 import Toast from '../common/Toast';
 import './TariffList.css';
@@ -23,6 +23,12 @@ const TariffList: React.FC = () => {
     const [compareMode, setCompareMode] = useState(false);
     const [selectedTariffs, setSelectedTariffs] = useState<string[]>([]);
 
+    // Добавляем состояние для сортировки
+    const [sortConfig, setSortConfig] = useState<SortConfig>({
+        field: 'price',
+        direction: 'asc'
+    });
+
     const handleFilterChange = (name: keyof TariffSearchParams, value: any) => {
         setFilters(prev => ({
             ...prev,
@@ -39,7 +45,6 @@ const TariffList: React.FC = () => {
         fetchTariffs();
     };
 
-// В TariffList.tsx:
     const restoreLastSearch = async () => {
         if (!isLoggedIn) return;
 
@@ -60,7 +65,32 @@ const TariffList: React.FC = () => {
             setLoadingHistory(false);
         }
     };
-    // Остальные функции...
+
+    // Применяем сортировку к списку тарифов
+    const sortedTariffs = React.useMemo(() => {
+        // Если список пустой или все еще загружается, возвращаем исходный список
+        if (!tariffs.length || loading) return tariffs;
+
+        const sorted = [...tariffs];
+        const {field, direction} = sortConfig;
+
+        return sorted.sort((a, b) => {
+            let comparison = 0;
+
+            if (field === 'price') {
+                const aPrice = a.promo_price ?? a.price;
+                const bPrice = b.promo_price ?? b.price;
+                comparison = aPrice - bPrice;
+            } else if (field === 'speed') {
+                comparison = a.speed - b.speed;
+            } else if (field === 'name') {
+                comparison = a.name.localeCompare(b.name);
+            }
+
+            return direction === 'asc' ? comparison : -comparison;
+        });
+    }, [tariffs, sortConfig, loading]);
+
     const toggleCompareMode = () => {
         if (compareMode) {
             setSelectedTariffs([]);
@@ -84,6 +114,11 @@ const TariffList: React.FC = () => {
         if (selectedTariffs.length >= 2) {
             navigate(`/tariffs/compare?ids=${selectedTariffs.join(',')}`);
         }
+    };
+
+    // Обработчик изменения сортировки
+    const handleSortChange = (newConfig: SortConfig) => {
+        setSortConfig(newConfig);
     };
 
     if (loading) {
@@ -113,7 +148,6 @@ const TariffList: React.FC = () => {
                 subtitle="Найдите подходящий тариф среди всех провайдеров"
             />
 
-            {/* Существующая разметка... */}
             <div className="tariff-controls">
                 <button
                     className={`compare-toggle ${compareMode ? 'active' : ''}`}
@@ -136,9 +170,14 @@ const TariffList: React.FC = () => {
                     </svg>
                     Фильтры
                 </button>
+
+                {/* Добавляем компонент сортировки */}
+                <TariffSort
+                    currentSort={sortConfig}
+                    onChange={handleSortChange}
+                />
             </div>
 
-            {/* Существующие секции... */}
             {compareMode && (
                 <div className="compare-panel">
                     <div className="compare-info">
@@ -160,7 +199,6 @@ const TariffList: React.FC = () => {
 
             {showFilters && (
                 <div className="filter-panel">
-                    {/* Существующие фильтры... */}
                     <div className="filter-group">
                         <label>Цена (₽/мес)</label>
                         <div className="filter-range">
@@ -257,7 +295,7 @@ const TariffList: React.FC = () => {
             )}
 
             <div className="tariffs-grid">
-                {tariffs.map((tariff) => (
+                {sortedTariffs.map((tariff) => (
                     <TariffCard
                         key={tariff.id}
                         tariff={tariff}
@@ -270,13 +308,12 @@ const TariffList: React.FC = () => {
                 ))}
             </div>
 
-            {tariffs.length === 0 && (
+            {sortedTariffs.length === 0 && (
                 <div className="no-tariffs">
                     <p>Тарифы не найдены. Попробуйте изменить параметры поиска.</p>
                 </div>
             )}
 
-            {/* Рендерим toast уведомления */}
             {toasts.map(toast => (
                 <Toast
                     key={toast.id}
