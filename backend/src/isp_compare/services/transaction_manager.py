@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -8,8 +10,8 @@ class TransactionManager:
     async def commit(self) -> None:
         await self.session.commit()
 
-    async def flush(self) -> None:
-        await self.session.flush()
+    async def flush(self, objects: Sequence | None = None) -> None:
+        await self.session.flush(objects)
 
     async def rollback(self) -> None:
         await self.session.rollback()

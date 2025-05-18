@@ -33,7 +33,7 @@ class TokenService:
         self._redis_client = redis_client
 
     async def create_tokens(
-        self, user: User, skip_revocation: bool = False, skip_commit: bool = False
+        self, user: User, skip_revocation: bool = False
     ) -> tuple[str, str, datetime]:
         if not skip_revocation:
             await self._refresh_token_repository.revoke_all_for_user(user.id)
@@ -48,8 +48,7 @@ class TokenService:
             expires_at=expires_at,
         )
         await self._refresh_token_repository.create(refresh_token)
-        if not skip_commit:
-            await self._transaction_manager.commit()
+        await self._transaction_manager.commit()
 
         return access_token, refresh_token_value, expires_at
 
