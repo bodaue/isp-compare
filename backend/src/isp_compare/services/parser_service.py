@@ -1,14 +1,14 @@
 import logging
+from typing import TYPE_CHECKING
 
-from isp_compare.parsers.rostelecom import RostelecomParser
-from isp_compare.parsers.domru import DomruParser
+from isp_compare.models.tariff import Tariff
 from isp_compare.parsers.beeline import BeelineParser
+from isp_compare.parsers.domru import DomruParser
+from isp_compare.parsers.rostelecom import RostelecomParser
 from isp_compare.repositories.provider import ProviderRepository
 from isp_compare.repositories.tariff import TariffRepository
 from isp_compare.schemas.tariff import TariffCreate
 from isp_compare.services.transaction_manager import TransactionManager
-from typing import TYPE_CHECKING
-
 
 if TYPE_CHECKING:
     from isp_compare.parsers.base import BaseParser
@@ -17,8 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class ParserService:
-    """Сервис для управления парсерами провайдеров"""
-
     def __init__(
         self,
         provider_repository: ProviderRepository,
@@ -29,7 +27,6 @@ class ParserService:
         self._tariff_repository = tariff_repository
         self._transaction_manager = transaction_manager
 
-        # Регистрация парсеров
         self._parsers: dict[str, type[BaseParser]] = {
             "Ростелеком": RostelecomParser,
             "Дом.ру": DomruParser,
@@ -45,7 +42,6 @@ class ParserService:
         parser = parser_class()
 
         try:
-            # Получаем ID провайдера из базы данных
             providers_with_counts = await self._provider_repository.get_all()
             for provider, _ in providers_with_counts:
                 if provider.name == provider_name:
@@ -56,7 +52,6 @@ class ParserService:
                 logger.error(f"Provider '{provider_name}' not found in database")
                 return []
 
-            # Парсим тарифы
             tariffs = await parser.parse_tariffs()
             logger.info(
                 f"Successfully parsed {len(tariffs)} tariffs for {provider_name}"
@@ -69,15 +64,6 @@ class ParserService:
             return tariffs
 
     async def update_provider_tariffs(self, provider_name: str) -> int:
-        """
-        Обновление базы данных тарифами выбранного провайдера
-
-        Args:
-            provider_name: Название провайдера
-
-        Returns:
-            int: Количество обновленных/добавленных тарифов
-        """
         tariffs = await self.parse_provider_tariffs(provider_name)
         if not tariffs:
             return 0
@@ -88,15 +74,7 @@ class ParserService:
         count = 0
         for tariff_data in tariffs:
             try:
-                # Если есть URL тарифа, получаем дополнительные детали
-                if tariff_data.url:
-                    details = await parser.parse_tariff_details(tariff_data.url)
-                    if "connection_cost" in details:
-                        tariff_data.connection_cost = details["connection_cost"]
-
-                tariff = TariffCreate(
-                    **tariff_data.model_dump(), provider_id=provider_id
-                )
+                tariff = Tariff(**tariff_data.model_dump(), provider_id=provider_id)
                 await self._tariff_repository.create(tariff)
                 count += 1
 
