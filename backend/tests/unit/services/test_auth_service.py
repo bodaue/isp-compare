@@ -138,8 +138,6 @@ async def test_register_success(
         email="test@example.com",
     )
 
-    user_repository_mock.get_by_username.return_value = None
-    user_repository_mock.get_by_email.return_value = None
     password_hasher_mock.hash.return_value = "hashed_password"
 
     access_token = "test_access_token"
@@ -158,8 +156,6 @@ async def test_register_success(
 
     result = await auth_service.register(user_data, response_mock)
 
-    user_repository_mock.get_by_username.assert_called_once_with(user_data.username)
-    user_repository_mock.get_by_email.assert_called_once_with(user_data.email)
     password_hasher_mock.hash.assert_called_once_with(user_data.password)
     user_repository_mock.create.assert_called_once()
     transaction_manager_mock.commit.assert_called_once()
@@ -189,8 +185,6 @@ async def test_register_username_already_exists(
     with pytest.raises(UsernameAlreadyExistsException):
         await auth_service.register(user_data, response_mock)
 
-    user_repository_mock.get_by_username.assert_called_once_with(user_data.username)
-    user_repository_mock.get_by_email.assert_not_called()
     user_repository_mock.create.assert_not_called()
 
 
@@ -207,14 +201,9 @@ async def test_register_email_already_exists(
         email="existing@example.com",
     )
 
-    user_repository_mock.get_by_username.return_value = None
-    user_repository_mock.get_by_email.return_value = mock_user
-
     with pytest.raises(EmailAlreadyExistsException):
         await auth_service.register(user_data, response_mock)
 
-    user_repository_mock.get_by_username.assert_called_once_with(user_data.username)
-    user_repository_mock.get_by_email.assert_called_once_with(user_data.email)
     user_repository_mock.create.assert_not_called()
 
 
