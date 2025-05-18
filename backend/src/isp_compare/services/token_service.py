@@ -48,7 +48,6 @@ class TokenService:
             expires_at=expires_at,
         )
         await self._refresh_token_repository.create(refresh_token)
-
         if not skip_commit:
             await self._transaction_manager.commit()
 

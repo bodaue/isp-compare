@@ -68,6 +68,7 @@ class AuthService:
         )
         try:
             await self._user_repository.create(user)
+
             (
                 access_token,
                 refresh_token,
@@ -75,6 +76,7 @@ class AuthService:
             ) = await self._token_service.create_tokens(
                 user, skip_revocation=True, skip_commit=True
             )
+
             await self._transaction_manager.commit()
         except IntegrityError as e:
             await self._transaction_manager.rollback()

@@ -92,15 +92,14 @@ class TariffService:
     async def get_provider_tariffs(
         self, provider_id: UUID, limit: int, offset: int
     ) -> list[TariffResponse]:
-        tasks = [
-            self._provider_repository.get_by_id(provider_id),
-            self._tariff_repository.get_by_provider(provider_id, limit, offset),
-        ]
+        provider_result = await self._provider_repository.get_by_id(provider_id)
 
-        provider, tariffs = await asyncio.gather(*tasks)
-
-        if not provider:
+        if not provider_result:
             raise ProviderNotFoundException
+
+        tariffs = await self._tariff_repository.get_by_provider(
+            provider_id, limit, offset
+        )
 
         return [TariffResponse.model_validate(tariff) for tariff in tariffs]
 
