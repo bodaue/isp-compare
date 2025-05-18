@@ -77,6 +77,7 @@ class AuthService:
             )
             await self._transaction_manager.commit()
         except IntegrityError as e:
+            await self._transaction_manager.rollback()
             orig = cast("BaseException", e.orig)
             if isinstance(orig.__cause__, UniqueViolationError):
                 error_detail = str(e).lower()
