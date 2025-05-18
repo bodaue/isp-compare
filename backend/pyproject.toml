@@ -21,6 +21,7 @@ bcrypt = "^4.3.0"
 pydantic = { extras = ["email"], version = "^2.11.3" }
 sqladmin = "^0.20.1"
 itsdangerous = "^2.2.0"
+beautifulsoup4 = "^4.13.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
@@ -49,7 +50,8 @@ ignore = [
     "FBT001", "FBT002",
     "PLR0913", "PLR0915",
     "TRY003", "EM101", "EM102",
-    "S101", "C901", "I001", "PLR2004"
+    "S101", "C901", "I001", "PLR2004",
+    "G004", "TRY401"
 ]
 
 [tool.ruff.lint.per-file-ignores]

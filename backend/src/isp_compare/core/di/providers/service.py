@@ -2,6 +2,7 @@ from dishka import Provider, Scope, provide
 
 from isp_compare.services.auth import AuthService
 from isp_compare.services.identity_provider import IdentityProvider
+from isp_compare.services.parser_service import ParserService
 from isp_compare.services.password_hasher import PasswordHasher
 from isp_compare.services.provider import ProviderService
 from isp_compare.services.rate_limiter import RateLimiter
@@ -32,3 +33,4 @@ class ServiceProvider(Provider):
     search_history_service = provide(SearchHistoryService)
 
     rate_limiter = provide(RateLimiter)
+    parser_service = provide(ParserService)
