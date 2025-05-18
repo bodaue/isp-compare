@@ -4,7 +4,6 @@ import {providerService} from '../../services/providerService';
 import {tariffService} from '../../services/tariffService';
 import {Provider, Tariff} from '../../types/provider.types';
 import TariffCard from '../tariffs/TariffCard';
-import TariffSort, {SortConfig} from '../tariffs/TariffSort';
 import ReviewList from '../reviews/ReviewList';
 import './ProviderDetail.css';
 
@@ -15,10 +14,6 @@ const ProviderDetail: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('tariffs');
-    const [sortConfig, setSortConfig] = useState<SortConfig>({
-        field: 'price',
-        direction: 'asc'
-    });
 
     useEffect(() => {
         if (id) {
@@ -43,30 +38,6 @@ const ProviderDetail: React.FC = () => {
         }
     };
 
-    // Сортировка тарифов
-    const sortedTariffs = React.useMemo(() => {
-        const sorted = [...tariffs];
-        const {field, direction} = sortConfig;
-
-        return sorted.sort((a, b) => {
-            let comparison = 0;
-
-            if (field === 'price') {
-                const aPrice = a.promo_price ?? a.price;
-                const bPrice = b.promo_price ?? b.price;
-                comparison = aPrice - bPrice;
-            }
-            else if (field === 'speed') {
-                comparison = a.speed - b.speed;
-            }
-            else if (field === 'name') {
-                comparison = a.name.localeCompare(b.name);
-            }
-
-            return direction === 'asc' ? comparison : -comparison;
-        });
-    }, [tariffs, sortConfig]);
-
     // Новая функция для обновления данных провайдера
     const refreshProviderData = async () => {
         try {
@@ -77,10 +48,6 @@ const ProviderDetail: React.FC = () => {
         } catch (err) {
             console.error("Error refreshing provider data:", err);
         }
-    };
-
-    const handleSortChange = (newConfig: SortConfig) => {
-        setSortConfig(newConfig);
     };
 
     if (loading) {
@@ -177,17 +144,10 @@ const ProviderDetail: React.FC = () => {
 
             {activeTab === 'tariffs' && (
                 <div className="provider-tariffs">
-                    <div className="tariffs-header">
-                        <h2>Тарифные планы</h2>
-                        <TariffSort
-                            currentSort={sortConfig}
-                            onChange={handleSortChange}
-                            className="tariff-sort-provider"
-                        />
-                    </div>
-                    {sortedTariffs.length > 0 ? (
+                    <h2>Тарифные планы</h2>
+                    {tariffs.length > 0 ? (
                         <div className="tariffs-grid">
-                            {sortedTariffs.map((tariff) => (
+                            {tariffs.map((tariff) => (
                                 <TariffCard key={tariff.id} tariff={tariff} provider={provider}/>
                             ))}
                         </div>

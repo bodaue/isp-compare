@@ -137,24 +137,13 @@
     background: var(--primary-color);
 }
 
-.tariffs-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.provider-tariffs h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
     margin-bottom: 1.5rem;
 }
 
-.tariffs-header h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.tariff-sort-provider {
-    min-width: 180px;
-}
-
-.provider-tariffs .tariffs-grid {
+.tariffs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
@@ -188,15 +177,5 @@
 
     .tariffs-grid {
         grid-template-columns: 1fr;
-    }
-
-    .tariffs-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .tariff-sort-provider {
-        width: 100%;
     }
 }
