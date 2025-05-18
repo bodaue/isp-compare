@@ -1,8 +1,8 @@
 """Add initial providers
 
-Revision ID: 67780e890d7c
-Revises: f0114287c0ac
-Create Date: 2025-05-10 11:54:10.820065
+Revision ID: 5ecf2e568cf7
+Revises: 1c046fa5a56c
+Create Date: 2025-05-18 21:10:05.803718
 
 """
 
@@ -13,14 +13,13 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "67780e890d7c"
-down_revision: str | None = "f0114287c0ac"
+revision: str = "5ecf2e568cf7"
+down_revision: str | None = "1c046fa5a56c"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    """Upgrade schema."""
     providers_table = sa.table(
         "providers",
         sa.column("id", sa.Uuid),
@@ -59,17 +58,6 @@ def upgrade() -> None:
         },
         {
             "id": uuid4(),
-            "name": "МегаФон",
-            "description": "Всероссийский оператор связи. Предоставляет услуги "
-            "мобильной связи, домашнего интернета и цифрового "
-            "телевидения.",
-            "website": "https://volgograd.megafon.ru/",
-            "phone": "8-800-550-0500",
-            "logo_url": "https://ui.megafon.ru/favicon/apple-touch-icon.png",
-            "rating": None,
-        },
-        {
-            "id": uuid4(),
             "name": "МТС",
             "description": "Ведущая российская компания по предоставлению цифровых,"
             " медийных и телекоммуникационных сервисов."
@@ -96,7 +84,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Downgrade schema."""
     op.execute(
         """
         DELETE
@@ -104,7 +91,6 @@ def downgrade() -> None:
         WHERE name IN (
                        'Ростелеком',
                        'Дом.ru',
-                       'МегаФон',
                        'МТС',
                        'Билайн'
             )

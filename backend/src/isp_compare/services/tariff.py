@@ -1,8 +1,5 @@
 import asyncio
-import json
 from uuid import UUID
-
-from redis.asyncio import Redis
 
 from isp_compare.core.exceptions import (
     AppException,
@@ -32,14 +29,12 @@ class TariffService:
         search_history_repository: SearchHistoryRepository,
         transaction_manager: TransactionManager,
         identity_provider: IdentityProvider,
-        redis_client: Redis,
     ) -> None:
         self._tariff_repository = tariff_repository
         self._provider_repository = provider_repository
         self._search_history_repository = search_history_repository
         self._transaction_manager = transaction_manager
         self._identity_provider = identity_provider
-        self._redis_client = redis_client
 
     async def create_tariff(
         self, provider_id: UUID, data: TariffCreate
@@ -62,32 +57,8 @@ class TariffService:
         return TariffResponse.model_validate(tariff)
 
     async def get_all_tariffs(self, limit: int, offset: int) -> list[TariffResponse]:
-        cache_key = "all_active_tariffs"
-
-        cached_data = await self._redis_client.get(cache_key)
-
-        if cached_data:
-            try:
-                all_tariffs_data = json.loads(cached_data)
-
-                all_tariffs = [TariffResponse(**tariff) for tariff in all_tariffs_data]
-                return all_tariffs[offset : offset + limit]
-            except (json.JSONDecodeError, TypeError, KeyError, IndexError):
-                pass
-
-        all_tariffs = await self._tariff_repository.get_all(limit=1000, offset=0)
-
-        all_tariff_responses = [
-            TariffResponse.model_validate(tariff) for tariff in all_tariffs
-        ]
-
-        serialized_data = json.dumps(
-            [tariff.model_dump() for tariff in all_tariff_responses],
-            default=str,
-        )
-        await self._redis_client.set(cache_key, serialized_data, ex=600)
-
-        return all_tariff_responses[offset : offset + limit]
+        tariffs = await self._tariff_repository.get_all(limit=limit, offset=offset)
+        return [TariffResponse.model_validate(tariff) for tariff in tariffs]
 
     async def get_provider_tariffs(
         self, provider_id: UUID, limit: int, offset: int

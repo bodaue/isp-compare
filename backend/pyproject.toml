@@ -56,7 +56,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["ARG001", "S105", "S106"]
-"migrations/**/*.py" = ["S105", "S106"]
+"migrations/**/*.py" = ["S105", "S106", "E501"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
