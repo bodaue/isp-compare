@@ -1,8 +1,10 @@
 import uuid
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
 from faker import Faker
+from redis.asyncio import Redis
 
 from isp_compare.core.exceptions import (
     ProviderNotFoundException,
@@ -21,11 +23,29 @@ def provider_repository_mock() -> AsyncMock:
 
 
 @pytest.fixture
+def redis_client_mock() -> AsyncMock:
+    redis_mock = AsyncMock(spec=Redis)
+
+    async def async_none(*_: Any, **__: Any) -> None:
+        return None
+
+    async def async_true(*_: Any, **__: Any) -> True:
+        return True
+
+    redis_mock.get.side_effect = async_none
+    redis_mock.set.side_effect = async_true
+
+    return redis_mock
+
+
+@pytest.fixture
 def provider_service(
     provider_repository_mock: AsyncMock,
+    redis_client_mock: AsyncMock,
 ) -> ProviderService:
     return ProviderService(
         provider_repository=provider_repository_mock,
+        redis_client=redis_client_mock,
     )
 
 
@@ -78,6 +98,7 @@ async def test_get_provider_not_found(
 async def test_get_all_providers(
     provider_service: ProviderService,
     provider_repository_mock: AsyncMock,
+    redis_client_mock: AsyncMock,
     mock_provider: Provider,
 ) -> None:
     providers = [(mock_provider, 0), (mock_provider, 0), (mock_provider, 0)]
@@ -85,6 +106,7 @@ async def test_get_all_providers(
 
     result = await provider_service.get_all_providers()
 
+    redis_client_mock.get.assert_called_once_with("all_providers")
     provider_repository_mock.get_all.assert_called_once()
     assert len(result) == len(providers)
     for provider_response in result:

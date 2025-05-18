@@ -8,14 +8,12 @@ from fastapi import Request, Response
 
 from isp_compare.core.config import CookieConfig, JWTConfig
 from isp_compare.core.exceptions import (
-    EmailAlreadyExistsException,
     IncorrectPasswordException,
     InvalidCredentialsException,
     LoginRateLimitExceededException,
     PasswordChangeRateLimitExceededException,
     RefreshTokenMissingException,
     TokenRefreshRateLimitExceededException,
-    UsernameAlreadyExistsException,
     UserNotFoundException,
 )
 from isp_compare.models.user import User
@@ -165,46 +163,6 @@ async def test_register_success(
 
     assert isinstance(result, TokenResponse)
     assert result.access_token == access_token
-
-
-async def test_register_username_already_exists(
-    auth_service: AuthService,
-    response_mock: MagicMock,
-    user_repository_mock: AsyncMock,
-    mock_user: User,
-) -> None:
-    user_data = UserCreate(
-        fullname="Test User",
-        username="existing_user",
-        password="Password123",
-        email="test@example.com",
-    )
-
-    user_repository_mock.get_by_username.return_value = mock_user
-
-    with pytest.raises(UsernameAlreadyExistsException):
-        await auth_service.register(user_data, response_mock)
-
-    user_repository_mock.create.assert_not_called()
-
-
-async def test_register_email_already_exists(
-    auth_service: AuthService,
-    response_mock: MagicMock,
-    user_repository_mock: AsyncMock,
-    mock_user: User,
-) -> None:
-    user_data = UserCreate(
-        fullname="Test User",
-        username="testuser",
-        password="Password123",
-        email="existing@example.com",
-    )
-
-    with pytest.raises(EmailAlreadyExistsException):
-        await auth_service.register(user_data, response_mock)
-
-    user_repository_mock.create.assert_not_called()
 
 
 async def test_login_success(

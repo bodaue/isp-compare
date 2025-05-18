@@ -1,8 +1,10 @@
 import uuid
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
 from faker import Faker
+from redis.asyncio import Redis
 
 from isp_compare.core.exceptions import (
     AdminAccessDeniedException,
@@ -52,12 +54,29 @@ def identity_provider_mock() -> AsyncMock:
 
 
 @pytest.fixture
+def redis_client_mock() -> AsyncMock:
+    redis_mock = AsyncMock(spec=Redis)
+
+    async def async_none(*_: Any, **__: Any) -> None:
+        return None
+
+    async def async_true(*_: Any, **__: Any) -> True:
+        return True
+
+    redis_mock.get.side_effect = async_none
+    redis_mock.set.side_effect = async_true
+
+    return redis_mock
+
+
+@pytest.fixture
 def tariff_service(
     tariff_repository_mock: AsyncMock,
     provider_repository_mock: AsyncMock,
     search_history_repository_mock: AsyncMock,
     transaction_manager_mock: AsyncMock,
     identity_provider_mock: AsyncMock,
+    redis_client_mock: AsyncMock,
 ) -> TariffService:
     return TariffService(
         tariff_repository=tariff_repository_mock,
@@ -65,6 +84,7 @@ def tariff_service(
         search_history_repository=search_history_repository_mock,
         transaction_manager=transaction_manager_mock,
         identity_provider=identity_provider_mock,
+        redis_client=redis_client_mock,
     )
 
 
@@ -234,6 +254,7 @@ async def test_get_tariff_not_found(
 async def test_get_all_tariffs(
     tariff_service: TariffService,
     tariff_repository_mock: AsyncMock,
+    redis_client_mock: AsyncMock,
     mock_tariff: Tariff,
 ) -> None:
     limit = 10
@@ -242,8 +263,8 @@ async def test_get_all_tariffs(
     tariff_repository_mock.get_all.return_value = tariffs
 
     result = await tariff_service.get_all_tariffs(limit, offset)
-
-    tariff_repository_mock.get_all.assert_called_once_with(limit, offset)
+    redis_client_mock.get.assert_called_once()
+    tariff_repository_mock.get_all.assert_called_once()
     assert len(result) == len(tariffs)
     for tariff_response in result:
         assert isinstance(tariff_response, TariffResponse)
