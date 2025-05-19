@@ -1,4 +1,3 @@
-import asyncio
 from uuid import UUID
 
 from isp_compare.core.exceptions import (
@@ -102,7 +101,7 @@ class TariffService:
     async def search_tariffs(
         self, search_params: TariffSearchParams
     ) -> list[TariffResponse]:
-        search_task = self._tariff_repository.search(
+        tariffs = await self._tariff_repository.search(
             min_price=search_params.min_price,
             max_price=search_params.max_price,
             min_speed=search_params.min_speed,
@@ -113,9 +112,7 @@ class TariffService:
             offset=search_params.offset,
         )
 
-        user_task = self._get_user_safe()
-
-        tariffs, user = await asyncio.gather(search_task, user_task)
+        user = await self._get_user_safe()
 
         tariff_responses = [TariffResponse.model_validate(tariff) for tariff in tariffs]
 
