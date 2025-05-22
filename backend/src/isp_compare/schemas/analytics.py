@@ -21,12 +21,3 @@ class UserSessionData(BaseModel):
 
     class Config:
         populate_by_name = True
-
-
-class AnalyticsStats(BaseModel):
-    total_sessions: int
-    goal_completion_rate: float
-    average_clicks_to_goal: float
-    average_session_duration: float
-    most_common_path: list[str]
-    drop_off_points: dict[str, int]

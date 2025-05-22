@@ -6,6 +6,7 @@ from isp_compare.repositories.search_history import SearchHistoryRepository
 from isp_compare.repositories.tariff import TariffRepository
 from isp_compare.repositories.token import RefreshTokenRepository
 from isp_compare.repositories.user import UserRepository
+from isp_compare.repositories.user_session import UserSessionRepository
 
 
 class RepositoryProvider(Provider):
@@ -18,3 +19,5 @@ class RepositoryProvider(Provider):
     tariff_repository = provide(TariffRepository)
     review_repository = provide(ReviewRepository)
     search_history = provide(SearchHistoryRepository)
+
+    user_session_repository = provide(UserSessionRepository)

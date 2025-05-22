@@ -10,7 +10,7 @@ from isp_compare.admin.views import (
     ReviewAdmin,
     TariffAdmin,
     UserAdmin,
-    UserAnalyticsAdmin,
+    UserSessionAdmin,
 )
 from isp_compare.core.config import JWTConfig
 
@@ -43,4 +43,4 @@ async def setup_admin(app: FastAPI) -> None:
     admin.add_view(TariffAdmin)
     admin.add_view(UserAdmin)
     admin.add_view(ReviewAdmin)
-    admin.add_view(UserAnalyticsAdmin)
+    admin.add_view(UserSessionAdmin)
