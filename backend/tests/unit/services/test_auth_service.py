@@ -3,15 +3,19 @@ from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from asyncpg import UniqueViolationError
 from faker import Faker
 from fastapi import Request, Response
+from sqlalchemy.exc import IntegrityError
 
 from isp_compare.core.config import CookieConfig, JWTConfig
 from isp_compare.core.exceptions import (
+    EmailAlreadyExistsException,
     InvalidCredentialsException,
     LoginRateLimitExceededException,
     RefreshTokenMissingException,
     TokenRefreshRateLimitExceededException,
+    UsernameAlreadyExistsException,
 )
 from isp_compare.models.user import User
 from isp_compare.repositories.user import UserRepository
@@ -151,6 +155,160 @@ async def test_register_success(
 
     assert isinstance(result, TokenResponse)
     assert result.access_token == access_token
+
+
+async def test_register_username_already_exists(
+    auth_service: AuthService,
+    response_mock: MagicMock,
+    user_repository_mock: AsyncMock,
+    password_hasher_mock: MagicMock,
+) -> None:
+    """Тест для случая, когда username уже существует"""
+    user_data = UserCreate(
+        fullname="Test User",
+        username="existinguser",
+        password="Password123",
+        email="test@example.com",
+    )
+
+    password_hasher_mock.hash.return_value = "hashed_password"
+
+    # Создаем мок для UniqueViolationError
+    unique_violation = UniqueViolationError(
+        "duplicate key value violates unique constraint"
+    )
+
+    # Создаем мок для IntegrityError с правильной структурой
+    integrity_error = IntegrityError(
+        "statement", "params", unique_violation, connection_invalidated=False
+    )
+    integrity_error.orig = MagicMock()
+    integrity_error.orig.__cause__ = unique_violation
+
+    def mock_str(_: IntegrityError) -> str:
+        return "duplicate key value violates unique constraint uq_users_username"
+
+    IntegrityError.__str__ = mock_str
+
+    user_repository_mock.create.side_effect = integrity_error
+
+    with pytest.raises(UsernameAlreadyExistsException):
+        await auth_service.register(user_data, response_mock)
+
+    password_hasher_mock.hash.assert_called_once_with(user_data.password)
+    user_repository_mock.create.assert_called_once()
+
+
+async def test_register_email_already_exists(
+    auth_service: AuthService,
+    response_mock: MagicMock,
+    user_repository_mock: AsyncMock,
+    password_hasher_mock: MagicMock,
+) -> None:
+    """Тест для случая, когда email уже существует"""
+    user_data = UserCreate(
+        fullname="Test User",
+        username="testuser",
+        password="Password123",
+        email="existing@example.com",
+    )
+
+    password_hasher_mock.hash.return_value = "hashed_password"
+
+    # Создаем мок для UniqueViolationError
+    unique_violation = UniqueViolationError(
+        "duplicate key value violates unique constraint"
+    )
+
+    # Создаем мок для IntegrityError с правильной структурой
+    integrity_error = IntegrityError(
+        "statement", "params", unique_violation, connection_invalidated=False
+    )
+    integrity_error.orig = MagicMock()
+    integrity_error.orig.__cause__ = unique_violation
+
+    def mock_str(_: IntegrityError) -> str:
+        return "duplicate key value violates unique constraint uq_users_email"
+
+    IntegrityError.__str__ = mock_str
+
+    user_repository_mock.create.side_effect = integrity_error
+
+    with pytest.raises(EmailAlreadyExistsException):
+        await auth_service.register(user_data, response_mock)
+
+    password_hasher_mock.hash.assert_called_once_with(user_data.password)
+    user_repository_mock.create.assert_called_once()
+
+
+async def test_register_other_integrity_error(
+    auth_service: AuthService,
+    response_mock: MagicMock,
+    user_repository_mock: AsyncMock,
+    password_hasher_mock: MagicMock,
+) -> None:
+    """Тест для случая, когда возникает другая IntegrityError"""
+    user_data = UserCreate(
+        fullname="Test User",
+        username="testuser",
+        password="Password123",
+        email="test@example.com",
+    )
+
+    password_hasher_mock.hash.return_value = "hashed_password"
+
+    # Создаем мок для обычного исключения (не UniqueViolationError)
+    other_error = Exception("some other database error")
+
+    # Создаем мок для IntegrityError с правильной структурой
+    integrity_error = IntegrityError(
+        "statement", "params", other_error, connection_invalidated=False
+    )
+    integrity_error.orig = MagicMock()
+    integrity_error.orig.__cause__ = other_error
+
+    user_repository_mock.create.side_effect = integrity_error
+
+    with pytest.raises(IntegrityError):
+        await auth_service.register(user_data, response_mock)
+
+    password_hasher_mock.hash.assert_called_once_with(user_data.password)
+    user_repository_mock.create.assert_called_once()
+
+
+async def test_register_integrity_error_without_unique_violation(
+    auth_service: AuthService,
+    response_mock: MagicMock,
+    user_repository_mock: AsyncMock,
+    password_hasher_mock: MagicMock,
+) -> None:
+    """Тест для случая, когда IntegrityError не содержит UniqueViolationError"""
+    user_data = UserCreate(
+        fullname="Test User",
+        username="testuser",
+        password="Password123",
+        email="test@example.com",
+    )
+
+    password_hasher_mock.hash.return_value = "hashed_password"
+
+    integrity_error = IntegrityError(
+        "statement",
+        "params",
+        Exception("not a unique violation"),
+        connection_invalidated=False,
+    )
+
+    user_repository_mock.create.side_effect = integrity_error
+
+    with pytest.raises(IntegrityError):
+        await auth_service.register(user_data, response_mock)
+
+    password_hasher_mock.hash.assert_called_once_with(user_data.password)
+    user_repository_mock.create.assert_called_once()
+
+
+# Остальные существующие тесты остаются без изменений...
 
 
 async def test_login_success(

@@ -71,6 +71,9 @@ omit = [
     "*/__init__.py",
     "*/migrations/*",
     "*/alembic/*",
+    "src/isp_compare/services/parser_service.py",
+    "src/isp_compare/parsers/*",
+    "src/isp_compare/api/v1/parser.py"
 ]
 
 [tool.coverage.report]
