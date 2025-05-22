@@ -104,8 +104,14 @@ class AuthService:
         ):
             await self._rate_limiter.add_failed_login_attempt(data.username)
 
+            remaining_after_attempt = remaining - 1
+            is_last_attempt = remaining_after_attempt <= 0
+
             raise InvalidCredentialsException(
-                remaining_attempts=remaining - 1, max_attempts=10
+                remaining_attempts=remaining_after_attempt,
+                max_attempts=10,
+                is_last_attempt=is_last_attempt,
+                retry_after=300 if is_last_attempt else None,
             )
 
         (
