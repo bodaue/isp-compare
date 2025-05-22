@@ -63,9 +63,7 @@ class RateLimiter:
         key = f"failed_login_limit:{username}"
         await self.add_failed_attempt(key, 5)
 
-    async def check_failed_password_change_limit(
-        self, user_id: UUID
-    ) -> tuple[bool, int]:
+    async def check_password_change_limit(self, user_id: UUID) -> tuple[bool, int]:
         key = f"failed_password_change_limit:{user_id}"
         window_seconds = 5 * 60
         current_time = int(datetime.now(UTC).timestamp())
@@ -85,7 +83,7 @@ class RateLimiter:
         await self._redis.expire(key, window_seconds)
         return is_allowed, remaining_attempts
 
-    async def add_failed_password_change_attempt(self, user_id: UUID) -> None:
+    async def add_password_change_attempt(self, user_id: UUID) -> None:
         key = f"failed_password_change_limit:{user_id}"
         await self.add_failed_attempt(key, 5)
 
@@ -95,4 +93,4 @@ class RateLimiter:
 
     async def username_change_rate_limit(self, user_id: UUID) -> tuple[bool, int]:
         key = f"username_change_limit:{user_id}"
-        return await self.check_rate_limit(key, 2, 60)
+        return await self.check_rate_limit(key, 10, 60)

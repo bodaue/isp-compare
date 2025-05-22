@@ -138,15 +138,13 @@ async def test_add_failed_login_attempt(
         )
 
 
-async def test_check_failed_password_change_limit_allowed(
+async def test_check_password_change_limit_allowed(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
     user_id = uuid.uuid4()
     redis_mock.zcard.return_value = 3
 
-    is_allowed, remaining = await rate_limiter.check_failed_password_change_limit(
-        user_id
-    )
+    is_allowed, remaining = await rate_limiter.check_password_change_limit(user_id)
 
     assert is_allowed is True
     assert remaining == 7  # 10 - 3 (НЕ добавляем текущую попытку)
@@ -157,15 +155,13 @@ async def test_check_failed_password_change_limit_allowed(
     redis_mock.expire.assert_called_once()
 
 
-async def test_check_failed_password_change_limit_exceeded(
+async def test_check_password_change_limit_exceeded(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
     user_id = uuid.uuid4()
     redis_mock.zcard.return_value = 10
 
-    is_allowed, remaining = await rate_limiter.check_failed_password_change_limit(
-        user_id
-    )
+    is_allowed, remaining = await rate_limiter.check_password_change_limit(user_id)
 
     assert is_allowed is False
     assert remaining == 0
@@ -175,13 +171,13 @@ async def test_check_failed_password_change_limit_exceeded(
     redis_mock.expire.assert_called_once()
 
 
-async def test_add_failed_password_change_attempt(
+async def test_add_password_change_attempt(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
     user_id = uuid.uuid4()
 
     with patch.object(rate_limiter, "add_failed_attempt") as mock_add_failed_attempt:
-        await rate_limiter.add_failed_password_change_attempt(user_id)
+        await rate_limiter.add_password_change_attempt(user_id)
 
         mock_add_failed_attempt.assert_called_once_with(
             f"failed_password_change_limit:{user_id}", 5

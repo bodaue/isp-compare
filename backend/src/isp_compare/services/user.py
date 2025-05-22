@@ -69,16 +69,16 @@ class UserService:
         (
             is_allowed,
             remaining,
-        ) = await self._rate_limiter.check_failed_password_change_limit(user.id)
+        ) = await self._rate_limiter.check_password_change_limit(user.id)
         if not is_allowed:
             raise PasswordChangeRateLimitExceededException
 
         if not self._password_hasher.verify(
             data.current_password, user.hashed_password
         ):
-            await self._rate_limiter.add_failed_password_change_attempt(user.id)
             raise IncorrectPasswordException
 
+        await self._rate_limiter.add_password_change_attempt(user.id)
         hashed_password = self._password_hasher.hash(data.new_password)
         await self._user_repository.update_password(user.id, hashed_password)
         await self._transaction_manager.commit()

@@ -269,16 +269,14 @@ async def test_change_password_success(
     )
 
     identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.check_failed_password_change_limit.return_value = (True, 10)
+    rate_limiter_mock.check_password_change_limit.return_value = (True, 10)
     password_hasher_mock.verify.return_value = True
     password_hasher_mock.hash.return_value = "new_hashed_password"
 
     await user_service.change_password(password_data)
 
     identity_provider_mock.get_current_user.assert_called_once()
-    rate_limiter_mock.check_failed_password_change_limit.assert_called_once_with(
-        mock_user.id
-    )
+    rate_limiter_mock.check_password_change_limit.assert_called_once_with(mock_user.id)
     password_hasher_mock.verify.assert_called_once_with(
         password_data.current_password, mock_user.hashed_password
     )
@@ -288,8 +286,7 @@ async def test_change_password_success(
     )
     transaction_manager_mock.commit.assert_called_once()
 
-    # Проверяем, что неудачная попытка НЕ была добавлена при успешной смене пароля
-    rate_limiter_mock.add_failed_password_change_attempt.assert_not_called()
+    rate_limiter_mock.add_password_change_attempt.assert_called_once()
 
 
 async def test_change_password_user_not_found(
@@ -319,14 +316,12 @@ async def test_change_password_rate_limit_exceeded_initial(
     )
 
     identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.check_failed_password_change_limit.return_value = (False, 0)
+    rate_limiter_mock.check_password_change_limit.return_value = (False, 0)
 
     with pytest.raises(PasswordChangeRateLimitExceededException):
         await user_service.change_password(password_data)
 
-    rate_limiter_mock.check_failed_password_change_limit.assert_called_once_with(
-        mock_user.id
-    )
+    rate_limiter_mock.check_password_change_limit.assert_called_once_with(mock_user.id)
 
 
 async def test_change_password_incorrect_current(
@@ -342,13 +337,8 @@ async def test_change_password_incorrect_current(
     )
 
     identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.check_failed_password_change_limit.return_value = (True, 5)
+    rate_limiter_mock.check_password_change_limit.return_value = (True, 5)
     password_hasher_mock.verify.return_value = False
 
     with pytest.raises(IncorrectPasswordException):
         await user_service.change_password(password_data)
-
-    # Проверяем, что неудачная попытка была добавлена
-    rate_limiter_mock.add_failed_password_change_attempt.assert_called_once_with(
-        mock_user.id
-    )

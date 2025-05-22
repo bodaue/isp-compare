@@ -72,7 +72,7 @@ async def test_update_profile_rate_limit(
     regular_user: User,
     faker: Faker,
 ) -> None:
-    for _ in range(2):
+    for _ in range(10):
         update_data = {"username": faker.unique.user_name()}
         await auth_client.patch("/users/profile", json=update_data)
 

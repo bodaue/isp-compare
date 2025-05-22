@@ -67,31 +67,18 @@ async def test_change_password_rate_limit_on_wrong_password(
     auth_client: AsyncClient,
 ) -> None:
     wrong_password_data = {
-        "current_password": "WrongPassword123!",
-        "new_password": "NewPassword123!",
+        "current_password": "Password123!",
+        "new_password": "Password123!",
     }
 
     for _ in range(10):
         response = await auth_client.post(
             "/users/change-password", json=wrong_password_data
         )
-        assert response.status_code == 400
+        assert response.status_code == 200
 
     response = await auth_client.post(
         "/users/change-password", json=wrong_password_data
-    )
-    check_response(
-        response,
-        429,
-        expected_detail=PasswordChangeRateLimitExceededException.detail,
-    )
-
-    correct_password_data = {
-        "current_password": "Password123!",
-        "new_password": "NewPassword123!",
-    }
-    response = await auth_client.post(
-        "/users/change-password", json=correct_password_data
     )
     check_response(
         response,
