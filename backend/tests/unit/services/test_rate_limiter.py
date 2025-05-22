@@ -184,7 +184,7 @@ async def test_add_password_change_attempt(
         await rate_limiter.add_password_change_attempt(user_id)
 
         mock_add_failed_attempt.assert_called_once_with(
-            f"failed_password_change_limit:{user_id}", 5
+            f"failed_password_change_limit:{user_id}", 24 * 60
         )
 
 

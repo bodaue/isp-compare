@@ -67,7 +67,7 @@ class RateLimiter:
 
     async def check_password_change_limit(self, user_id: UUID) -> tuple[bool, int]:
         key = f"failed_password_change_limit:{user_id}"
-        window_seconds = 5 * 60
+        window_seconds = 24 * 60 * 60
         current_time = int(datetime.now(UTC).timestamp())
         window_start_time = current_time - window_seconds
 
@@ -87,7 +87,7 @@ class RateLimiter:
 
     async def add_password_change_attempt(self, user_id: UUID) -> None:
         key = f"failed_password_change_limit:{user_id}"
-        await self.add_failed_attempt(key, 5)
+        await self.add_failed_attempt(key, 24 * 60)
 
     async def refresh_token_rate_limit_by_ip(self, ip_address: str) -> tuple[bool, int]:
         key = f"refresh_token_limit:ip:{ip_address}"
