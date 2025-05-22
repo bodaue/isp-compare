@@ -17,6 +17,7 @@ interface UserSession {
     clickPath: ClickData[];
     goalReached: boolean;
     userPath: string[]; // страницы, которые посетил пользователь
+    dataSent?: boolean; // флаг для отслеживания отправки данных
 }
 
 interface ClickTrackingContextType {
@@ -63,7 +64,8 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
             totalClicks: 0,
             clickPath: [],
             goalReached: false,
-            userPath: []
+            userPath: [],
+            dataSent: false
         };
 
         setCurrentSession(newSession);
@@ -127,15 +129,17 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
     }, [currentSession]);
 
     const trackGoalReached = useCallback(() => {
-        if (!currentSession || currentSession.goalReached) return;
+        if (!currentSession || currentSession.goalReached || currentSession.dataSent) return;
 
+        // Сразу помечаем что данные отправляются, чтобы избежать повторных вызовов
         setCurrentSession(prev => {
-            if (!prev) return prev;
+            if (!prev || prev.goalReached || prev.dataSent) return prev;
 
             const completedSession = {
                 ...prev,
                 endTime: Date.now(),
-                goalReached: true
+                goalReached: true,
+                dataSent: true // Сразу помечаем как отправленные
             };
 
             console.log('[Click Tracking] Goal reached!', {
@@ -144,7 +148,7 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
                 path: completedSession.userPath
             });
 
-            // Отправляем данные на сервер
+            // Отправляем данные асинхронно
             sendSessionData(completedSession);
 
             return completedSession;
@@ -160,7 +164,8 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
             totalClicks: 0,
             clickPath: [],
             goalReached: false,
-            userPath: []
+            userPath: [],
+            dataSent: false
         };
 
         setCurrentSession(newSession);
@@ -189,8 +194,10 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const sendSessionData = async (session: UserSession) => {
         try {
+            console.log('[Click Tracking] Sending session data to server...');
+
             // Отправляем данные на сервер для аналитики
-            await fetch('/api/analytics/user-session', {
+            const response = await fetch('/api/analytics/user-session', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,8 +213,14 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
                     sessionDuration: session.endTime! - session.startTime
                 })
             });
+
+            if (response.ok) {
+                console.log('[Click Tracking] Session data sent successfully');
+            } else {
+                console.error('[Click Tracking] Failed to send session data:', response.status, response.statusText);
+            }
         } catch (error) {
-            console.error('Failed to send session data:', error);
+            console.error('[Click Tracking] Failed to send session data:', error);
         }
     };
 
