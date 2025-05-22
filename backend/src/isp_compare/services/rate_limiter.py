@@ -39,8 +39,10 @@ class RateLimiter:
         await self._redis.zadd(key, {member: current_time})
         await self._redis.expire(key, window_seconds)
 
-    async def check_failed_login_limit(self, username: str) -> tuple[bool, int]:
-        key = f"failed_login_limit:{username}"
+    async def check_failed_login_limit(
+        self, username: str, ip_address: str
+    ) -> tuple[bool, int]:
+        key = f"failed_login_limit:{username}:{ip_address}"
         window_seconds = 5 * 60
         current_time = int(datetime.now(UTC).timestamp())
         window_start_time = current_time - window_seconds
@@ -59,8 +61,8 @@ class RateLimiter:
         await self._redis.expire(key, window_seconds)
         return is_allowed, remaining_attempts
 
-    async def add_failed_login_attempt(self, username: str) -> None:
-        key = f"failed_login_limit:{username}"
+    async def add_failed_login_attempt(self, username: str, ip_address: str) -> None:
+        key = f"failed_login_limit:{username}:{ip_address}"
         await self.add_failed_attempt(key, 5)
 
     async def check_password_change_limit(self, user_id: UUID) -> tuple[bool, int]:

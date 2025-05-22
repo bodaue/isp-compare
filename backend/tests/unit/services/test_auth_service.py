@@ -341,9 +341,11 @@ async def test_login_success(
     result = await auth_service.login(login_data, response_mock)
 
     rate_limiter_mock.check_failed_login_limit.assert_called_once_with(
-        login_data.username
+        username=login_data.username, ip_address="127.0.0.1"
     )
-    user_repository_mock.get_by_username.assert_called_once_with(login_data.username)
+    user_repository_mock.get_by_username.assert_called_once_with(
+        login_data.username,
+    )
     password_hasher_mock.verify.assert_called_once_with(
         login_data.password, mock_user.hashed_password
     )
@@ -374,7 +376,7 @@ async def test_login_rate_limit_exceeded_initial(
         await auth_service.login(login_data, response_mock)
 
     rate_limiter_mock.check_failed_login_limit.assert_called_once_with(
-        login_data.username
+        username=login_data.username, ip_address="127.0.0.1"
     )
 
 
@@ -397,7 +399,7 @@ async def test_login_invalid_credentials_user_not_found(
 
     # Проверяем, что неудачная попытка была добавлена
     rate_limiter_mock.add_failed_login_attempt.assert_called_once_with(
-        login_data.username
+        username=login_data.username, ip_address="127.0.0.1"
     )
 
     # Проверяем заголовки (remaining = 10 - 1 = 9)
@@ -427,7 +429,7 @@ async def test_login_wrong_password(
 
     # Проверяем, что неудачная попытка была добавлена
     rate_limiter_mock.add_failed_login_attempt.assert_called_once_with(
-        login_data.username
+        username=login_data.username, ip_address="127.0.0.1"
     )
     password_hasher_mock.verify.assert_called_once_with(
         login_data.password, mock_user.hashed_password

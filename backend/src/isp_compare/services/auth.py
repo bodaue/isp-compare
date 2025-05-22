@@ -91,8 +91,10 @@ class AuthService:
         return TokenResponse(access_token=access_token)
 
     async def login(self, data: UserLogin, response: Response) -> TokenResponse:
+        ip_address = self._request.client.host if self._request.client else "unknown"
+
         is_allowed, remaining = await self._rate_limiter.check_failed_login_limit(
-            data.username
+            username=data.username, ip_address=ip_address
         )
         if not is_allowed:
             raise LoginRateLimitExceededException(retry_after=300)
@@ -102,7 +104,9 @@ class AuthService:
         if not user or not self._password_hasher.verify(
             data.password, user.hashed_password
         ):
-            await self._rate_limiter.add_failed_login_attempt(data.username)
+            await self._rate_limiter.add_failed_login_attempt(
+                username=data.username, ip_address=ip_address
+            )
 
             remaining_after_attempt = remaining - 1
             is_last_attempt = remaining_after_attempt <= 0

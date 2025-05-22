@@ -101,7 +101,9 @@ async def test_check_failed_login_limit_allowed(
 ) -> None:
     redis_mock.zcard.return_value = 5
 
-    is_allowed, remaining = await rate_limiter.check_failed_login_limit("testuser")
+    is_allowed, remaining = await rate_limiter.check_failed_login_limit(
+        "testuser", "127.0.0.1"
+    )
 
     assert is_allowed is True
     assert remaining == 5  # 10 - 5 (НЕ добавляем текущую попытку)
@@ -117,7 +119,9 @@ async def test_check_failed_login_limit_exceeded(
 ) -> None:
     redis_mock.zcard.return_value = 10
 
-    is_allowed, remaining = await rate_limiter.check_failed_login_limit("testuser")
+    is_allowed, remaining = await rate_limiter.check_failed_login_limit(
+        "testuser", "127.0.0.1"
+    )
 
     assert is_allowed is False
     assert remaining == 0
@@ -131,10 +135,10 @@ async def test_add_failed_login_attempt(
     rate_limiter: RateLimiter, redis_mock: AsyncMock
 ) -> None:
     with patch.object(rate_limiter, "add_failed_attempt") as mock_add_failed_attempt:
-        await rate_limiter.add_failed_login_attempt("testuser")
+        await rate_limiter.add_failed_login_attempt("testuser", "127.0.0.1")
 
         mock_add_failed_attempt.assert_called_once_with(
-            "failed_login_limit:testuser", 5
+            "failed_login_limit:testuser:127.0.0.1", 5
         )
 
 
