@@ -1,6 +1,7 @@
 # backend/src/isp_compare/services/user_session.py
 from datetime import UTC, datetime
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from isp_compare.models import UserSession
@@ -36,5 +37,8 @@ class UserSessionService:
             session_duration=session_data.session_duration,
         )
 
-        await self._user_session_repository.create(user_session)
-        await self._transaction_manager.commit()
+        try:
+            await self._user_session_repository.create(user_session)
+            await self._transaction_manager.commit()
+        except IntegrityError:
+            await self._transaction_manager.rollback()

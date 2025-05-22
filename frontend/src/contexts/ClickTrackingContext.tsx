@@ -1,5 +1,5 @@
 // frontend/src/contexts/ClickTrackingContext.tsx
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 interface ClickData {
     timestamp: number;
@@ -16,8 +16,8 @@ interface UserSession {
     totalClicks: number;
     clickPath: ClickData[];
     goalReached: boolean;
-    userPath: string[]; // страницы, которые посетил пользователь
-    dataSent?: boolean; // флаг для отслеживания отправки данных
+    userPath: string[];
+    dataSent?: boolean;
 }
 
 interface ClickTrackingContextType {
@@ -38,6 +38,7 @@ const ClickTrackingContext = createContext<ClickTrackingContextType | undefined>
 
 export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [currentSession, setCurrentSession] = useState<UserSession | null>(null);
+    const sendingDataRef = useRef(false); // Ref для отслеживания процесса отправки
 
     // Инициализация сессии при первом заходе
     useEffect(() => {
@@ -46,7 +47,6 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
         if (existingSession) {
             try {
                 const session = JSON.parse(existingSession);
-                // Проверяем, не истекла ли сессия (более 30 минут)
                 const now = Date.now();
                 if (now - session.startTime < 30 * 60 * 1000 && !session.goalReached) {
                     setCurrentSession(session);
@@ -57,7 +57,6 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
             }
         }
 
-        // Создаем новую сессию
         const newSession: UserSession = {
             sessionId: generateSessionId(),
             startTime: Date.now(),
@@ -115,7 +114,6 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
         setCurrentSession(prev => {
             if (!prev) return prev;
 
-            // Добавляем страницу только если она отличается от последней
             const lastPage = prev.userPath[prev.userPath.length - 1];
             if (lastPage === page) return prev;
 
@@ -129,17 +127,22 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
     }, [currentSession]);
 
     const trackGoalReached = useCallback(() => {
-        if (!currentSession || currentSession.goalReached || currentSession.dataSent) return;
+        // Используем ref для предотвращения множественных вызовов
+        if (!currentSession || currentSession.goalReached || sendingDataRef.current) return;
 
-        // Сразу помечаем что данные отправляются, чтобы избежать повторных вызовов
+        sendingDataRef.current = true;
+
         setCurrentSession(prev => {
-            if (!prev || prev.goalReached || prev.dataSent) return prev;
+            if (!prev || prev.goalReached) {
+                sendingDataRef.current = false;
+                return prev;
+            }
 
             const completedSession = {
                 ...prev,
                 endTime: Date.now(),
                 goalReached: true,
-                dataSent: true // Сразу помечаем как отправленные
+                dataSent: true
             };
 
             console.log('[Click Tracking] Goal reached!', {
@@ -148,8 +151,12 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
                 path: completedSession.userPath
             });
 
-            // Отправляем данные асинхронно
-            sendSessionData(completedSession);
+            // Отправляем данные асинхронно с задержкой
+            setTimeout(() => {
+                sendSessionData(completedSession).finally(() => {
+                    sendingDataRef.current = false;
+                });
+            }, 100);
 
             return completedSession;
         });
@@ -157,6 +164,7 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const resetSession = useCallback(() => {
         localStorage.removeItem('clickTrackingSession');
+        sendingDataRef.current = false;
 
         const newSession: UserSession = {
             sessionId: generateSessionId(),
@@ -192,11 +200,10 @@ export const ClickTrackingProvider: React.FC<{ children: React.ReactNode }> = ({
         };
     }, [currentSession]);
 
-    const sendSessionData = async (session: UserSession) => {
+    const sendSessionData = async (session: UserSession): Promise<void> => {
         try {
             console.log('[Click Tracking] Sending session data to server...');
 
-            // Отправляем данные на сервер для аналитики
             const response = await fetch('/api/analytics/user-session', {
                 method: 'POST',
                 headers: {
