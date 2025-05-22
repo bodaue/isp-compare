@@ -1,8 +1,8 @@
 """Add user sessions for analytics
 
-Revision ID: 26a09cade66b
+Revision ID: 6ed04b241432
 Revises: a6b0c5c27a02
-Create Date: 2025-05-22 19:45:13.782314
+Create Date: 2025-05-22 20:54:32.651418
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "26a09cade66b"
+revision: str = "6ed04b241432"
 down_revision: str | None = "a6b0c5c27a02"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
