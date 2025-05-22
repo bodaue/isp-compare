@@ -98,26 +98,21 @@ class AuthService:
         return TokenResponse(access_token=access_token)
 
     async def login(self, data: UserLogin, response: Response) -> TokenResponse:
-        client_ip = self._request.client.host if self._request.client else "unknown"
-        is_allowed, remaining = await self._rate_limiter.login_rate_limit(
-            ip_address=client_ip
+        is_allowed, remaining = await self._rate_limiter.check_failed_login_limit(
+            data.username
         )
         if not is_allowed:
             raise LoginRateLimitExceededException(retry_after=300)
 
         user = await self._user_repository.get_by_username(data.username)
+
         if not user or not self._password_hasher.verify(
             data.password, user.hashed_password
         ):
-            if remaining == 0:
-                raise InvalidCredentialsException(
-                    remaining_attempts=0,
-                    max_attempts=5,
-                    is_last_attempt=True,
-                    retry_after=300,
-                )
+            await self._rate_limiter.add_failed_login_attempt(data.username)
+
             raise InvalidCredentialsException(
-                remaining_attempts=remaining, max_attempts=5
+                remaining_attempts=remaining - 1, max_attempts=10
             )
 
         (
@@ -190,19 +185,19 @@ class AuthService:
         if not user:
             raise UserNotFoundException
 
-        is_allowed, remaining = await self._rate_limiter.password_change_rate_limit(
-            user.id
-        )
+        (
+            is_allowed,
+            remaining,
+        ) = await self._rate_limiter.check_failed_password_change_limit(user.id)
         if not is_allowed:
             raise PasswordChangeRateLimitExceededException
 
         if not self._password_hasher.verify(
             data.current_password, user.hashed_password
         ):
+            await self._rate_limiter.add_failed_password_change_attempt(user.id)
             raise IncorrectPasswordException
 
         hashed_password = self._password_hasher.hash(data.new_password)
-
         await self._user_repository.update_password(user.id, hashed_password)
-
         await self._transaction_manager.commit()

@@ -179,7 +179,7 @@ async def test_login_success(
         password="Password123",
     )
 
-    rate_limiter_mock.login_rate_limit.return_value = (True, 5)
+    rate_limiter_mock.check_failed_login_limit.return_value = (True, 10)
     user_repository_mock.get_by_username.return_value = mock_user
     password_hasher_mock.verify.return_value = True
 
@@ -194,12 +194,17 @@ async def test_login_success(
 
     result = await auth_service.login(login_data, response_mock)
 
-    rate_limiter_mock.login_rate_limit.assert_called_once()
+    rate_limiter_mock.check_failed_login_limit.assert_called_once_with(
+        login_data.username
+    )
     user_repository_mock.get_by_username.assert_called_once_with(login_data.username)
     password_hasher_mock.verify.assert_called_once_with(
         login_data.password, mock_user.hashed_password
     )
     token_service_mock.create_tokens.assert_called_once_with(mock_user)
+
+    # Проверяем, что неудачная попытка НЕ была добавлена при успешном входе
+    rate_limiter_mock.add_failed_login_attempt.assert_not_called()
 
     response_mock.set_cookie.assert_called_once()
 
@@ -207,7 +212,27 @@ async def test_login_success(
     assert result.access_token == access_token
 
 
-async def test_login_invalid_credentials(
+async def test_login_rate_limit_exceeded_initial(
+    auth_service: AuthService,
+    response_mock: MagicMock,
+    rate_limiter_mock: AsyncMock,
+) -> None:
+    login_data = UserLogin(
+        username="testuser",
+        password="Password123",
+    )
+
+    rate_limiter_mock.check_failed_login_limit.return_value = (False, 0)
+
+    with pytest.raises(LoginRateLimitExceededException):
+        await auth_service.login(login_data, response_mock)
+
+    rate_limiter_mock.check_failed_login_limit.assert_called_once_with(
+        login_data.username
+    )
+
+
+async def test_login_invalid_credentials_user_not_found(
     auth_service: AuthService,
     response_mock: MagicMock,
     user_repository_mock: AsyncMock,
@@ -218,14 +243,20 @@ async def test_login_invalid_credentials(
         password="Password123",
     )
 
-    rate_limiter_mock.login_rate_limit.return_value = (True, 5)
+    rate_limiter_mock.check_failed_login_limit.return_value = (True, 10)
     user_repository_mock.get_by_username.return_value = None
 
-    with pytest.raises(InvalidCredentialsException):
+    with pytest.raises(InvalidCredentialsException) as exc_info:
         await auth_service.login(login_data, response_mock)
 
-    rate_limiter_mock.login_rate_limit.assert_called_once()
-    user_repository_mock.get_by_username.assert_called_once_with(login_data.username)
+    # Проверяем, что неудачная попытка была добавлена
+    rate_limiter_mock.add_failed_login_attempt.assert_called_once_with(
+        login_data.username
+    )
+
+    # Проверяем заголовки (remaining = 10 - 1 = 9)
+    assert exc_info.value.headers["X-RateLimit-Limit"] == "10"
+    assert exc_info.value.headers["X-RateLimit-Remaining"] == "9"
 
 
 async def test_login_wrong_password(
@@ -241,34 +272,23 @@ async def test_login_wrong_password(
         password="WrongPassword",
     )
 
-    rate_limiter_mock.login_rate_limit.return_value = (True, 5)
+    rate_limiter_mock.check_failed_login_limit.return_value = (True, 5)
     user_repository_mock.get_by_username.return_value = mock_user
     password_hasher_mock.verify.return_value = False
 
-    with pytest.raises(InvalidCredentialsException):
+    with pytest.raises(InvalidCredentialsException) as exc_info:
         await auth_service.login(login_data, response_mock)
 
+    # Проверяем, что неудачная попытка была добавлена
+    rate_limiter_mock.add_failed_login_attempt.assert_called_once_with(
+        login_data.username
+    )
     password_hasher_mock.verify.assert_called_once_with(
         login_data.password, mock_user.hashed_password
     )
 
-
-async def test_login_rate_limit_exceeded(
-    auth_service: AuthService,
-    response_mock: MagicMock,
-    rate_limiter_mock: AsyncMock,
-) -> None:
-    login_data = UserLogin(
-        username="testuser",
-        password="Password123",
-    )
-
-    rate_limiter_mock.login_rate_limit.return_value = (False, 0)
-
-    with pytest.raises(LoginRateLimitExceededException):
-        await auth_service.login(login_data, response_mock)
-
-    rate_limiter_mock.login_rate_limit.assert_called_once()
+    # Проверяем заголовки (remaining = 5 - 1 = 4)
+    assert exc_info.value.headers["X-RateLimit-Remaining"] == "4"
 
 
 async def test_refresh_token_success(
@@ -379,14 +399,16 @@ async def test_change_password_success(
     )
 
     identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.password_change_rate_limit.return_value = (True, 2)
+    rate_limiter_mock.check_failed_password_change_limit.return_value = (True, 10)
     password_hasher_mock.verify.return_value = True
     password_hasher_mock.hash.return_value = "new_hashed_password"
 
     await auth_service.change_password(password_data)
 
     identity_provider_mock.get_current_user.assert_called_once()
-    rate_limiter_mock.password_change_rate_limit.assert_called_once_with(mock_user.id)
+    rate_limiter_mock.check_failed_password_change_limit.assert_called_once_with(
+        mock_user.id
+    )
     password_hasher_mock.verify.assert_called_once_with(
         password_data.current_password, mock_user.hashed_password
     )
@@ -395,6 +417,9 @@ async def test_change_password_success(
         mock_user.id, "new_hashed_password"
     )
     transaction_manager_mock.commit.assert_called_once()
+
+    # Проверяем, что неудачная попытка НЕ была добавлена при успешной смене пароля
+    rate_limiter_mock.add_failed_password_change_attempt.assert_not_called()
 
 
 async def test_change_password_user_not_found(
@@ -412,6 +437,28 @@ async def test_change_password_user_not_found(
         await auth_service.change_password(password_data)
 
 
+async def test_change_password_rate_limit_exceeded_initial(
+    auth_service: AuthService,
+    identity_provider_mock: AsyncMock,
+    rate_limiter_mock: AsyncMock,
+    mock_user: User,
+) -> None:
+    password_data = PasswordChange(
+        current_password="OldPassword123",
+        new_password="NewPassword123",
+    )
+
+    identity_provider_mock.get_current_user.return_value = mock_user
+    rate_limiter_mock.check_failed_password_change_limit.return_value = (False, 0)
+
+    with pytest.raises(PasswordChangeRateLimitExceededException):
+        await auth_service.change_password(password_data)
+
+    rate_limiter_mock.check_failed_password_change_limit.assert_called_once_with(
+        mock_user.id
+    )
+
+
 async def test_change_password_incorrect_current(
     auth_service: AuthService,
     identity_provider_mock: AsyncMock,
@@ -425,26 +472,13 @@ async def test_change_password_incorrect_current(
     )
 
     identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.password_change_rate_limit.return_value = (True, 2)
+    rate_limiter_mock.check_failed_password_change_limit.return_value = (True, 5)
     password_hasher_mock.verify.return_value = False
 
     with pytest.raises(IncorrectPasswordException):
         await auth_service.change_password(password_data)
 
-
-async def test_change_password_rate_limit_exceeded(
-    auth_service: AuthService,
-    identity_provider_mock: AsyncMock,
-    rate_limiter_mock: AsyncMock,
-    mock_user: User,
-) -> None:
-    password_data = PasswordChange(
-        current_password="OldPassword123",
-        new_password="NewPassword123",
+    # Проверяем, что неудачная попытка была добавлена
+    rate_limiter_mock.add_failed_password_change_attempt.assert_called_once_with(
+        mock_user.id
     )
-
-    identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.password_change_rate_limit.return_value = (False, 0)
-
-    with pytest.raises(PasswordChangeRateLimitExceededException):
-        await auth_service.change_password(password_data)

@@ -63,30 +63,38 @@ async def test_change_password_unauthorized(client: AsyncClient) -> None:
     check_response(response, 401, expected_detail=InvalidTokenException.detail)
 
 
-async def test_change_password_rate_limit(auth_client: AsyncClient) -> None:
-    first_change = {
+async def test_change_password_rate_limit_on_wrong_password(
+    auth_client: AsyncClient,
+) -> None:
+    wrong_password_data = {
+        "current_password": "WrongPassword123!",
+        "new_password": "NewPassword123!",
+    }
+
+    for _ in range(10):
+        response = await auth_client.post(
+            "/users/change-password", json=wrong_password_data
+        )
+        assert response.status_code == 400
+
+    response = await auth_client.post(
+        "/users/change-password", json=wrong_password_data
+    )
+    check_response(
+        response,
+        429,
+        expected_detail=PasswordChangeRateLimitExceededException.detail,
+    )
+
+    correct_password_data = {
         "current_password": "Password123!",
         "new_password": "NewPassword123!",
     }
-    first_response = await auth_client.post("/users/change-password", json=first_change)
-    assert first_response.status_code == 200
-
-    second_change = {
-        "current_password": "NewPassword123!",
-        "new_password": "AnotherPassword123!",
-    }
-    second_response = await auth_client.post(
-        "/users/change-password", json=second_change
+    response = await auth_client.post(
+        "/users/change-password", json=correct_password_data
     )
-    assert second_response.status_code == 200
-
-    third_change = {
-        "current_password": "AnotherPassword123!",
-        "new_password": "YetAnotherPassword123!",
-    }
-    third_response = await auth_client.post("/users/change-password", json=third_change)
     check_response(
-        third_response,
+        response,
         429,
         expected_detail=PasswordChangeRateLimitExceededException.detail,
     )
