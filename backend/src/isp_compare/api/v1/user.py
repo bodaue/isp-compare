@@ -1,12 +1,11 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends
-from isp_compare.schemas.common import APIResponse
-from isp_compare.schemas.user import PasswordChange, UserProfile, UserProfileUpdate
-from isp_compare.services.auth import AuthService
-from isp_compare.services.user import UserService
 
 from isp_compare.api.v1 import security
+from isp_compare.schemas.common import APIResponse
+from isp_compare.schemas.user import PasswordChange, UserProfile, UserProfileUpdate
+from isp_compare.services.user import UserService
 
 router = APIRouter(prefix="/users", tags=["User"], dependencies=[Depends(security)])
 
@@ -32,7 +31,7 @@ async def update_profile(
 @inject
 async def change_password(
     data: PasswordChange,
-    service: FromDishka[AuthService],
+    service: FromDishka[UserService],
 ) -> APIResponse:
     await service.change_password(data)
     return APIResponse(message="Password successfully changed")

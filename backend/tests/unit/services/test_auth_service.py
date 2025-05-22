@@ -8,24 +8,19 @@ from fastapi import Request, Response
 
 from isp_compare.core.config import CookieConfig, JWTConfig
 from isp_compare.core.exceptions import (
-    IncorrectPasswordException,
     InvalidCredentialsException,
     LoginRateLimitExceededException,
-    PasswordChangeRateLimitExceededException,
     RefreshTokenMissingException,
     TokenRefreshRateLimitExceededException,
-    UserNotFoundException,
 )
 from isp_compare.models.user import User
 from isp_compare.repositories.user import UserRepository
 from isp_compare.schemas.user import (
-    PasswordChange,
     TokenResponse,
     UserCreate,
     UserLogin,
 )
 from isp_compare.services.auth import AuthService
-from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.password_hasher import PasswordHasher
 from isp_compare.services.rate_limiter import RateLimiter
 from isp_compare.services.token_processor import TokenProcessor
@@ -74,11 +69,6 @@ def token_service_mock() -> AsyncMock:
 
 
 @pytest.fixture
-def identity_provider_mock() -> AsyncMock:
-    return AsyncMock(spec=IdentityProvider)
-
-
-@pytest.fixture
 def rate_limiter_mock() -> AsyncMock:
     return AsyncMock(spec=RateLimiter)
 
@@ -93,7 +83,6 @@ def auth_service(
     password_hasher_mock: MagicMock,
     token_processor_mock: MagicMock,
     token_service_mock: AsyncMock,
-    identity_provider_mock: AsyncMock,
     rate_limiter_mock: AsyncMock,
 ) -> AuthService:
     return AuthService(
@@ -105,7 +94,6 @@ def auth_service(
         password_hasher=password_hasher_mock,
         token_processor=token_processor_mock,
         token_service=token_service_mock,
-        identity_provider=identity_provider_mock,
         rate_limiter=rate_limiter_mock,
     )
 
@@ -382,103 +370,3 @@ async def test_logout_no_tokens(
     token_service_mock.blacklist_access_token.assert_not_called()
     token_service_mock.revoke_refresh_token.assert_not_called()
     response_mock.delete_cookie.assert_called_once()
-
-
-async def test_change_password_success(
-    auth_service: AuthService,
-    identity_provider_mock: AsyncMock,
-    user_repository_mock: AsyncMock,
-    transaction_manager_mock: AsyncMock,
-    password_hasher_mock: MagicMock,
-    rate_limiter_mock: AsyncMock,
-    mock_user: User,
-) -> None:
-    password_data = PasswordChange(
-        current_password="OldPassword123",
-        new_password="NewPassword123",
-    )
-
-    identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.check_failed_password_change_limit.return_value = (True, 10)
-    password_hasher_mock.verify.return_value = True
-    password_hasher_mock.hash.return_value = "new_hashed_password"
-
-    await auth_service.change_password(password_data)
-
-    identity_provider_mock.get_current_user.assert_called_once()
-    rate_limiter_mock.check_failed_password_change_limit.assert_called_once_with(
-        mock_user.id
-    )
-    password_hasher_mock.verify.assert_called_once_with(
-        password_data.current_password, mock_user.hashed_password
-    )
-    password_hasher_mock.hash.assert_called_once_with(password_data.new_password)
-    user_repository_mock.update_password.assert_called_once_with(
-        mock_user.id, "new_hashed_password"
-    )
-    transaction_manager_mock.commit.assert_called_once()
-
-    # Проверяем, что неудачная попытка НЕ была добавлена при успешной смене пароля
-    rate_limiter_mock.add_failed_password_change_attempt.assert_not_called()
-
-
-async def test_change_password_user_not_found(
-    auth_service: AuthService,
-    identity_provider_mock: AsyncMock,
-) -> None:
-    password_data = PasswordChange(
-        current_password="OldPassword123",
-        new_password="NewPassword123",
-    )
-
-    identity_provider_mock.get_current_user.return_value = None
-
-    with pytest.raises(UserNotFoundException):
-        await auth_service.change_password(password_data)
-
-
-async def test_change_password_rate_limit_exceeded_initial(
-    auth_service: AuthService,
-    identity_provider_mock: AsyncMock,
-    rate_limiter_mock: AsyncMock,
-    mock_user: User,
-) -> None:
-    password_data = PasswordChange(
-        current_password="OldPassword123",
-        new_password="NewPassword123",
-    )
-
-    identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.check_failed_password_change_limit.return_value = (False, 0)
-
-    with pytest.raises(PasswordChangeRateLimitExceededException):
-        await auth_service.change_password(password_data)
-
-    rate_limiter_mock.check_failed_password_change_limit.assert_called_once_with(
-        mock_user.id
-    )
-
-
-async def test_change_password_incorrect_current(
-    auth_service: AuthService,
-    identity_provider_mock: AsyncMock,
-    password_hasher_mock: MagicMock,
-    rate_limiter_mock: AsyncMock,
-    mock_user: User,
-) -> None:
-    password_data = PasswordChange(
-        current_password="WrongPassword",
-        new_password="NewPassword123",
-    )
-
-    identity_provider_mock.get_current_user.return_value = mock_user
-    rate_limiter_mock.check_failed_password_change_limit.return_value = (True, 5)
-    password_hasher_mock.verify.return_value = False
-
-    with pytest.raises(IncorrectPasswordException):
-        await auth_service.change_password(password_data)
-
-    # Проверяем, что неудачная попытка была добавлена
-    rate_limiter_mock.add_failed_password_change_attempt.assert_called_once_with(
-        mock_user.id
-    )

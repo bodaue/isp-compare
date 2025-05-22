@@ -7,24 +7,19 @@ from sqlalchemy.exc import IntegrityError
 from isp_compare.core.config import CookieConfig, JWTConfig
 from isp_compare.core.exceptions import (
     EmailAlreadyExistsException,
-    IncorrectPasswordException,
     InvalidCredentialsException,
     LoginRateLimitExceededException,
-    PasswordChangeRateLimitExceededException,
     RefreshTokenMissingException,
     TokenRefreshRateLimitExceededException,
     UsernameAlreadyExistsException,
-    UserNotFoundException,
 )
 from isp_compare.models.user import User
 from isp_compare.repositories.user import UserRepository
 from isp_compare.schemas.user import (
-    PasswordChange,
     TokenResponse,
     UserCreate,
     UserLogin,
 )
-from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.password_hasher import PasswordHasher
 from isp_compare.services.rate_limiter import RateLimiter
 from isp_compare.services.token_processor import TokenProcessor
@@ -43,7 +38,6 @@ class AuthService:
         password_hasher: PasswordHasher,
         token_processor: TokenProcessor,
         token_service: TokenService,
-        identity_provider: IdentityProvider,
         rate_limiter: RateLimiter,
     ) -> None:
         self._request = request
@@ -54,7 +48,6 @@ class AuthService:
         self._password_hasher = password_hasher
         self._token_processor = token_processor
         self._token_service = token_service
-        self._identity_provider = identity_provider
         self._rate_limiter = rate_limiter
 
     async def register(self, data: UserCreate, response: Response) -> TokenResponse:
@@ -179,25 +172,3 @@ class AuthService:
             key=self._cookie_config.refresh_token_key,
             path=self._cookie_config.path,
         )
-
-    async def change_password(self, data: PasswordChange) -> None:
-        user = await self._identity_provider.get_current_user()
-        if not user:
-            raise UserNotFoundException
-
-        (
-            is_allowed,
-            remaining,
-        ) = await self._rate_limiter.check_failed_password_change_limit(user.id)
-        if not is_allowed:
-            raise PasswordChangeRateLimitExceededException
-
-        if not self._password_hasher.verify(
-            data.current_password, user.hashed_password
-        ):
-            await self._rate_limiter.add_failed_password_change_attempt(user.id)
-            raise IncorrectPasswordException
-
-        hashed_password = self._password_hasher.hash(data.new_password)
-        await self._user_repository.update_password(user.id, hashed_password)
-        await self._transaction_manager.commit()
