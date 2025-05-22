@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
         <header className={`app-header ${isScrolled ? 'scrolled' : ''}`}>
             <div className="header-container">
                 <div className="logo-section">
-                    <Link to="/" className="logo-link">
+                    <Link to="/" className="logo-link" data-track-click="logo">
                         <div className="logo-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  strokeWidth="2">
@@ -39,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                     </Link>
                 </div>
 
-                <button className="menu-toggle" onClick={toggleMenu}>
+                <button className="menu-toggle" onClick={toggleMenu} data-track-click="mobile-menu">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         {isMenuOpen ? (
                             <path d="M18 6L6 18M6 6l12 12"/>
@@ -56,8 +56,10 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                 <nav className={`nav-menu ${isMenuOpen ? 'open' : ''}`}>
                     <ul>
                         <li>
-                            <Link to="/providers" className={location.pathname === '/providers' ? 'active' : ''}
-                                  onClick={closeMenu}>
+                            <Link to="/providers"
+                                  className={location.pathname === '/providers' ? 'active' : ''}
+                                  onClick={closeMenu}
+                                  data-track-click="navigation">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                      strokeWidth="2">
                                     <rect x="3" y="3" width="7" height="7"></rect>
@@ -69,8 +71,10 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                             </Link>
                         </li>
                         <li>
-                            <Link to="/tariffs" className={location.pathname === '/tariffs' ? 'active' : ''}
-                                  onClick={closeMenu}>
+                            <Link to="/tariffs"
+                                  className={location.pathname === '/tariffs' ? 'active' : ''}
+                                  onClick={closeMenu}
+                                  data-track-click="navigation">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                      strokeWidth="2">
                                     <path
@@ -86,7 +90,8 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                                 <li>
                                     <Link to="/profile"
                                           className={location.pathname === '/profile' ? 'active' : ''}
-                                          onClick={closeMenu}>
+                                          onClick={closeMenu}
+                                          data-track-click="navigation">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                              stroke="currentColor" strokeWidth="2">
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -99,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                                     <button onClick={() => {
                                         onLogout();
                                         closeMenu();
-                                    }} className="logout-btn">
+                                    }} className="logout-btn" data-track-click="auth-action">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                              stroke="currentColor" strokeWidth="2">
                                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -113,8 +118,10 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                         ) : (
                             <>
                                 <li>
-                                    <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}
-                                          onClick={closeMenu}>
+                                    <Link to="/login"
+                                          className={location.pathname === '/login' ? 'active' : ''}
+                                          onClick={closeMenu}
+                                          data-track-click="auth-action">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                              stroke="currentColor" strokeWidth="2">
                                             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -127,7 +134,8 @@ const Header: React.FC<HeaderProps> = ({isLoggedIn, isScrolled, onLogout}) => {
                                 <li>
                                     <Link to="/register"
                                           className={`nav-link-register ${location.pathname === '/register' ? 'active' : ''}`}
-                                          onClick={closeMenu}>
+                                          onClick={closeMenu}
+                                          data-track-click="auth-action">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                              stroke="currentColor" strokeWidth="2">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>

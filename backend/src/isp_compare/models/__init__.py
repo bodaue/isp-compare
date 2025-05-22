@@ -1,3 +1,4 @@
+from isp_compare.models.user_analytics import UserAnalytics
 from isp_compare.models.base import Base
 from isp_compare.models.provider import Provider
 from isp_compare.models.review import Review
@@ -14,4 +15,5 @@ __all__ = [
     "SearchHistory",
     "Tariff",
     "User",
+    "UserAnalytics",
 ]

@@ -31,6 +31,7 @@ const TariffCard: React.FC<TariffCardProps> = ({
         <div
             className={`tariff-card ${selectable ? 'selectable' : ''} ${selected ? 'selected' : ''}`}
             onClick={handleCardClick}
+            data-track-click={selectable ? "tariff-selection" : "tariff-card"}
         >
             {selectable && (
                 <div className="tariff-checkbox">
@@ -119,6 +120,7 @@ const TariffCard: React.FC<TariffCardProps> = ({
             <Link
                 to={`/tariffs/${tariff.id}`}
                 className="tariff-button"
+                data-track-click="tariff-details"
                 onClick={(e) => {
                     if (selectable) {
                         e.preventDefault();

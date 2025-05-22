@@ -3,6 +3,7 @@ import {Link, useParams} from 'react-router-dom';
 import {tariffService} from '../../services/tariffService';
 import {providerService} from '../../services/providerService';
 import {Provider, Tariff} from '../../types/provider.types';
+import {useClickTracking} from '../../contexts/ClickTrackingContext';
 import Modal from '../common/Modal';
 import './TariffDetail.css';
 
@@ -14,6 +15,7 @@ const TariffDetail: React.FC = () => {
     const [error, setError] = useState('');
     const [showConnectModal, setShowConnectModal] = useState(false);
     const [copiedPhone, setCopiedPhone] = useState(false);
+    const {trackGoalReached} = useClickTracking();
 
     useEffect(() => {
         if (id) {
@@ -39,6 +41,7 @@ const TariffDetail: React.FC = () => {
     };
 
     const handleConnect = () => {
+        trackGoalReached();
         setShowConnectModal(true);
     };
 
@@ -196,14 +199,14 @@ const TariffDetail: React.FC = () => {
             </div>
 
             <div className="tariff-detail-actions">
-                <button className="btn btn-primary" onClick={handleConnect}>
+                <button className="btn btn-primary" onClick={handleConnect} data-track-click="connect-tariff-goal">
                     Подключить тариф
                 </button>
-                <Link to={`/providers/${provider.id}`} className="btn btn-secondary">
+                <Link to={`/providers/${provider.id}`} className="btn btn-secondary"
+                      data-track-click="provider-tariffs">
                     Все тарифы {provider.name}
                 </Link>
             </div>
-
             <Modal
                 isOpen={showConnectModal}
                 onClose={() => setShowConnectModal(false)}

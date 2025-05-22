@@ -1,13 +1,14 @@
 from fastapi.routing import APIRouter
 
 from isp_compare.api.v1 import (
+    analytics,
     auth,
+    parser,
     provider,
     review,
     search_history,
     tariff,
     user,
-    parser,
 )
 
 main_router = APIRouter()
@@ -18,3 +19,4 @@ main_router.include_router(tariff.router)
 main_router.include_router(review.router)
 main_router.include_router(search_history.router)
 main_router.include_router(parser.router)
+main_router.include_router(analytics.router)

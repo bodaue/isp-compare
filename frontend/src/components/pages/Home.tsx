@@ -19,10 +19,10 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                         Сравните тарифы, скорость и качество услуг интернет-провайдеров в Волгограде
                     </p>
                     <div className="hero-buttons">
-                        <Link to="/providers" className="btn btn-primary">
+                        <Link to="/providers" className="btn btn-primary" data-track-click="cta-primary">
                             Начать поиск
                         </Link>
-                        <Link to="/tariffs" className="btn btn-secondary">
+                        <Link to="/tariffs" className="btn btn-secondary" data-track-click="cta-secondary">
                             Сравнить тарифы
                         </Link>
                     </div>
@@ -92,7 +92,7 @@ const Home: React.FC<HomeProps> = ({isLoggedIn}) => {
                     <div className="cta-content">
                         <h2>Готовы найти лучший интернет?</h2>
                         <p>Присоединяйтесь к пользователям, которые уже нашли идеального провайдера</p>
-                        <Link to="/register" className="btn btn-primary">
+                        <Link to="/register" className="btn btn-primary" data-track-click="cta-register">
                             Создать аккаунт
                         </Link>
                     </div>

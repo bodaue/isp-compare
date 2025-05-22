@@ -118,6 +118,7 @@ const TariffList: React.FC = () => {
                 <button
                     className={`compare-toggle ${compareMode ? 'active' : ''}`}
                     onClick={toggleCompareMode}
+                    data-track-click="compare-mode"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M3 3v18h18"></path>
@@ -130,6 +131,7 @@ const TariffList: React.FC = () => {
                 <button
                     className="filter-toggle"
                     onClick={() => setShowFilters(!showFilters)}
+                    data-track-click="filter-toggle"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M4 6h16M4 12h10M4 18h4"/>
@@ -147,6 +149,7 @@ const TariffList: React.FC = () => {
                             <button
                                 className="btn btn-primary btn-sm"
                                 onClick={startComparison}
+                                data-track-click="start-comparison"
                             >
                                 Сравнить выбранные ({selectedTariffs.length})
                             </button>
@@ -222,10 +225,10 @@ const TariffList: React.FC = () => {
                     </div>
 
                     <div className="filter-actions">
-                        <button onClick={applyFilters} className="btn btn-primary">
+                        <button onClick={applyFilters} className="btn btn-primary" data-track-click="apply-filters">
                             Применить
                         </button>
-                        <button onClick={resetFilters} className="btn btn-secondary">
+                        <button onClick={resetFilters} className="btn btn-secondary" data-track-click="reset-filters">
                             Сбросить
                         </button>
                         {isLoggedIn && (
@@ -233,6 +236,7 @@ const TariffList: React.FC = () => {
                                 onClick={restoreLastSearch}
                                 className="btn btn-secondary btn-restore"
                                 disabled={loadingHistory}
+                                data-track-click="restore-filters"
                             >
                                 {loadingHistory ? (
                                     <>

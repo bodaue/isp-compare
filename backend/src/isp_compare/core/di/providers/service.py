@@ -1,5 +1,6 @@
 from dishka import Provider, Scope, provide
 
+from isp_compare.services.analytics import AnalyticsService
 from isp_compare.services.auth import AuthService
 from isp_compare.services.identity_provider import IdentityProvider
 from isp_compare.services.parser_service import ParserService
@@ -34,3 +35,4 @@ class ServiceProvider(Provider):
 
     rate_limiter = provide(RateLimiter)
     parser_service = provide(ParserService)
+    analytics_service = provide(AnalyticsService)

@@ -11,11 +11,19 @@ import TariffList from './components/tariffs/TariffList';
 import TariffDetail from './components/tariffs/TariffDetail';
 import TariffComparison from './components/tariffs/TariffComparison';
 import {useAuth} from './contexts/AuthContext';
+import {ClickTrackingProvider} from './contexts/ClickTrackingContext';
+import {useClickTracker} from './hooks/useClickTracker';
+import {usePageTracker} from './hooks/usePageTracker';
+import AnalyticsDebugPanel from './components/debug/AnalyticsDebugPanel';
 import './App.css';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
     const {isLoggedIn, logout} = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
+
+    // Инициализируем трекеры
+    useClickTracker();
+    usePageTracker();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -50,7 +58,18 @@ const App: React.FC = () => {
             </main>
 
             <Footer/>
+
+            {/* Панель аналитики для тестирования */}
+            <AnalyticsDebugPanel />
         </div>
+    );
+};
+
+const App: React.FC = () => {
+    return (
+        <ClickTrackingProvider>
+            <AppContent />
+        </ClickTrackingProvider>
     );
 };
 

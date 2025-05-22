@@ -5,7 +5,13 @@ from sqladmin import Admin
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from isp_compare.admin.auth import AdminAuth
-from isp_compare.admin.views import ProviderAdmin, ReviewAdmin, TariffAdmin, UserAdmin
+from isp_compare.admin.views import (
+    ProviderAdmin,
+    ReviewAdmin,
+    TariffAdmin,
+    UserAdmin,
+    UserAnalyticsAdmin,
+)
 from isp_compare.core.config import JWTConfig
 
 if TYPE_CHECKING:
@@ -37,3 +43,4 @@ async def setup_admin(app: FastAPI) -> None:
     admin.add_view(TariffAdmin)
     admin.add_view(UserAdmin)
     admin.add_view(ReviewAdmin)
+    admin.add_view(UserAnalyticsAdmin)

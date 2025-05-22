@@ -1,5 +1,6 @@
 from sqladmin import ModelView
 
+from isp_compare.models import UserAnalytics
 from isp_compare.models.provider import Provider
 from isp_compare.models.review import Review
 from isp_compare.models.tariff import Tariff
@@ -115,3 +116,11 @@ class ReviewAdmin(ModelView, model=Review):
     name = "Review"
     name_plural = "Reviews"
     icon = "fa-solid fa-star"
+
+
+class UserAnalyticsAdmin(ModelView, model=UserAnalytics):
+    column_list = [UserAnalytics.id, UserAnalytics.total_clicks]
+
+    name = "UserAnalytics"
+    name_plural = "UserAnalytics"
+    icon = "fas fa-analytics"
