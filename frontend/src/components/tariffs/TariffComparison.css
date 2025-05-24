@@ -38,10 +38,9 @@
     vertical-align: middle;
 }
 
-/* Фиксированная ширина для всех столбцов с тарифами */
 .comparison-table th:not(.fixed-column),
 .comparison-table td:not(.fixed-column) {
-    width: calc((100% - 240px) / var(--columns-count, 5));
+    flex: 1;
     min-width: 200px;
 }
 
